@@ -1,5 +1,6 @@
 package com.score.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,6 +31,14 @@ public class User extends BaseEntity {
     private String profileImg;
 
     private Time goal;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<User> mates = new ArrayList<>();
+
+    private boolean marketing;
+
+    private boolean push;
 
     @CreatedDate
     private LocalDateTime createdAt;
