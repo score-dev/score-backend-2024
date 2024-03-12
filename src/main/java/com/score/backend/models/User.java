@@ -40,6 +40,8 @@ public class User extends BaseEntity {
 
     private boolean push;
 
+    private String refreshToken;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
