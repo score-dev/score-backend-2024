@@ -26,4 +26,9 @@ public class UserService {
     public Optional<User> findUserByKey(String key) {
         return userRepository.findByKey(key);
     }
+
+    public boolean isPresentUser(String key) {
+        Optional<User> userOption = userRepository.findByKey(key);
+        return userOption.isPresent();
+    }
 }
