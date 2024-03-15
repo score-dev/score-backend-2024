@@ -22,4 +22,8 @@ public class UserService {
     public Optional<User> findUserByNickname(String nickname) {
         return userRepository.findByNickname(nickname);
     }
+
+    public Optional<User> findUserByKey(String key) {
+        return userRepository.findByKey(key);
+    }
 }
