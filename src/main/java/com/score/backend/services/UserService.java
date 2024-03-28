@@ -19,6 +19,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void withdrawUser(String nickname) {
+        User deletingUser = findUserByNickname(nickname).orElseThrow(null); // 예외 처리 필요
+        userRepository.delete(deletingUser);
+    }
+
     public Optional<User> findUserByNickname(String nickname) {
         return userRepository.findByNickname(nickname);
     }

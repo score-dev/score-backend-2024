@@ -73,4 +73,14 @@ public class UserController {
         }
 
     }
+
+    // 회원 탈퇴
+    @RequestMapping(value = "/score/withdrawal/{nickname}", method = RequestMethod.DELETE)
+    public ResponseEntity<Object> withdrawUser(@PathVariable(name = "nickname") String nickname, HttpServletResponse response) {
+        userService.withdrawUser(nickname);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        // 탈퇴 완료 후 온보딩 페이지로 이동.
+        httpHeaders.setLocation(URI.create("http://localhost:8080/score/onbording"));
+        return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+    }
 }

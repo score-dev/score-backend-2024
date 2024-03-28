@@ -20,6 +20,7 @@ import java.util.List;
 public class User extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -35,7 +36,8 @@ public class User extends BaseEntity {
 
     private Time goal;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany
+    @JoinColumn(name = "user_id")
     @JsonIgnore
     private List<User> mates = new ArrayList<>();
 
