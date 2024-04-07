@@ -41,6 +41,10 @@ public class User extends BaseEntity {
     @JsonIgnore
     private List<User> mates = new ArrayList<>();
 
+    @OneToMany(mappedBy="user")
+    @JsonIgnore
+    private List<Exercise> feeds = new ArrayList<>();
+
     private boolean marketing;
 
     private boolean push;
