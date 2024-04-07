@@ -2,6 +2,7 @@ package com.score.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.BaseEntity;
+import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -36,10 +37,9 @@ public class User extends BaseEntity {
 
     private Time goal;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy="agent")
     @JsonIgnore
-    private List<User> mates = new ArrayList<>();
+    private List<Exercise> feeds = new ArrayList<>();
 
     private boolean marketing;
 
@@ -48,10 +48,4 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     private String loginKey;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }
