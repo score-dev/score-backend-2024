@@ -1,4 +1,4 @@
-package com.score.backend.models.enums;
+package com.score.backend.models;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
