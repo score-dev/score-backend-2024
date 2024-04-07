@@ -58,14 +58,4 @@ public abstract class Exercise {
         this.exercisePic = exercisePic;
         this.content = content;
     }
-    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String emotion, String content) {
-        this.startedAt = startedAt;
-        this.completedAt = completedAt;
-        this.reducedKcal = reducedKcal;
-        this.location = location;
-        this.weather = weather;
-        this.temperature = temperature;
-        this.emotion = emotion;
-        this.content = content;
-    }
 }
