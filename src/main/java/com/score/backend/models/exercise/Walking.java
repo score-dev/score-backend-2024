@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.models.exercise;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

@@ -1,5 +1,7 @@
-package com.score.backend.models;
+package com.score.backend.models.exercise;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.score.backend.models.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +11,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +29,10 @@ public abstract class Exercise {
 
     @ManyToOne @JoinColumn(name="exercise_id")
     private User agent; // 피드를 업로드한 유저
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<ExerciseUser> exerciseUsers = new ArrayList<>(); // 함께 운동한 유저
 
     private LocalDateTime startedAt;
 

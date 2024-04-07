@@ -1,7 +1,7 @@
 package com.score.backend.models.dtos;
 
-import com.score.backend.models.Exercise;
-import com.score.backend.models.Walking;
+import com.score.backend.models.exercise.Exercise;
+import com.score.backend.models.exercise.Walking;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
