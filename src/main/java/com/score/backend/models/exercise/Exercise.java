@@ -1,6 +1,7 @@
 package com.score.backend.models.exercise;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.score.backend.BaseEntity;
 import com.score.backend.models.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DTYPE")
 @NoArgsConstructor
-public abstract class Exercise {
+public abstract class Exercise extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "exercise_id")
@@ -47,12 +48,6 @@ public abstract class Exercise {
     private String exercisePic;
 
     private String content;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String emotion, String exercisePic, String content) {
         this.startedAt = startedAt;
