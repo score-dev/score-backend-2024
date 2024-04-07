@@ -23,6 +23,9 @@ public abstract class Exercise {
     @Column(name = "exercise_id")
     private Long id;
 
+    @ManyToOne @JoinColumn(name="exercise_id")
+    private User agent; // 피드를 업로드한 유저
+
     private LocalDateTime startedAt;
 
     private LocalDateTime completedAt;

@@ -36,12 +36,12 @@ public class User extends BaseEntity {
 
     private Time goal;
 
-    @OneToMany
+    @OneToMany(mappedBy="user")
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private List<User> mates = new ArrayList<>();
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="agent")
     @JsonIgnore
     private List<Exercise> feeds = new ArrayList<>();
 
