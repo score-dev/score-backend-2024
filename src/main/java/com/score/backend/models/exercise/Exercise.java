@@ -23,10 +23,10 @@ public abstract class Exercise {
     @Column(name = "exercise_id")
     private Long id;
 
-    @ManyToOne @JoinColumn(name="exercise_id")
+    @ManyToOne @JoinColumn(name="user_id")
     private User agent; // 피드를 업로드한 유저
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "exercise")
     @JsonIgnore
     private List<ExerciseUser> exerciseUsers = new ArrayList<>(); // 함께 운동한 유저
 

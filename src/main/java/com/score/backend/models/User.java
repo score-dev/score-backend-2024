@@ -37,11 +37,6 @@ public class User extends BaseEntity {
 
     private Time goal;
 
-    @OneToMany(mappedBy="user")
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private List<User> mates = new ArrayList<>();
-
     @OneToMany(mappedBy="agent")
     @JsonIgnore
     private List<Exercise> feeds = new ArrayList<>();
@@ -53,10 +48,4 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     private String loginKey;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }
