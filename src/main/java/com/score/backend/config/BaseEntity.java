@@ -1,4 +1,4 @@
-package com.score.backend;
+package com.score.backend.config;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -21,13 +21,15 @@ public class BaseEntity {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(updatable = false)
+    @Column
     private LocalDateTime updatedAt;
 
     @CreatedBy
+    @Column(updatable = false)
     private String createdBy;
 
     @LastModifiedBy
+    @Column
     private String lastModifiedBy;
 
 }
