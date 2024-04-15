@@ -51,4 +51,14 @@ public class ExerciseController {
         httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
+    @RequestMapping(value = "/score/auth", method = DELETE)
+    public ResponseEntity<Object> deleteFeed(@RequestParam("id") Long id) {
+        Exercise feed = exerciseService.findFeedByExerciseId(id).orElseThrow(
+                () -> new RuntimeException("Exercise not found")
+        );
+        exerciseService.deleteFeed(feed);
+        // 피드 삭제 후 어느 페이지로 이동할 것인지 설정 필요
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
 }

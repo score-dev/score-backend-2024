@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ExerciseService {
@@ -14,5 +16,14 @@ public class ExerciseService {
     @Transactional
     public void saveFeed(Exercise exercise) {
         exerciseRepository.save(exercise);
+    }
+
+    @Transactional
+    public void deleteFeed(Exercise exercise) {
+        exerciseRepository.delete(exercise);
+    }
+
+    public Optional<Exercise> findFeedByExerciseId(Long exerciseId) {
+        return exerciseRepository.findById(exerciseId);
     }
 }
