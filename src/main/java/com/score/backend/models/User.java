@@ -42,6 +42,9 @@ public class User extends BaseEntity {
     private int consecutiveDate; // 며칠 연속으로 운동 중인지?
 
     @Column(nullable = false)
+    private double cumulativeTime; // 누적 운동 시간
+
+    @Column(nullable = false)
     private double cumulativeDistance; // 누적 운동 거리
 
     @OneToMany(mappedBy="agent")

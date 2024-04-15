@@ -37,6 +37,7 @@ public class UserDto {
                 .grade(grade)
                 .height(height)
                 .weight(weight)
+                .cumulativeTime(0.0)
                 .level(1)
                 .point(0)
                 .consecutiveDate(0)
