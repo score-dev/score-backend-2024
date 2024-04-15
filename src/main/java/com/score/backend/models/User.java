@@ -34,6 +34,16 @@ public class User extends BaseEntity {
 
     private Time goal;
 
+    private int level;
+
+    private int point;
+
+    @Column(nullable = false)
+    private int consecutiveDate; // 며칠 연속으로 운동 중인지?
+
+    @Column(nullable = false)
+    private double cumulativeDistance; // 누적 운동 거리
+
     @OneToMany(mappedBy="agent")
     @JsonIgnore
     private List<Exercise> feeds = new ArrayList<>();
