@@ -51,7 +51,7 @@ public class ExerciseController {
         httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
-    @RequestMapping(value = "/score/auth", method = DELETE)
+    @RequestMapping(value = "/score/exercise/walking/delete", method = DELETE)
     public ResponseEntity<Object> deleteFeed(@RequestParam("id") Long id) {
         Exercise feed = exerciseService.findFeedByExerciseId(id).orElseThrow(
                 () -> new RuntimeException("Exercise not found")
