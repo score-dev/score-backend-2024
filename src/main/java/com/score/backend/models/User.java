@@ -1,7 +1,7 @@
 package com.score.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.score.backend.BaseEntity;
+import com.score.backend.config.BaseEntity;
 import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;

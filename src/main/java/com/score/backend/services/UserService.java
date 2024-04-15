@@ -25,6 +25,10 @@ public class UserService {
         userRepository.delete(deletingUser);
     }
 
+    public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
     public Optional<User> findUserByNickname(String nickname) {
         return userRepository.findByNickname(nickname);
     }
