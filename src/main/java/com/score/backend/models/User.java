@@ -59,7 +59,10 @@ public class User extends BaseEntity {
 
     private String loginKey;
 
-    public void updateCumulativeTime(double cumulativeTime) {
-        this.cumulativeTime += cumulativeTime;
+    public void updateCumulativeTime(double duration) {
+        this.cumulativeTime += duration;
+    }
+    public void updateCumulativeDistance(double distance) {
+        this.cumulativeDistance += distance;
     }
 }

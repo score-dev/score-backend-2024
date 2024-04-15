@@ -46,4 +46,13 @@ public class ExerciseService {
         user.updateCumulativeTime(calculateExerciseDuration(start, end));
     }
 
+    // 유저의 운동 거리 누적
+    @Transactional
+    public void cumulateExerciseDistance(Long userId, double distance) {
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        user.updateCumulativeTime(distance);
+    }
+
 }
