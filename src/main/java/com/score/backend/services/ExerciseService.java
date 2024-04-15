@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -26,4 +28,11 @@ public class ExerciseService {
     public Optional<Exercise> findFeedByExerciseId(Long exerciseId) {
         return exerciseRepository.findById(exerciseId);
     }
+
+    // 운동한 시간 계산
+    public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) {
+        Duration duration = Duration.between(start, end);
+        return duration.getSeconds();
+    }
+
 }
