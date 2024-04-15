@@ -1,15 +1,12 @@
 package com.score.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.score.backend.BaseEntity;
+import com.score.backend.config.BaseEntity;
 import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Time;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +34,19 @@ public class User extends BaseEntity {
 
     private Time goal;
 
+    private int level;
+
+    private int point;
+
+    @Column(nullable = false)
+    private int consecutiveDate; // 며칠 연속으로 운동 중인지?
+
+    @Column(nullable = false)
+    private double cumulativeTime; // 누적 운동 시간
+
+    @Column(nullable = false)
+    private double cumulativeDistance; // 누적 운동 거리
+
     @OneToMany(mappedBy="agent")
     @JsonIgnore
     private List<Exercise> feeds = new ArrayList<>();
@@ -48,4 +58,11 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     private String loginKey;
+
+    public void updateCumulativeTime(double duration) {
+        this.cumulativeTime += duration;
+    }
+    public void updateCumulativeDistance(double distance) {
+        this.cumulativeDistance += distance;
+    }
 }
