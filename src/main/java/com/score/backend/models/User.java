@@ -68,4 +68,12 @@ public class User extends BaseEntity {
     public void updatePoint(int point) {
         this.point = point;
     }
+    public void updateConsecutiveDate(boolean isIncrement) {
+        if (isIncrement) {
+            this.consecutiveDate++;
+        } else {
+            this.consecutiveDate = 0;
+        }
+
+    }
 }
