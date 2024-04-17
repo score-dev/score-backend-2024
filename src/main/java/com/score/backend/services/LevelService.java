@@ -28,10 +28,10 @@ public class LevelService {
                 () -> new RuntimeException("User not found")
         );
         switch (user.getConsecutiveDate() + 1) {
-            case 1, 2: break;
             case 3, 4, 5, 6: user.updatePoint(100); break;
             case 7, 8, 9, 10, 11, 12, 13, 14: user.updatePoint(300); break;
-            default: user.updatePoint(500); break;
+            case 15: user.updatePoint(500); break;
+            default: break;
         }
     }
 }
