@@ -65,4 +65,7 @@ public class User extends BaseEntity {
     public void updateCumulativeDistance(double distance) {
         this.cumulativeDistance += distance;
     }
+    public void updatePoint(int point) {
+        this.point = point;
+    }
 }

@@ -52,7 +52,7 @@ public class ExerciseService {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
-        user.updateCumulativeTime(distance);
+        user.updateCumulativeDistance(distance);
     }
 
 }
