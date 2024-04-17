@@ -75,4 +75,7 @@ public class User extends BaseEntity {
             this.consecutiveDate = 0;
         }
     }
+    public void increaseLevel() {
+        this.level++;
+    }
 }
