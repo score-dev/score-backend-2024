@@ -66,7 +66,7 @@ public class User extends BaseEntity {
         this.cumulativeDistance += distance;
     }
     public void updatePoint(int point) {
-        this.point = point;
+        this.point += point;
     }
     public void updateConsecutiveDate(boolean isIncrement) {
         if (isIncrement) {

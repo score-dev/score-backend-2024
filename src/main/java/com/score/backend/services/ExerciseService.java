@@ -32,6 +32,7 @@ public class ExerciseService {
     }
 
     // 운동한 시간 계산
+    @Transactional(readOnly = true)
     public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) {
         Duration duration = Duration.between(start, end);
         return duration.getSeconds();
