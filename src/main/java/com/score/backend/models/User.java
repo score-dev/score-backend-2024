@@ -74,6 +74,5 @@ public class User extends BaseEntity {
         } else {
             this.consecutiveDate = 0;
         }
-
     }
 }
