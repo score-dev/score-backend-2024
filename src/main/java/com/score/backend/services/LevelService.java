@@ -27,7 +27,11 @@ public class LevelService {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
-        switch (user.getConsecutiveDate() + 1) {
+        int currConsecutiveDate = user.getConsecutiveDate();
+        if (currConsecutiveDate > 15) {
+            currConsecutiveDate = currConsecutiveDate % 15;
+        }
+        switch (currConsecutiveDate) {
             case 3: user.updatePoint(100); break;
             case 7: user.updatePoint(300); break;
             case 15: user.updatePoint(500); break;
