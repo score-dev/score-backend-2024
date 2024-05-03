@@ -71,6 +71,9 @@ public class ExerciseService {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         List<User> userList = userService.findAll();
         for (User user : userList) {
+            if (user.getLastExerciseDateTime() == null) {
+                continue;
+            }
             LocalDateTime lastExerciseDate = user.getLastExerciseDateTime().truncatedTo(ChronoUnit.DAYS);
             if (ChronoUnit.DAYS.between(lastExerciseDate, now) > 1) {
                 user.updateConsecutiveDate(false);
