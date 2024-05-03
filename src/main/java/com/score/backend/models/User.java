@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,8 @@ public class User extends BaseEntity {
 
     private int point;
 
+    private LocalDateTime lastExerciseDateTime;
+
     @Column(nullable = false)
     private int consecutiveDate; // 며칠 연속으로 운동 중인지?
 
@@ -49,7 +52,7 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy="agent")
     @JsonIgnore
-    private List<Exercise> feeds = new ArrayList<>();
+    private final List<Exercise> feeds = new ArrayList<>();
 
     private boolean marketing;
 
