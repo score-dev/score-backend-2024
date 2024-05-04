@@ -65,6 +65,14 @@ public class ExerciseService {
         user.updateConsecutiveDate(true);
     }
 
+    // 유저의 마지막 운동 시간 및 날짜 설정
+    public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime, Long userId) {
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        user.updateLastExerciseDateTime(lastExerciseDateTime);
+    }
+
     // 유저의 연속 운동 일수 초기화
     @Scheduled(cron = "0 0 0 * * *")
     public void initEveryUsersConsecutiveDate() {

@@ -78,6 +78,8 @@ public class User extends BaseEntity {
             this.consecutiveDate = 0;
         }
     }
+
+    public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime) {this.lastExerciseDateTime = lastExerciseDateTime;}
     public void increaseLevel() {
         this.level++;
     }
