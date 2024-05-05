@@ -2,7 +2,7 @@ package com.score.backend.services;
 
 import com.score.backend.models.User;
 import com.score.backend.models.exercise.Exercise;
-import com.score.backend.repositories.ExerciseRepository;
+import com.score.backend.repositories.exercise.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
