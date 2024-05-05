@@ -1,7 +1,7 @@
 package com.score.backend.services;
 
 import com.score.backend.models.User;
-import com.score.backend.repositories.UserRepository;
+import com.score.backend.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
