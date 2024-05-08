@@ -24,6 +24,7 @@ public class LevelService {
         double currDistance = user.getCumulativeDistance();
         user.updatePoint((int)(currDistance % 10 + newDistance) / 10 * 100);
         user.updatePoint((int)(currDistance % 30 + newDistance) / 30 * 300);
+        levelUp(userId);
     }
 
     // 연속 운동 일수에 따른 포인트 증가
@@ -36,9 +37,9 @@ public class LevelService {
             currConsecutiveDate = currConsecutiveDate % 15;
         }
         switch (currConsecutiveDate) {
-            case 3: user.updatePoint(100); break;
-            case 7: user.updatePoint(300); break;
-            case 15: user.updatePoint(500); break;
+            case 3: user.updatePoint(100); levelUp(userId); break;
+            case 7: user.updatePoint(300); levelUp(userId); break;
+            case 15: user.updatePoint(500); levelUp(userId); break;
             default: break;
         }
     }
@@ -60,5 +61,18 @@ public class LevelService {
             }
         }
         user.updatePoint(100);
+        levelUp(userId);
+    }
+
+    // 500 포인트 달성시 레벨업 + 포인트 초기화
+    private void levelUp(Long userId) {
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        int points = user.getPoint();
+        if (points >= 500) {
+            user.increaseLevel(points / 500);
+            user.initPoint(points % 500);
+        }
     }
 }
