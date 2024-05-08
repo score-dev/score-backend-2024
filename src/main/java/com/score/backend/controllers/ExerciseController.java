@@ -29,27 +29,8 @@ public class ExerciseController {
 
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
     public ResponseEntity<Object> uploadWalkingFeed(WalkingDto walkingDto, HttpServletResponse response) {
-        // 새로운 피드 엔티티 생성
-        Exercise feed = walkingDto.toEntity();
-        // 운동한 유저(피드 작성자) db에서 찾기
-        User agent = userService.findUserById(walkingDto.getAgentId()).orElseThrow(
-                () -> new RuntimeException("Agent not found")
-        );
-
-        // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
-        List<ExerciseUser> exerciseUsers = new ArrayList<>();
-        for (Long id : walkingDto.getOthersId()) {
-            User user = userService.findUserById(id).orElseThrow(
-                    () -> new RuntimeException("User not found")
-            );
-            exerciseUsers.add(new ExerciseUser(user));
-        }
-        // 피드 작성자, 함께 운동한 친구 설정
-        feed.setAgentAndExerciseUser(agent, exerciseUsers);
-        // 피드 작성자의 마지막 운동 시간 및 날짜 설정
-        exerciseService.updateLastExerciseDateTime(feed.getCompletedAt(), agent.getId());
         // 피드 저장
-        exerciseService.saveFeed(feed);
+        exerciseService.saveFeed(walkingDto);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
