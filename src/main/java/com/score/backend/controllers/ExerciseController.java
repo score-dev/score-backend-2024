@@ -27,14 +27,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class ExerciseController {
     private final ExerciseService exerciseService;
     private final LevelService levelService;
-    private final UserService userService;
 
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
     public ResponseEntity<Object> uploadWalkingFeed(WalkingDto walkingDto, HttpServletResponse response) {
         // 피드 저장
         exerciseService.saveFeed(walkingDto);
         // 유저의 연속 운동 일수 증가
-        exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
+        boolean isIncreased = exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
+        // 연속 운동 일수 증가에 따른 포인트 증가
+        if (isIncreased) {
+            levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
+        }
         // 누적 운동 거리에 따른 포인트 증가
         levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
         // 누적 운동 거리 업데이트
