@@ -24,7 +24,7 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
 
-    public void saveFeed(WalkingDto walkingDto) {
+    public Long saveFeed(WalkingDto walkingDto) {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기
@@ -34,17 +34,20 @@ public class ExerciseService {
 
         // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
         List<ExerciseUser> exerciseUsers = new ArrayList<>();
-        for (Long id : walkingDto.getOthersId()) {
-            User user = userService.findUserById(id).orElseThrow(
-                    () -> new RuntimeException("User not found")
-            );
-            exerciseUsers.add(new ExerciseUser(user));
+        if (!walkingDto.getOthersId().isEmpty()) {
+            for (Long id : walkingDto.getOthersId()) {
+                User user = userService.findUserById(id).orElseThrow(
+                        () -> new RuntimeException("User not found")
+                );
+                exerciseUsers.add(new ExerciseUser(user));
+            }
         }
         // 피드 작성자, 함께 운동한 친구 설정
         feed.setAgentAndExerciseUser(agent, exerciseUsers);
         // 피드 작성자의 마지막 운동 시간 및 날짜 설정
         updateLastExerciseDateTime(feed.getCompletedAt(), agent.getId());
         exerciseRepository.save(feed);
+        return feed.getId();
     }
 
     public void deleteFeed(Exercise exercise) {
