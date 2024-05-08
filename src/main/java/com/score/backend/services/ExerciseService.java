@@ -23,6 +23,7 @@ import java.util.Optional;
 public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
+    private final LevelService levelService;
 
     // 유저의 당일 운동 기록 전체 조회
     public List<Exercise> getTodaysAllExercises(Long userId) {
@@ -92,6 +93,18 @@ public class ExerciseService {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
+        List<Exercise> todaysAllExercises = getTodaysAllExercises(userId);
+        if (todaysAllExercises.isEmpty()) {
+            levelService.increasePointsByConsecutiveDate(userId);
+            user.updateConsecutiveDate(true);
+            return;
+        }
+        for (Exercise exercise : todaysAllExercises) {
+            if (calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt()) >= 600) {
+                return;
+            }
+        }
+        levelService.increasePointsByConsecutiveDate(userId);
         user.updateConsecutiveDate(true);
     }
 
