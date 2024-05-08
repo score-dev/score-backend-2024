@@ -34,7 +34,7 @@ public class ExerciseService {
 
         // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
         List<ExerciseUser> exerciseUsers = new ArrayList<>();
-        if (!walkingDto.getOthersId().isEmpty()) {
+        if (walkingDto.getOthersId() != null) {
             for (Long id : walkingDto.getOthersId()) {
                 User user = userService.findUserById(id).orElseThrow(
                         () -> new RuntimeException("User not found")
