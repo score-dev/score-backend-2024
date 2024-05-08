@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Walking extends Exercise {
-    private int distance;
+    private double distance;
 
     @Builder
-    public Walking(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String emotion, String exercisePic, String content, int distance) {
+    public Walking(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String emotion, String exercisePic, String content, double distance) {
         super(startedAt, completedAt, reducedKcal, location, weather, temperature, emotion, exercisePic, content);
         this.distance = distance;
     }

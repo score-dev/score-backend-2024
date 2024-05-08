@@ -15,6 +15,7 @@ public class WalkingDto {
     private LocalDateTime completedAt;
     private Long agentId;
     private List<Long> othersId;
+    private double distance;
     private int reducedKcal;
     private String location;
     private String weather;
@@ -28,6 +29,7 @@ public class WalkingDto {
                 .startedAt(startedAt)
                 .completedAt(completedAt)
                 .reducedKcal(reducedKcal)
+                .distance(distance)
                 .location(location)
                 .weather(weather)
                 .temperature(temperature)

@@ -6,7 +6,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.QExercise;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +21,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     public List<Exercise> findUsersExerciseToday(Long userId, LocalDateTime today) {
         return queryFactory
                 .selectFrom(e)
-                .where(userIdEq(userId), completeDateEq(today.truncatedTo(ChronoUnit.SECONDS)))
+                .where(userIdEq(userId), completeDateEq(today.truncatedTo(ChronoUnit.DAYS)))
                 .fetch();
     }
 
@@ -31,8 +30,8 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     }
 
     private BooleanExpression completeDateEq(LocalDateTime dateCond) {
-        String formattedTime = dateCond.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        return Expressions.stringTemplate("TO_CHAR(DATE_TRUNC('second', {0}), 'YYYY-MM-DD\"T\"HH24:MI:SS')", e.completedAt)
+        String formattedTime = dateCond.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", e.completedAt)
                 .eq(formattedTime);
     }
 }

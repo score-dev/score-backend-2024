@@ -71,6 +71,9 @@ public class User extends BaseEntity {
     public void updatePoint(int point) {
         this.point += point;
     }
+    public void initPoint(int point) {
+        this.point = point;
+    }
     public void updateConsecutiveDate(boolean isIncrement) {
         if (isIncrement) {
             this.consecutiveDate++;
@@ -78,9 +81,8 @@ public class User extends BaseEntity {
             this.consecutiveDate = 0;
         }
     }
-
     public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime) {this.lastExerciseDateTime = lastExerciseDateTime;}
-    public void increaseLevel() {
-        this.level++;
+    public void increaseLevel(int amount) {
+        this.level = this.level + amount;
     }
 }

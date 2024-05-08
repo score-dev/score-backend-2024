@@ -1,0 +1,53 @@
+{
+  "sampleUser" : [
+    {
+      "nickname": "testid1",
+      "grade": 1,
+      "height": "160",
+      "weight": 50,
+      "profileImg": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.picmonkey.com%2Fblog%2Fcreate-the-best-profile-pic&psig=AOvVaw0ImeZDRN3coJZRnw1do0Dx&ust=1715228706011000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCLCfmICb_YUDFQAAAAAdAAAAABAE",
+      "goal": null,
+      "marketing": true,
+      "push": true,
+      "refreshToken": "refreshtoken1",
+      "loginKey": "loginkey1"
+
+    },
+    {
+      "nickname": "testid2",
+      "grade": 2,
+      "height": "180",
+      "weight": 80,
+      "profileImg": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWHxTvJzZxj8W_gLQpvVhjj40sRqfSg2hDMLZ5CvDXRC1pbEnn4IxPTbE3kSRCKJSFQq0&usqp=CAU",
+      "goal": null,
+      "marketing": false,
+      "push": true,
+      "refreshToken": "refreshtoken2",
+      "loginKey": "loginkey2"
+    },
+    {
+      "nickname": "testid3",
+      "grade": 3,
+      "height": "140",
+      "weight": 40,
+      "profileImg": "https://marketplace.canva.com/EAFqNrAJpQs/1/0/1600w/canva-neutral-pink-modern-circle-shape-linkedin-profile-picture-WAhofEY5L1U.jpg",
+      "goal": null,
+      "marketing": false,
+      "push": false,
+      "refreshToken": "refreshtoken3",
+      "loginKey": "loginkey3"
+    },
+    {
+      "nickname": "testid4",
+      "grade": 4,
+      "height": "170",
+      "weight": 60,
+      "profileImg": "https://images.inc.com/uploaded_files/image/1920x1080/getty_522854574_360091.jpg",
+      "goal": null,
+      "marketing": true,
+      "push": false,
+      "refreshToken": "refreshtoken4",
+      "loginKey": "loginkey4"
+    }
+  ]
+}
