@@ -46,6 +46,9 @@ public class ExerciseController {
         }
         // 피드 작성자, 함께 운동한 친구 설정
         feed.setAgentAndExerciseUser(agent, exerciseUsers);
+        // 피드 작성자의 마지막 운동 시간 및 날짜 설정
+        exerciseService.updateLastExerciseDateTime(feed.getCompletedAt(), agent.getId());
+        // 피드 저장
         exerciseService.saveFeed(feed);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
