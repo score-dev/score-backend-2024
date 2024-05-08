@@ -24,6 +24,11 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
 
+    // 유저의 당일 운동 기록 전체 조회
+    public List<Exercise> getTodaysAllExercises(Long userId) {
+        return exerciseRepository.findUsersExerciseToday(userId, LocalDateTime.now());
+    }
+
     public Long saveFeed(WalkingDto walkingDto) {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();

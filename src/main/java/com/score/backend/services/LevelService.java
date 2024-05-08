@@ -1,9 +1,12 @@
 package com.score.backend.services;
 
 import com.score.backend.models.User;
+import com.score.backend.models.exercise.Exercise;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LevelService {
 
     private final UserService userService;
+    private final ExerciseService exerciseService;
 
     // 누적 운동 거리에 따른 포인트 증가
     public void increasePointsByWalkingDistance(Long userId, double newDistance) {
@@ -37,5 +41,24 @@ public class LevelService {
             case 15: user.updatePoint(500); break;
             default: break;
         }
+    }
+
+    // 당일 최초로 10분 이상 운동했을 경우 포인트 증가
+    public void increasePointsForTodaysFirstExercise(Long userId) {
+        List<Exercise> todaysExercises = exerciseService.getTodaysAllExercises(userId);
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        if (todaysExercises.isEmpty()) {
+            user.updatePoint(100);
+            return;
+        }
+        for (Exercise exercise : todaysExercises) {
+            double exerciseDuration = exerciseService.calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt());
+            if (exerciseDuration >= 600) {
+                return;
+            }
+        }
+        user.updatePoint(100);
     }
 }
