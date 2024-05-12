@@ -4,6 +4,7 @@ import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.Walking;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +22,7 @@ public class WalkingDto {
     private String weather;
     private int temperature;
     private String emotion;
-    private String exercisePic;
+    private MultipartFile exercisePic;
     private String content;
 
     public Exercise toEntity() {
@@ -34,7 +35,6 @@ public class WalkingDto {
                 .weather(weather)
                 .temperature(temperature)
                 .emotion(emotion)
-                .exercisePic(exercisePic)
                 .content(content)
                 .build();
     }

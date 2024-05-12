@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
 import com.score.backend.models.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -64,6 +62,10 @@ public abstract class Exercise extends BaseEntity {
         for (ExerciseUser exerciseUser : exerciseUsers) {
             this.setExerciseUser(exerciseUser);
         }
+    }
+
+    public void setExercisePicUrl(String exercisePicUrl) {
+        this.exercisePic = exercisePicUrl;
     }
 
     public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String emotion, String exercisePic, String content) {

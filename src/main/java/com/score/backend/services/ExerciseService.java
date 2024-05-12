@@ -23,6 +23,7 @@ import java.util.Optional;
 public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
+    private final ImageUploadService imageUploadService;
 
     // 유저의 당일 운동 기록 전체 조회
     public List<Exercise> getTodaysAllExercises(Long userId) {
@@ -51,6 +52,8 @@ public class ExerciseService {
         feed.setAgentAndExerciseUser(agent, exerciseUsers);
         // 피드 작성자의 마지막 운동 시간 및 날짜 설정
         updateLastExerciseDateTime(feed.getCompletedAt(), agent.getId());
+        // 프로필 사진 설정
+        feed.setExercisePicUrl(imageUploadService.uploadImage(walkingDto.getExercisePic()));
         exerciseRepository.save(feed);
         return feed.getId();
     }
