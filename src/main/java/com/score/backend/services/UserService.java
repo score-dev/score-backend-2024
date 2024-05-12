@@ -5,6 +5,7 @@ import com.score.backend.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +15,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final ImageUploadService imageUploadService;
 
     @Transactional
-    public void saveUser(User user) {
+    public void saveUser(User user, MultipartFile profileImage) {
+        user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
         userRepository.save(user);
     }
 

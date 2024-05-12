@@ -44,7 +44,7 @@ public class UserController {
     @RequestMapping(value = "/score/onboarding/fin", method = RequestMethod.POST)
     public ResponseEntity<Object> saveNewUser(@RequestBody UserDto userDto, HttpServletResponse response) {
         // 해당 회원 정보 db에 저장
-        userService.saveUser(userDto.toEntity());
+        userService.saveUser(userDto.toEntity(), userDto.getProfileImg());
         HttpHeaders httpHeaders = new HttpHeaders();
         // 소셜 로그인 인증 완료시 호출되는 페이지로 이동해 로그인 진행
         httpHeaders.setLocation(URI.create("http://localhost/score/auth?" + userDto.getLoginKey()));
