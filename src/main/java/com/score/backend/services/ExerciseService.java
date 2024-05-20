@@ -6,6 +6,10 @@ import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.ExerciseUser;
 import com.score.backend.repositories.exercise.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +28,14 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
     private final ImageUploadService imageUploadService;
+
+    // 유저의 개인 피드 조회
+    public Page<Exercise> getUsersAllExercises(int page, Long userId) {
+        Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
+        return exerciseRepository.findExercisePageByUserId(userId, pageable);
+    }
+
+    // 그룹 기능 연동 후 그룹 피드 조회 기능 구현 필요
 
     // 유저의 당일 운동 기록 전체 조회
     public List<Exercise> getTodaysAllExercises(Long userId) {
