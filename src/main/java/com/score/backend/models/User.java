@@ -54,6 +54,15 @@ public class User extends BaseEntity {
     @JsonIgnore
     private final List<Exercise> feeds = new ArrayList<>();
 
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private List<User> mates = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name="group_id")
+    private Group group;
+
     private boolean marketing;
 
     private boolean push;
@@ -61,6 +70,10 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     private String loginKey;
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
 
     public void updateCumulativeTime(double duration) {
         this.cumulativeTime += duration;
@@ -86,3 +99,4 @@ public class User extends BaseEntity {
         this.level = this.level + amount;
     }
 }
+
