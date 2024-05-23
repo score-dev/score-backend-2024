@@ -98,5 +98,8 @@ public class User extends BaseEntity {
     public void increaseLevel(int amount) {
         this.level = this.level + amount;
     }
+    public void setProfileImageUrl(String profileImg) {
+        this.profileImg = profileImg;
+    }
 }
 

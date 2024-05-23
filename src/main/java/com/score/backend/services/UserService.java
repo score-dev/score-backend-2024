@@ -5,6 +5,7 @@ import com.score.backend.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +15,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final ImageUploadService imageUploadService;
 
     @Transactional
-    public void saveUser(User user) {
+    public void saveUser(User user, MultipartFile profileImage) {
+        // db에 기본 프로필 이미지 저장된 후 프로필 사진 미설정시 기본 프로필 이미지 설정되도록 하는 기능 구현 필요
+        user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
         userRepository.save(user);
     }
 

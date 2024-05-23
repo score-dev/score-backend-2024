@@ -1,8 +1,10 @@
 package com.score.backend.models.dtos;
 
+
 import com.score.backend.models.User;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
 
@@ -12,14 +14,14 @@ public class UserDto {
     private final int grade;
     private final int height;
     private final int weight;
-    private final String profileImg;
+    private final MultipartFile profileImg;
     private final Time goal;
     private final boolean marketing;
     private final boolean push;
     private final String loginKey;
 
     @Builder
-    public UserDto(String nickname, int grade, int height, int weight, String profileImg, Time goal, boolean marketing, boolean push, String loginKey) {
+    public UserDto(String nickname, int grade, int height, int weight, MultipartFile profileImg, Time goal, boolean marketing, boolean push, String loginKey) {
         this.nickname = nickname;
         this.grade = grade;
         this.height = height;
@@ -42,7 +44,6 @@ public class UserDto {
                 .point(0)
                 .consecutiveDate(0)
                 .cumulativeDistance(0.0)
-                .profileImg(profileImg)
                 .goal(goal)
                 .marketing(marketing)
                 .push(push)
