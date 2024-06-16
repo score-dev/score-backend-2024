@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class User extends BaseEntity {
 
     private String profileImg;
 
-    private Time goal;
+    private LocalTime goal;
 
     private int level;
 

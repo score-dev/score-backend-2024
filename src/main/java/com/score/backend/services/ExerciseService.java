@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -42,7 +43,7 @@ public class ExerciseService {
         return exerciseRepository.findUsersExerciseToday(userId, LocalDateTime.now());
     }
 
-    public Long saveFeed(WalkingDto walkingDto) {
+    public Long saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기
@@ -65,7 +66,7 @@ public class ExerciseService {
         // 피드 작성자의 마지막 운동 시간 및 날짜 설정
         updateLastExerciseDateTime(feed.getCompletedAt(), agent.getId());
         // 프로필 사진 설정
-        feed.setExercisePicUrl(imageUploadService.uploadImage(walkingDto.getExercisePic()));
+        feed.setExercisePicUrl(imageUploadService.uploadImage(multipartFile));
         exerciseRepository.save(feed);
         return feed.getId();
     }
