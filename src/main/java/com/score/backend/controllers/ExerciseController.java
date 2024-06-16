@@ -1,12 +1,11 @@
 package com.score.backend.controllers;
 
-import com.score.backend.models.User;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
-import com.score.backend.models.exercise.ExerciseUser;
 import com.score.backend.services.ExerciseService;
 import com.score.backend.services.LevelService;
-import com.score.backend.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -28,6 +25,7 @@ public class ExerciseController {
     private final ExerciseService exerciseService;
     private final LevelService levelService;
 
+    @Operation(summary = "피드 저장", description = "운동이 끝난 후 운동 기록을 업데이트하고, 피드를 업로드합니다.")
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
     public ResponseEntity<Object> uploadWalkingFeed(WalkingDto walkingDto, HttpServletResponse response) {
         // 피드 저장
@@ -50,13 +48,16 @@ public class ExerciseController {
         httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
+
+    @Operation(summary = "피드 삭제", description = "피드를 삭제합니다. 피드 삭제 후에는 메인 페이지로 이동하도록 임시로 구현해두었습니다. ")
     @RequestMapping(value = "/score/exercise/walking/delete", method = DELETE)
-    public ResponseEntity<Object> deleteFeed(@RequestParam("id") Long id) {
+    public ResponseEntity<Object> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long id, HttpServletResponse response) {
         Exercise feed = exerciseService.findFeedByExerciseId(id).orElseThrow(
                 () -> new RuntimeException("Exercise not found")
         );
         exerciseService.deleteFeed(feed);
-        // 피드 삭제 후 어느 페이지로 이동할 것인지 설정 필요
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
+        return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
 }

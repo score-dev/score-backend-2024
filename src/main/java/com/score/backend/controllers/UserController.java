@@ -1,10 +1,11 @@
 package com.score.backend.controllers;
 
-
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.UserDto;
 import com.score.backend.security.jwt.JwtProvider;
 import com.score.backend.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +24,9 @@ public class UserController {
     private final JwtProvider jwtProvider;
 
     // 소셜 로그인 인증 완료시
+    @Operation(summary = "소셜 로그인 인증 완료", description = "소셜 로그인이 완료되면 신규 회원이라면 온보딩 페이지로, 기존 회원이라면 메인 페이지로 이동하도록 하는 페이지입니다.")
     @RequestMapping(value = "/score/auth", method = RequestMethod.GET)
-    public ResponseEntity<Object> authorizeUser(@RequestParam("id") String key, HttpServletResponse response) {
+    public ResponseEntity<Object> authorizeUser(@RequestParam("id") @Parameter(required = true, description = "provider id") String key, HttpServletResponse response) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         // 신규 회원이라면 온보딩 페이지로 이동
@@ -41,6 +43,7 @@ public class UserController {
     }
 
     // 온보딩에서 회원 정보 입력 완료시
+    @Operation(summary = "신규 회원 정보 저장", description = "온보딩에서 회원 정보가 입력이 완료될 경우 수행되는 요청입니다. 해당 정보를 db에 저장하고 로그인을 진행해 메인 페이지로 이동하도록 합니다.")
     @RequestMapping(value = "/score/onboarding/fin", method = RequestMethod.POST)
     public ResponseEntity<Object> saveNewUser(@RequestBody UserDto userDto, HttpServletResponse response) {
         // 해당 회원 정보 db에 저장
@@ -64,8 +67,10 @@ public class UserController {
 
     // 메인 페이지 접속시 토큰의 유효성 확인
     // 메인 페이지 기능 구현되면 추후 수정 필요
+    @Operation(summary = "메인 페이지", description = "메인 페이지 접속 요청 발생시 jwt 토큰을 검증합니다.")
     @RequestMapping(value = "/score/main", method = RequestMethod.GET)
-    public ResponseEntity<Object> verifyUser(@RequestHeader(name = "Authorization") String token, HttpServletResponse response) {
+    public ResponseEntity<Object> verifyUser(@RequestHeader(name = "Authorization") @Parameter(required = true, description = "Request Header의 Authorization에 있는 jwt 토큰") String token,
+                                             HttpServletResponse response) {
         if (jwtProvider.validateToken(token, response)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -75,6 +80,7 @@ public class UserController {
     }
 
     // 회원 탈퇴
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 요청 발생시 해당 회원의 모든 정보를 db에서 삭제합니다.")
     @RequestMapping(value = "/score/withdrawal/{nickname}", method = RequestMethod.DELETE)
     public ResponseEntity<Object> withdrawUser(@PathVariable(name = "nickname") String nickname, HttpServletResponse response) {
         userService.withdrawUser(nickname);
