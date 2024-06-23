@@ -44,7 +44,7 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
-    public ResponseEntity<Object> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
+    public ResponseEntity<Object> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
                                                     @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile,
                                                     HttpServletResponse response) throws IOException {
         // 피드 저장
@@ -68,6 +68,19 @@ public class ExerciseController {
         httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
+
+    @Operation(summary = "피드 조회", description = "요청한 피드에 대한 세부 정보를 조회하여 응답합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "요청한 피드의 세부 정보 응답", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+    )
+    @RequestMapping(value = "/score/exercise/walking/read", method = GET)
+    public Exercise readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
+        return exerciseService.findFeedByExerciseId(feedId).orElseThrow(
+                () -> new RuntimeException("Exercise not found")
+        );
+    }
+
 
     @Operation(summary = "피드 삭제", description = "피드를 삭제합니다.")
     @ApiResponses(
