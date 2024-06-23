@@ -2,15 +2,20 @@ package com.score.backend.models.dtos;
 
 import com.score.backend.models.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+
 import java.time.LocalTime;
 
 @Schema(description = "회원가입을 위한 DTO")
 @Getter
 @NoArgsConstructor(force = true)
 public class UserDto {
+    @NotBlank(message = "닉네임을 입력해주세요.")
+    @Length(max = 10, message = "닉네임은 10자 이내로 입력해야 합니다.")
     @Schema(description = "유저 닉네임(unique)", maxLength = 10, example = "김승주")
     private final String nickname;
 
