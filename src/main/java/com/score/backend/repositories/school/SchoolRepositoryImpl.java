@@ -13,11 +13,10 @@ public class SchoolRepositoryImpl implements SchoolRepositoryCustom{
     QSchool school = new QSchool("school");
 
     @Override
-    public List<School> findByNameAndAddress(String name, String address) {
+    public School findByNameAndAddress(String code) {
         return queryFactory
                 .selectFrom(school)
-                .where(school.schoolName.eq(name)
-                        .and(school.schoolAddress.eq(address)))
-                .fetch();
+                .where(school.schoolCode.eq(code))
+                .fetchOne();
     }
 }

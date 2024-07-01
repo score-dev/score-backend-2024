@@ -22,6 +22,9 @@ public class School extends BaseEntity {
 
     private String schoolAddress;
 
+    @Column(nullable = false, unique = true)
+    private String schoolCode;
+
     @OneToMany(mappedBy="school")
     @JsonIgnore
     private List<User> students = new ArrayList<>();

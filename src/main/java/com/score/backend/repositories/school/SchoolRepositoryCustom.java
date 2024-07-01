@@ -5,5 +5,5 @@ import com.score.backend.models.School;
 import java.util.List;
 
 public interface SchoolRepositoryCustom {
-    List<School> findByNameAndAddress(String name, String address);
+    School findByNameAndAddress(String code);
 }
