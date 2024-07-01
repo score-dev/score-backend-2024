@@ -25,6 +25,10 @@ public class Group extends BaseEntity {
     @Column(name = "groupId")
     private Long groupId;
 
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School belongingSchool;
+
     @Column(name = "groupName", nullable = false, unique = true, length = 15)
     private String groupName;
 

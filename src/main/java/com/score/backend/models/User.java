@@ -6,7 +6,6 @@ import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -25,6 +24,10 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String nickname;
+
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
 
     private int grade;
 

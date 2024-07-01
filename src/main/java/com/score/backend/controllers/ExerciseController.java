@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,7 +44,7 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
-    public ResponseEntity<Object> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
+    public ResponseEntity<Object> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
                                                     @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile,
                                                     HttpServletResponse response) throws IOException {
         // 피드 저장
@@ -68,6 +69,19 @@ public class ExerciseController {
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
 
+    @Operation(summary = "피드 조회", description = "요청한 피드에 대한 세부 정보를 조회하여 응답합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "요청한 피드의 세부 정보 응답", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+    )
+    @RequestMapping(value = "/score/exercise/walking/read", method = GET)
+    public Exercise readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
+        return exerciseService.findFeedByExerciseId(feedId).orElseThrow(
+                () -> new RuntimeException("Exercise not found")
+        );
+    }
+
+
     @Operation(summary = "피드 삭제", description = "피드를 삭제합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "피드 삭제 후 이전 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
@@ -82,5 +96,16 @@ public class ExerciseController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+    }
+
+    @Operation(summary = "유저의 피드 목록 조회", description = "유저의 전체 피드 목록을 페이지 단위로 제공합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "피드 페이지가 JSON 형태로 전달됩니다."),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+    )
+    @RequestMapping(value = "/score/exercise/list", method = GET)
+    public Page<Exercise> getAllFeeds(@RequestParam("id") @Parameter(required = true, description = "피드 목록을 요청할 유저의 고유 번호") Long id,
+                                      @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
+        return exerciseService.getUsersAllExercises(page, id);
     }
 }
