@@ -13,10 +13,10 @@ public class SchoolService {
     private final SchoolRepository schoolRepository;
 
     // 새로운 학교 정보 db에 저장
-    public Long saveSchool(SchoolDto schoolDto) {
+    public School saveSchool(SchoolDto schoolDto) {
         School school = schoolDto.toEntity();
         schoolRepository.save(school);
-        return school.getId();
+        return school;
     }
 
     // 행정 표준 코드로 학교 검색

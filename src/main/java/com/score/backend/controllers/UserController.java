@@ -1,8 +1,11 @@
 package com.score.backend.controllers;
 
+import com.score.backend.models.School;
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.SchoolDto;
 import com.score.backend.models.dtos.UserDto;
 import com.score.backend.security.jwt.JwtProvider;
+import com.score.backend.services.SchoolService;
 import com.score.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
@@ -32,6 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final SchoolService schoolService;
     private final JwtProvider jwtProvider;
 
     // 소셜 로그인 인증 완료시
@@ -67,12 +70,24 @@ public class UserController {
     )
     @RequestMapping(value = "/score/onboarding/fin", method = RequestMethod.POST)
     public ResponseEntity<Object> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
+                                              @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
                                               @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile, HttpServletResponse response) throws IOException {
+
+        // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
+        School school = schoolService.findSchoolByCode(schoolDto.getSchoolCode());
+        if (school == null) {
+            school = schoolService.saveSchool(schoolDto);
+        }
+        // 유저 엔티티에 학교 정보 set
+        User user = userDto.toEntity();
+        user.setSchoolAndStudent(school);
+
         // 해당 회원 정보 db에 저장
-        userService.saveUser(userDto.toEntity(), multipartFile);
+        userService.saveUser(user, multipartFile);
+
         // 소셜 로그인 인증 완료시 호출되는 페이지로 이동해 로그인 진행
         response.getOutputStream().close();
-        response.addHeader(HttpHeaders.LOCATION, "http://localhost:8080/score/main");
+        response.addHeader(HttpHeaders.LOCATION, "http://localhost:8080/score/onboarding/fin/school");
         return new ResponseEntity<>(response, HttpStatus.MOVED_PERMANENTLY);
     }
 

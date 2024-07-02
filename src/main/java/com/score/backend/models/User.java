@@ -105,5 +105,10 @@ public class User extends BaseEntity {
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
     }
+
+    public void setSchoolAndStudent(School school) {
+        this.school = school;
+        school.getStudents().add(this);
+    }
 }
 
