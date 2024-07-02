@@ -11,7 +11,7 @@ public class SchoolRepositoryImpl implements SchoolRepositoryCustom{
     QSchool school = new QSchool("school");
 
     @Override
-    public School findByNameAndAddress(String code) {
+    public School findSchoolByCode(String code) {
         return queryFactory
                 .selectFrom(school)
                 .where(school.schoolCode.eq(code))
