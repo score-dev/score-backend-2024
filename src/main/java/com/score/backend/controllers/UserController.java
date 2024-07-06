@@ -4,6 +4,7 @@ import com.score.backend.models.School;
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.SchoolDto;
 import com.score.backend.models.dtos.UserDto;
+import com.score.backend.models.dtos.UserUpdateDto;
 import com.score.backend.security.jwt.JwtProvider;
 import com.score.backend.services.SchoolService;
 import com.score.backend.services.UserService;
@@ -126,12 +127,25 @@ public class UserController {
             value = {@ApiResponse(responseCode = "200", description = "회원 탈퇴 완료, 온보딩 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/score/withdrawal/{nickname}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/score/user/withdrawal/{nickname}", method = RequestMethod.DELETE)
     public ResponseEntity<Object> withdrawUser(@PathVariable(name = "nickname") String nickname, HttpServletResponse response) {
         userService.withdrawUser(nickname);
         HttpHeaders httpHeaders = new HttpHeaders();
         // 탈퇴 완료 후 온보딩 페이지로 이동.
-        httpHeaders.setLocation(URI.create("http://localhost:8080/score/onbording"));
+        httpHeaders.setLocation(URI.create("/score/onbording"));
         return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+    }
+
+    @Operation(summary = "회원 정보 수정", description = "수정된 회원 정보를 db에 업데이트합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "회원 정보 수정 완료"),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+    )
+    @RequestMapping(value = "/score/user/update/{id}", method = RequestMethod.POST)
+    public ResponseEntity<Object> updateUserInfo(@Parameter(description = "회원 정보 수정을 요청한 유저의 고유 id 값") @PathVariable(name = "id") Long userId,
+                                                 @Parameter(description = "수정된 회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userUpdateDto") UserUpdateDto userUpdateDto,
+                                                 @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
+        userService.updateUser(userId, userUpdateDto, multipartFile);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
