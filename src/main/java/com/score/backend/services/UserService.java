@@ -1,6 +1,7 @@
 package com.score.backend.services;
 
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.UserUpdateDto;
 import com.score.backend.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,19 @@ public class UserService {
         // db에 기본 프로필 이미지 저장된 후 프로필 사진 미설정시 기본 프로필 이미지 설정되도록 하는 기능 구현 필요
         user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateUser(Long userId, UserUpdateDto userUpdateDto , MultipartFile profileImage) {
+        User user = this.findUserById(userId).orElseThrow(null); // 예외 처리 필요
+        user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
+        user.setGoal(userUpdateDto.getGoal());
+        user.setHeight(userUpdateDto.getHeight());
+        user.setWeight(userUpdateDto.getWeight());
+        user.setGrade(userUpdateDto.getGrade());
+        if (!user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())) {
+            user.setSchoolAndStudent(userUpdateDto.getSchool());
+        }
     }
 
     @Transactional
