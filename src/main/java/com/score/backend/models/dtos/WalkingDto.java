@@ -3,6 +3,7 @@ package com.score.backend.models.dtos;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.Walking;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @Schema(description = "걷기 운동 기록을 저장하기 위한 DTO")
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WalkingDto {
     @Schema(description = "운동을 시작한 시각")
     private LocalDateTime startedAt;
@@ -21,7 +22,7 @@ public class WalkingDto {
     private LocalDateTime completedAt;
     @Schema(description = "운동 기록을 한 유저의 고유 id 값")
     private Long agentId;
-    @Schema(description = "agent가 함께 운동했다고 선택한 유저들의 고유 id rkqt")
+    @Schema(description = "agent가 함께 운동했다고 선택한 유저들의 고유 id 값")
     private List<Long> othersId;
     @Schema(description = "걸은 거리")
     private double distance;

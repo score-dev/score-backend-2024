@@ -23,20 +23,26 @@ public class User extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Setter
     private String nickname;
 
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;
 
+    @Setter
     private int grade;
 
+    @Setter
     private int height;
 
+    @Setter
     private int weight;
 
+    @Setter
     private String profileImg;
 
+    @Setter
     private LocalTime goal;
 
     private int level;
@@ -104,6 +110,11 @@ public class User extends BaseEntity {
     }
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
+    }
+
+    public void setSchoolAndStudent(School school) {
+        this.school = school;
+        school.getStudents().add(this);
     }
 }
 

@@ -6,7 +6,6 @@ import com.score.backend.services.ExerciseService;
 import com.score.backend.services.LevelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,18 +14,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -40,62 +35,60 @@ public class ExerciseController {
 
     @Operation(summary = "피드 저장", description = "운동이 끝난 후 운동 기록을 업데이트하고, 피드를 업로드합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "피드 업로드 후 이전 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+            value = {@ApiResponse(responseCode = "200", description = "피드 업로드 완료"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")}
     )
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
-    public ResponseEntity<Object> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
-                                                    @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile,
-                                                    HttpServletResponse response) throws IOException {
-        // 피드 저장
-        exerciseService.saveFeed(walkingDto, multipartFile);
-        // 유저의 연속 운동 일수 증가
-        boolean isIncreased = exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
-        // 연속 운동 일수 증가에 따른 포인트 증가
-        if (isIncreased) {
-            levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
+    public ResponseEntity<HttpStatus> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
+                                                    @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
+        try {
+            // 피드 저장
+            exerciseService.saveFeed(walkingDto, multipartFile);
+            // 유저의 연속 운동 일수 증가
+            boolean isIncreased = exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
+            // 연속 운동 일수 증가에 따른 포인트 증가
+            if (isIncreased) {
+                levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
+            }
+            // 누적 운동 거리에 따른 포인트 증가
+            levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
+            // 누적 운동 거리 업데이트
+            exerciseService.cumulateExerciseDistance(walkingDto.getAgentId(), walkingDto.getDistance());
+            // 누적 운동 시간 업데이트
+            exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+            // 피드 업로드에 따른 포인트 증가
+            levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        // 누적 운동 거리에 따른 포인트 증가
-        levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
-        // 누적 운동 거리 업데이트
-        exerciseService.cumulateExerciseDistance(walkingDto.getAgentId(), walkingDto.getDistance());
-        // 누적 운동 시간 업데이트
-        exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-        // 피드 업로드에 따른 포인트 증가
-        levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
-        response.getOutputStream().close();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
-        return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "피드 조회", description = "요청한 피드에 대한 세부 정보를 조회하여 응답합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "요청한 피드의 세부 정보 응답", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+                    @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
     @RequestMapping(value = "/score/exercise/walking/read", method = GET)
-    public Exercise readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
-        return exerciseService.findFeedByExerciseId(feedId).orElseThrow(
-                () -> new RuntimeException("Exercise not found")
-        );
+    public ResponseEntity<Exercise> readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
+        Optional<Exercise> feed = exerciseService.findFeedByExerciseId(feedId);
+        return feed.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 
     @Operation(summary = "피드 삭제", description = "피드를 삭제합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "피드 삭제 후 이전 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+            value = {@ApiResponse(responseCode = "200", description = "피드 삭제 완료"),
+                    @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
     @RequestMapping(value = "/score/exercise/walking/delete", method = DELETE)
-    public ResponseEntity<Object> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long id, HttpServletResponse response) {
-        Exercise feed = exerciseService.findFeedByExerciseId(id).orElseThrow(
-                () -> new RuntimeException("Exercise not found")
-        );
-        exerciseService.deleteFeed(feed);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
-        return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+    public ResponseEntity<HttpStatusCode> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long id, HttpServletResponse response) {
+        Optional<Exercise> feed = exerciseService.findFeedByExerciseId(id);
+        if (feed.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        exerciseService.deleteFeed(feed.get());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "유저의 피드 목록 조회", description = "유저의 전체 피드 목록을 페이지 단위로 제공합니다.")
