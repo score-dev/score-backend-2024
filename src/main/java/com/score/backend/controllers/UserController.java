@@ -38,6 +38,21 @@ public class UserController {
     private final SchoolService schoolService;
     private final JwtProvider jwtProvider;
 
+    // 닉네임 중복 검사
+    @Operation(summary = "닉네임 중복 검사", description = "온보딩이나 회원 정보 수정 시 닉네임 중복 검사를 위한 api입니다.")
+    @RequestMapping(value = "/score/{nickname}/exists", method = RequestMethod.GET)
+    @ApiResponse(responseCode = "200", description = "닉네임 중복 검사 완료. ResponseBody의 내용이 0이면 필드에 아무 것도 입력되지 않은 경우, 1이면 중복되지 않은 닉네임인 경우, -1이면 이미 존재하는 닉네임인 경우.")
+    public ResponseEntity<Integer> checkNicknameUniqueness(@Parameter(description = "유저가 필드에 입력한 닉네임") @PathVariable(name = "nickname") String nickname) {
+        if (nickname.isEmpty()) {
+            return ResponseEntity.ok(0); // 필드에 아무것도 입력되지 않은 상태인 경우
+        }
+        if (userService.findUserByNickname(nickname).isEmpty()) {
+            return ResponseEntity.ok(1); // 중복되지 않는 닉네임인 경우
+        } else {
+            return ResponseEntity.ok(-1); // 이미 존재하는 닉네임인 경우
+        }
+    }
+
     // 소셜 로그인 인증 완료시
     @Operation(summary = "소셜 로그인 인증 완료", description = "소셜 로그인이 완료되면 신규 회원이라면 온보딩 페이지로, 기존 회원이라면 메인 페이지로 이동하도록 하는 페이지입니다.")
     @ApiResponses(
