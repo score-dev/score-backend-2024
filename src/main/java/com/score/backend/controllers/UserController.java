@@ -18,16 +18,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Tag(name = "User", description = "회원 정보 관리를 위한 API입니다.")
@@ -54,32 +52,29 @@ public class UserController {
     }
 
     // 소셜 로그인 인증 완료시
-    @Operation(summary = "소셜 로그인 인증 완료", description = "소셜 로그인이 완료되면 신규 회원이라면 온보딩 페이지로, 기존 회원이라면 메인 페이지로 이동하도록 하는 페이지입니다.")
+    @Operation(summary = "소셜 로그인 인증 완료", description = "소셜 로그인 인증 완료 후 기존 회원인지 여부를 응답받기 위한 api입니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "피드 업로드 후 이전 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
+            value = {@ApiResponse(responseCode = "200", description = "소셜 로그인 인증 완료. RequestBody가 true이면 기존 회원, false이면 신규 회원."),
                     @ApiResponse(responseCode = "400", description = "Bad Request"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             }
     )
     @RequestMapping(value = "/score/auth", method = RequestMethod.GET)
-    public ResponseEntity<Object> authorizeUser(@RequestParam("id") @Parameter(required = true, description = "provider id") String key, HttpServletResponse response) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-
+    public ResponseEntity<Boolean> authorizeUser(@RequestParam("id") @Parameter(required = true, description = "provider id") String key, HttpServletResponse response) {
         // 신규 회원이라면 온보딩 페이지로 이동
         if (!userService.isPresentUser(key)) {
-            httpHeaders.setLocation(URI.create("http://localhost:8080/score/onbording"));
+            return ResponseEntity.ok(false);
         } else {
             // 기존 회원이라면 로그인 진행(토큰 갱신) 후 메인 페이지로 이동
             User user = userService.findUserByKey(key).orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
             login(user.getNickname(), response);
-            httpHeaders.setLocation(URI.create("http://localhost:8080/score/main"));
         }
-        return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+        return ResponseEntity.ok(true);
     }
 
     // 온보딩에서 회원 정보 입력 완료시
-    @Operation(summary = "신규 회원 정보 저장", description = "온보딩에서 회원 정보가 입력이 완료될 경우 수행되는 요청입니다. 해당 정보를 db에 저장하고 로그인을 진행해 메인 페이지로 이동하도록 합니다.")
+    @Operation(summary = "신규 회원 정보 저장", description = "온보딩에서 회원 정보가 입력이 완료될 경우 수행되는 요청입니다. 해당 정보를 db에 저장하고 로그인을 진행합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "신규 회원 정보 저장 완료, 소셜 로그인 인증 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
@@ -139,27 +134,38 @@ public class UserController {
     // 회원 탈퇴
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 요청 발생시 해당 회원의 모든 정보를 db에서 삭제합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "회원 탈퇴 완료, 온보딩 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
-    )
+            value = {@ApiResponse(responseCode = "200", description = "회원 탈퇴 완료"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")})
     @RequestMapping(value = "/score/user/withdrawal/{nickname}", method = RequestMethod.DELETE)
-    public ResponseEntity<Object> withdrawUser(@PathVariable(name = "nickname") String nickname, HttpServletResponse response) {
-        userService.withdrawUser(nickname);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        // 탈퇴 완료 후 온보딩 페이지로 이동.
-        httpHeaders.setLocation(URI.create("/score/onbording"));
-        return new ResponseEntity<>(response, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+    public ResponseEntity<HttpStatus> withdrawUser(@PathVariable(name = "nickname") String nickname) {
+        try {
+            userService.withdrawUser(nickname);
+        } catch(ResponseStatusException e) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 회원 정보 수정
     @Operation(summary = "회원 정보 수정", description = "수정된 회원 정보를 db에 업데이트합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "회원 정보 수정 완료"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
-    )
+                    @ApiResponse(responseCode = "409", description = "마지막 학교 정보 수정 후 30일이 경과되기 전 학교 정보 수정 시도"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")
+            })
     @RequestMapping(value = "/score/user/update/{id}", method = RequestMethod.POST)
     public ResponseEntity<Object> updateUserInfo(@Parameter(description = "회원 정보 수정을 요청한 유저의 고유 id 값") @PathVariable(name = "id") Long userId,
                                                  @Parameter(description = "수정된 회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userUpdateDto") UserUpdateDto userUpdateDto,
                                                  @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
+        if (userService.findUserById(userId).isEmpty()) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+        }
+        User user = userService.findUserById(userId).get();
+
+        if (!user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())
+                && ChronoUnit.DAYS.between(LocalDateTime.now(), user.getSchool().getUpdatedAt()) < 30) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(409));
+        }
         userService.updateUser(userId, userUpdateDto, multipartFile);
         return new ResponseEntity<>(HttpStatus.OK);
     }

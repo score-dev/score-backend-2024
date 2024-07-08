@@ -4,9 +4,11 @@ import com.score.backend.models.User;
 import com.score.backend.models.dtos.UserUpdateDto;
 import com.score.backend.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +42,9 @@ public class UserService {
 
     @Transactional
     public void withdrawUser(String nickname) {
-        User deletingUser = findUserByNickname(nickname).orElseThrow(null); // 예외 처리 필요
+        User deletingUser = findUserByNickname(nickname).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        ); // 예외 처리 필요
         userRepository.delete(deletingUser);
     }
 
