@@ -65,9 +65,12 @@ public class User extends BaseEntity {
     private final List<Exercise> feeds = new ArrayList<>();
 
     @OneToMany
+    private final List<User> friends = new ArrayList<>();
+
+    @OneToMany
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private List<User> mates = new ArrayList<>();
+    private final List<User> mates = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name="group_id")
@@ -111,7 +114,10 @@ public class User extends BaseEntity {
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
     }
-
+    public void addFriend(User user) {
+        this.friends.add(user);
+        user.getFriends().add(this);
+    }
     public void setSchoolAndStudent(School school) {
         this.school = school;
         school.getStudents().add(this);
