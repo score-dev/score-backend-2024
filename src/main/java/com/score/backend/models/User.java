@@ -116,6 +116,8 @@ public class User extends BaseEntity {
     }
     public void addFriend(User user) {
         this.friends.add(user);
+        this.mates.add(user);
+        user.getMates().add(this);
         user.getFriends().add(this);
     }
     public void setSchoolAndStudent(School school) {
@@ -123,4 +125,3 @@ public class User extends BaseEntity {
         school.getStudents().add(this);
     }
 }
-
