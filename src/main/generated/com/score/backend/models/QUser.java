@@ -38,6 +38,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise> feeds = this.<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise>createList("feeds", com.score.backend.models.exercise.Exercise.class, com.score.backend.models.exercise.QExercise.class, PathInits.DIRECT2);
 
+    public final ListPath<User, QUser> friends = this.<User, QUser>createList("friends", User.class, QUser.class, PathInits.DIRECT2);
+
     public final TimePath<java.time.LocalTime> goal = createTime("goal", java.time.LocalTime.class);
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);

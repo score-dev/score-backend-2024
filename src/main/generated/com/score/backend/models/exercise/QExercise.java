@@ -36,11 +36,13 @@ public class QExercise extends EntityPathBase<Exercise> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
-    public final StringPath emotion = createString("emotion");
+    public final ListPath<com.score.backend.models.Emotion, com.score.backend.models.QEmotion> emotions = this.<com.score.backend.models.Emotion, com.score.backend.models.QEmotion>createList("emotions", com.score.backend.models.Emotion.class, com.score.backend.models.QEmotion.class, PathInits.DIRECT2);
 
     public final StringPath exercisePic = createString("exercisePic");
 
     public final ListPath<ExerciseUser, QExerciseUser> exerciseUsers = this.<ExerciseUser, QExerciseUser>createList("exerciseUsers", ExerciseUser.class, QExerciseUser.class, PathInits.DIRECT2);
+
+    public final StringPath feeling = createString("feeling");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
