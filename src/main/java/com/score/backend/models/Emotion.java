@@ -26,7 +26,10 @@ public class Emotion extends BaseEntity {
     @JdbcType(value = SmallIntJdbcType.class)
     private EmotionType emotionType; // 어떤 감정 표현인지?
 
-    public void setFeed(Exercise feed) {
+    public void setEmotion(User agent, Exercise feed, EmotionType emotionType) {
+        this.agent = agent;
+        this.feed = feed;
+        this.emotionType = emotionType;
         feed.getEmotions().add(this);
     }
 }
