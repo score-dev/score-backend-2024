@@ -36,4 +36,17 @@ public class EmotionService {
     public List<Emotion> findAllEmotions(Long feedId, EmotionType emotionType) {
         return emotionRepository.findAllByEmotionType(feedId, emotionType);
     }
+
+    // 해당 타입의 감정 표현을 이미 한 유저인지 여부 확인
+    private boolean checkDuplicateEmotion(Long userId, List<Emotion> savedEmotions) {
+        if (savedEmotions.isEmpty()) {
+            return false;
+        }
+        for (Emotion emotion : savedEmotions) {
+            if (emotion.getAgent().getId().equals(userId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
