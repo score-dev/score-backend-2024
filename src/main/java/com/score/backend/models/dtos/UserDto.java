@@ -1,6 +1,7 @@
 package com.score.backend.models.dtos;
 
 import com.score.backend.models.User;
+import com.score.backend.models.enums.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -28,6 +29,9 @@ public class UserDto {
     @Schema(description = "체중", maxLength = 10, nullable = true, example = "50")
     private int weight;
 
+    @Schema(description = "성별", nullable = true, example = "FEMALE")
+    private Gender gender;
+
     @Schema(description = "목표 운동 시작 시간")
     private LocalTime goal;
 
@@ -40,11 +44,12 @@ public class UserDto {
     @Schema(description = "provider id")
     private String loginKey;
 
-    public UserDto(String nickname, int grade, int height, int weight, LocalTime goal, boolean marketing, boolean push, String loginKey) {
+    public UserDto(String nickname, int grade, int height, int weight, Gender gender, LocalTime goal, boolean marketing, boolean push, String loginKey) {
         this.nickname = nickname;
         this.grade = grade;
         this.height = height;
         this.weight = weight;
+        this.gender = gender;
         this.goal = goal;
         this.marketing = marketing;
         this.push = push;
@@ -57,6 +62,7 @@ public class UserDto {
                 .grade(grade)
                 .height(height)
                 .weight(weight)
+                .gender(gender)
                 .cumulativeTime(0.0)
                 .level(1)
                 .point(0)
