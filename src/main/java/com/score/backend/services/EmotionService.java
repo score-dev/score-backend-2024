@@ -19,7 +19,7 @@ public class EmotionService {
     private final ExerciseService exerciseService;
     private final EmotionRepository emotionRepository;
 
-    // 새로운 피드 추가
+    // 피드에 새로운 감정 표현 추가
     public void addEmotion(Long agentId, Long feedId, EmotionType emotionType) {
         User agent = userService.findUserById(agentId).orElseThrow(
                 () -> new RuntimeException("Agent Not Found")
@@ -32,21 +32,28 @@ public class EmotionService {
         emotionRepository.save(emotion);
     }
 
+    // 감정 표현 삭제
+    public void deleteEmotion(Emotion emotion) {
+        emotionRepository.delete(emotion);
+    }
+
     // feedId의 피드에 남겨져 있는 emotionType 타입의 감정 표현 목록 조회
+    @Transactional(readOnly = true)
     public List<Emotion> findAllEmotions(Long feedId, EmotionType emotionType) {
         return emotionRepository.findAllByEmotionType(feedId, emotionType);
     }
 
     // 해당 타입의 감정 표현을 이미 한 유저인지 여부 확인
-    private boolean checkDuplicateEmotion(Long userId, List<Emotion> savedEmotions) {
+    @Transactional(readOnly = true)
+    public Emotion checkDuplicateEmotion(Long userId, List<Emotion> savedEmotions) {
         if (savedEmotions.isEmpty()) {
-            return false;
+            return null;
         }
         for (Emotion emotion : savedEmotions) {
             if (emotion.getAgent().getId().equals(userId)) {
-                return true;
+                return emotion;
             }
         }
-        return false;
+        return null;
     }
 }

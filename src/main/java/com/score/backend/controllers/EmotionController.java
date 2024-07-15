@@ -1,5 +1,6 @@
 package com.score.backend.controllers;
 
+import com.score.backend.models.Emotion;
 import com.score.backend.models.enums.EmotionType;
 import com.score.backend.services.EmotionService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,22 +23,28 @@ public class EmotionController {
 
     private final EmotionService emotionService;
 
+    // 감정 표현 추가 혹은 제거
     @RequestMapping(value = "/score/exercise/emotion", method = RequestMethod.POST)
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "피드 삭제 완료"),
+            value = {@ApiResponse(responseCode = "200", description = "감정 표현 추가 혹은 삭제 완료"),
                     @ApiResponse(responseCode = "404", description = "Agent Or Feed Not Found"),
                     @ApiResponse(responseCode = "400", description = "존재하지 않는 감정 표현입니다.")})
-    public ResponseEntity<HttpStatusCode> addEmotionAtFeed(
+    public ResponseEntity<HttpStatusCode> addOrDeleteEmotion(
             @Parameter(required = true, description = "감정 표현을 누르는 유저의 고유 id 값") @RequestParam("agentId") Long agentId,
             @Parameter(required = true, description = "감정 표현을 누른 피드 게시물의 고유 id 값") @RequestParam("feedId") Long feedId,
             @Parameter(required = true, description = "좋아요(like), 최고예요(best), 응원해요(support), 축하해요(congrat), 일등이에요(first) 중 어떤 감정 표현인지", example = "like")
             @RequestParam("type") EmotionType type) {
         try {
-            emotionService.addEmotion(agentId, feedId, type);
+            Emotion emotion = emotionService.checkDuplicateEmotion(agentId, emotionService.findAllEmotions(feedId, type));
+            // 해당 타입의 감정 표현을 한 적이 없는 유저인 경우 감정 표현 추가
+            if (emotion == null) {
+                emotionService.addEmotion(agentId, feedId, type);
+            } else { // 해당 타입의 감정 표현을 한 적이 있는 유저인 경우 감정 표현 삭제
+                emotionService.deleteEmotion(emotion);
+            }
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 }
