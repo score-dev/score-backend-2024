@@ -18,8 +18,8 @@ public class Walking extends Exercise {
     private double distance;
 
     @Builder
-    public Walking(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String emotion, String exercisePic, String content, double distance) {
-        super(startedAt, completedAt, reducedKcal, location, weather, temperature, emotion, exercisePic, content);
+    public Walking(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String feeling, String exercisePic, String content, double distance) {
+        super(startedAt, completedAt, reducedKcal, location, weather, temperature, feeling, exercisePic, content);
         this.distance = distance;
     }
 }

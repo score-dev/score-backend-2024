@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
@@ -69,7 +68,7 @@ public class ExerciseController {
             value = {@ApiResponse(responseCode = "200", description = "요청한 피드의 세부 정보 응답", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))),
                     @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
-    @RequestMapping(value = "/score/exercise/walking/read", method = GET)
+    @RequestMapping(value = "/score/exercise/read", method = GET)
     public ResponseEntity<Exercise> readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
         Optional<Exercise> feed = exerciseService.findFeedByExerciseId(feedId);
         return feed.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -81,8 +80,8 @@ public class ExerciseController {
             value = {@ApiResponse(responseCode = "200", description = "피드 삭제 완료"),
                     @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
-    @RequestMapping(value = "/score/exercise/walking/delete", method = DELETE)
-    public ResponseEntity<HttpStatusCode> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long id, HttpServletResponse response) {
+    @RequestMapping(value = "/score/exercise/delete", method = DELETE)
+    public ResponseEntity<HttpStatusCode> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long id) {
         Optional<Exercise> feed = exerciseService.findFeedByExerciseId(id);
         if (feed.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

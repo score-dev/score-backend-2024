@@ -35,7 +35,7 @@ public class WalkingDto {
     @Schema(description = "기온")
     private int temperature;
     @Schema(description = "오늘의 감정")
-    private String emotion;
+    private String feeling;
     @Schema(description = "피드에 업로드할 내용")
     private String content;
 
@@ -48,7 +48,7 @@ public class WalkingDto {
                 .location(location)
                 .weather(weather)
                 .temperature(temperature)
-                .emotion(emotion)
+                .feeling(feeling)
                 .content(content)
                 .build();
     }

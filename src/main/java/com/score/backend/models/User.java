@@ -2,6 +2,7 @@ package com.score.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
+import com.score.backend.models.enums.Gender;
 import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,6 +30,8 @@ public class User extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;
+
+    private Gender gender;
 
     @Setter
     private int grade;
@@ -65,9 +68,12 @@ public class User extends BaseEntity {
     private final List<Exercise> feeds = new ArrayList<>();
 
     @OneToMany
+    private final List<User> friends = new ArrayList<>();
+
+    @OneToMany
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private List<User> mates = new ArrayList<>();
+    private final List<User> mates = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name="group_id")
@@ -111,10 +117,14 @@ public class User extends BaseEntity {
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
     }
-
+    public void addFriend(User user) {
+        this.friends.add(user);
+        this.mates.add(user);
+        user.getMates().add(this);
+        user.getFriends().add(this);
+    }
     public void setSchoolAndStudent(School school) {
         this.school = school;
         school.getStudents().add(this);
     }
 }
-

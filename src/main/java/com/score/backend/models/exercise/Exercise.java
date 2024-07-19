@@ -2,6 +2,7 @@ package com.score.backend.models.exercise;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
+import com.score.backend.models.Emotion;
 import com.score.backend.models.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -41,11 +42,14 @@ public abstract class Exercise extends BaseEntity {
 
     private int temperature;
 
-    private String emotion;
+    private String feeling;
 
     private String exercisePic;
 
     private String content;
+
+    @OneToMany(mappedBy = "feed")
+    private final List<Emotion> emotions = new ArrayList<>(); // 피드에 추가된 감정 표현 리스트
 
     private void setAgent(User agent) {
         this.agent = agent;
@@ -68,14 +72,14 @@ public abstract class Exercise extends BaseEntity {
         this.exercisePic = exercisePicUrl;
     }
 
-    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String emotion, String exercisePic, String content) {
+    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String feeling, String exercisePic, String content) {
         this.startedAt = startedAt;
         this.completedAt = completedAt;
         this.reducedKcal = reducedKcal;
         this.location = location;
         this.weather = weather;
         this.temperature = temperature;
-        this.emotion = emotion;
+        this.feeling = feeling;
         this.exercisePic = exercisePic;
         this.content = content;
     }

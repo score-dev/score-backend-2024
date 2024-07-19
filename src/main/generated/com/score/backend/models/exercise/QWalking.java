@@ -42,13 +42,16 @@ public class QWalking extends EntityPathBase<Walking> {
     public final NumberPath<Double> distance = createNumber("distance", Double.class);
 
     //inherited
-    public final StringPath emotion;
+    public final ListPath<com.score.backend.models.Emotion, com.score.backend.models.QEmotion> emotions;
 
     //inherited
     public final StringPath exercisePic;
 
     //inherited
     public final ListPath<ExerciseUser, QExerciseUser> exerciseUsers;
+
+    //inherited
+    public final StringPath feeling;
 
     //inherited
     public final NumberPath<Long> id;
@@ -98,9 +101,10 @@ public class QWalking extends EntityPathBase<Walking> {
         this.content = _super.content;
         this.createdAt = _super.createdAt;
         this.createdBy = _super.createdBy;
-        this.emotion = _super.emotion;
+        this.emotions = _super.emotions;
         this.exercisePic = _super.exercisePic;
         this.exerciseUsers = _super.exerciseUsers;
+        this.feeling = _super.feeling;
         this.id = _super.id;
         this.lastModifiedBy = _super.lastModifiedBy;
         this.location = _super.location;
