@@ -6,5 +6,5 @@ import com.score.backend.models.enums.EmotionType;
 import java.util.List;
 
 public interface EmotionRepositoryCustom {
-    List<Emotion> findAllByEmotionType(Long feedId, EmotionType emotionType);
+    List<Emotion> findAllEmotionType(Long feedId, EmotionType emotionType);
 }

@@ -14,7 +14,7 @@ public class EmotionRepositoryImpl implements EmotionRepositoryCustom {
     QEmotion e = new QEmotion("e");
 
     @Override
-    public List<Emotion> findAllByEmotionType(Long feedId, EmotionType emotionType) {
+    public List<Emotion> findAllEmotionType(Long feedId, EmotionType emotionType) {
         return queryFactory
                 .selectFrom(e)
                 .where(e.feed.id.eq(feedId).and(e.emotionType.eq(emotionType)))

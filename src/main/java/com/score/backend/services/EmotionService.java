@@ -37,10 +37,18 @@ public class EmotionService {
         emotionRepository.delete(emotion);
     }
 
+    // 피드에 남겨져 있는 모든 감정 표현 조회 (emotionType 상관 없이 모두 조회)
+    @Transactional(readOnly = true)
+    public List<Emotion> findAll(Long feedId) {
+        return emotionRepository.findAllEmotionsByFeedId(feedId).orElseThrow(
+                () -> new RuntimeException("Feed Not Found")
+        );
+    }
+
     // feedId의 피드에 남겨져 있는 emotionType 타입의 감정 표현 목록 조회
     @Transactional(readOnly = true)
-    public List<Emotion> findAllEmotions(Long feedId, EmotionType emotionType) {
-        return emotionRepository.findAllByEmotionType(feedId, emotionType);
+    public List<Emotion> findAllEmotionTypes(Long feedId, EmotionType emotionType) {
+        return emotionRepository.findAllEmotionType(feedId, emotionType);
     }
 
     // 해당 타입의 감정 표현을 이미 한 유저인지 여부 확인
