@@ -39,7 +39,7 @@ public class GroupController{
     @PostMapping("/{groupId}/leave")
     public ResponseEntity<String> leaveGroup(@PathVariable Long groupId, @RequestParam Long userId) {
         try {
-            groupService.removeMember(groupId, userId);
+            groupService.leaveGroup(groupId, userId);
             return ResponseEntity.ok("그룹 탈퇴가 완료되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -47,9 +47,11 @@ public class GroupController{
     }
 
     @PutMapping("/{groupId}/update")
-    public ResponseEntity<String> updateGroup(@PathVariable Long groupId, @Valid @RequestBody GroupCreateDto groupCreateDto) {
+    public ResponseEntity<String> updateGroup(@PathVariable Long groupId,
+                                              @Valid @RequestBody GroupCreateDto groupCreateDto,
+                                              @RequestParam Long adminId) {
         try {
-            groupService.updateGroup(groupId, groupCreateDto);
+            groupService.updateGroup(groupId, groupCreateDto, adminId);
             return ResponseEntity.ok("그룹 정보 update 완료!");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

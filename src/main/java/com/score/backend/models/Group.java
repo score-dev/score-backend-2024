@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import com.score.backend.config.BaseEntity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -57,7 +58,7 @@ public class Group extends BaseEntity {
     @JoinColumn(name="admin_id", nullable=false)
     private User admin;
 
-    @OneToMany(mappedBy = "group")
-    private Set<User> members; //회원들과의 관계
+    @ManyToMany(mappedBy = "groups")
+    private Set<User> members = new HashSet<>(); //회원들과의 관계
 
 }
