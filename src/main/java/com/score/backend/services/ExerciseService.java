@@ -31,14 +31,21 @@ public class ExerciseService {
     private final ImageUploadService imageUploadService;
 
     // 유저의 개인 피드 조회
+    @Transactional(readOnly = true)
     public Page<Exercise> getUsersAllExercises(int page, Long userId) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
         return exerciseRepository.findExercisePageByUserId(userId, pageable);
     }
 
-    // 그룹 기능 연동 후 그룹 피드 조회 기능 구현 필요
+    // 그룹 전체 피드 조회
+    @Transactional(readOnly = true)
+    public Page<Exercise> getGroupsAllExercises(int page, Long groupId) {
+        Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
+        return exerciseRepository.findExercisePageByGroupId(groupId, pageable);
+    }
 
     // 유저의 당일 운동 기록 전체 조회
+    @Transactional(readOnly = true)
     public List<Exercise> getTodaysAllExercises(Long userId) {
         return exerciseRepository.findUsersExerciseToday(userId, LocalDateTime.now());
     }
