@@ -6,6 +6,8 @@ import com.score.backend.models.enums.Gender;
 import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.SmallIntJdbcType;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,6 +33,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "school_id")
     private School school;
 
+    @JdbcType(value = SmallIntJdbcType.class)
     private Gender gender;
 
     @Setter

@@ -40,6 +40,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<User, QUser> friends = this.<User, QUser>createList("friends", User.class, QUser.class, PathInits.DIRECT2);
 
+    public final EnumPath<com.score.backend.models.enums.Gender> gender = createEnum("gender", com.score.backend.models.enums.Gender.class);
+
     public final TimePath<java.time.LocalTime> goal = createTime("goal", java.time.LocalTime.class);
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);
