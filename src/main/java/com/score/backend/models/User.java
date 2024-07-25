@@ -78,9 +78,14 @@ public class User extends BaseEntity {
     @JsonIgnore
     private final List<User> mates = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name="group_id")
-    private Group group;
+    @ManyToMany
+    @JoinTable(
+            name = "user_group",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    @JsonIgnore
+    private List<Group> groups = new ArrayList<>();
 
     private boolean marketing;
 
@@ -90,8 +95,14 @@ public class User extends BaseEntity {
 
     private String loginKey;
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void addGroup(Group group) {
+        this.groups.add(group);
+        group.getMembers().add(this);
+    }
+
+    public void removeGroup(Group group) {
+        this.groups.remove(group);
+        group.getMembers().remove(this);
     }
 
     public void updateCumulativeTime(double duration) {

@@ -38,15 +38,18 @@ public class GroupService{
         groupRepository.save(group);
     }
 
-    public List<GroupDto> getAllGroups() {
-        List<Group> groups = groupRepository.findAll();
-        return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
-    }
+    //public List<GroupDto> getAllGroups() {
+    //    List<Group> groups = groupRepository.findAll();
+    //    return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
+    //}
 
-
-    public void updateGroup(Long groupId, GroupCreateDto groupCreateDto) {
+    public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
+
+        if (!group.getAdmin().getId().equals(adminId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
 
         group.setGroupImg(groupCreateDto.getGroupImg());
         group.setGroupName(groupCreateDto.getGroupName());
@@ -58,7 +61,7 @@ public class GroupService{
         groupRepository.save(group);
     }
 
-    public void removeMember(Long groupId, Long userId) {
+    public void leaveGroup(Long groupId, Long userId) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
         User user = userRepository.findById(userId)
@@ -69,7 +72,33 @@ public class GroupService{
         }
 
         group.getMembers().remove(user); // 그룹의 멤버 목록에서 사용자 제거
-        user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
+        //user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
+        groupRepository.save(group);
+        userRepository.save(user);
+    }
+
+    public void removeMember(Long groupId, Long userId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
+
+        Long adminId = group.getAdmin().getId(); //그룹의 adminId 가져오기
+
+        if (!group.getAdmin().getId().equals(adminId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        if (user.getId().equals(adminId)) {
+            throw new IllegalArgumentException("방장은 강퇴할 수 없습니다.");
+        }
+
+        if (!group.getMembers().contains(user)) {
+            throw new IllegalArgumentException("그룹에 속해 있지 않습니다.");
+        }
+
+        group.getMembers().remove(user); // 그룹의 멤버 목록에서 사용자 제거
+        //user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
         groupRepository.save(group);
         userRepository.save(user);
     }
