@@ -39,18 +39,16 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
 
     @Override
     public Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable) {
-        List<Exercise> exercises = queryFactory
+        JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
-                .where(e.agent.id.eq(userId))
+                .where(e.agent.id.eq(userId));
+        List<Exercise> exercises = where
                 .orderBy(e.completedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory
-                .selectFrom(e)
-                .where(e.agent.id.eq(userId))
-                .stream().count();
+        long total = where.stream().count();
 
         return new PageImpl<>(exercises, pageable, total);
     }
