@@ -38,10 +38,10 @@ public class GroupService{
         groupRepository.save(group);
     }
 
-    //public List<GroupDto> getAllGroups() {
-    //    List<Group> groups = groupRepository.findAll();
-    //    return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
-    //}
+    public List<GroupDto> getAllGroups() {
+        List<Group> groups = groupRepository.findAll();
+        return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
+    }
 
     public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
         Group group = groupRepository.findById(groupId)
