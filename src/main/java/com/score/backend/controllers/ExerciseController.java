@@ -96,8 +96,8 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/exercise/list", method = GET)
-    public Page<Exercise> getAllFeeds(@RequestParam("id") @Parameter(required = true, description = "피드 목록을 요청할 유저의 고유 번호") Long id,
+    public ResponseEntity<Page<Exercise>> getAllFeeds(@RequestParam("id") @Parameter(required = true, description = "피드 목록을 요청할 유저의 고유 번호") Long id,
                                       @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
-        return exerciseService.getUsersAllExercises(page, id);
+        return ResponseEntity.ok(exerciseService.getUsersAllExercises(page, id));
     }
 }
