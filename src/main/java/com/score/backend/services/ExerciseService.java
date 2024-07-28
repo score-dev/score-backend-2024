@@ -6,10 +6,7 @@ import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.ExerciseUser;
 import com.score.backend.repositories.exercise.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -30,11 +28,22 @@ public class ExerciseService {
     private final UserService userService;
     private final ImageUploadService imageUploadService;
 
-    // 유저의 개인 피드 조회
+    // user1이 user2의 피드 목록을 조회 (둘이 같을 경우 자기가 자기 피드를 조회)
     @Transactional(readOnly = true)
-    public Page<Exercise> getUsersAllExercises(int page, Long userId) {
+    public Page<Exercise> getUsersAllExercises(int page, Long id1, Long id2) {
+        User user1 = userService.findUserById(id1).orElseThrow(
+                () -> new NoSuchElementException("User not found")
+        );
+
+        User user2 = userService.findUserById(id2).orElseThrow(
+                () -> new NoSuchElementException("User not found")
+        );
+
+        if (user1.getBlockedUsers().contains(user2)) {
+            throw new RuntimeException("차단한 유저에 대한 피드 목록 조회 요청입니다.");
+        }
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
-        return exerciseRepository.findExercisePageByUserId(userId, pageable);
+        return exerciseRepository.findExercisePageByUserId(id1, pageable);
     }
 
     // 그룹 전체 피드 조회

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -93,12 +94,22 @@ public class ExerciseController {
     @Operation(summary = "유저의 피드 목록 조회", description = "유저의 전체 피드 목록을 페이지 단위로 제공합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "피드 페이지가 JSON 형태로 전달됩니다."),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
-    )
+                    @ApiResponse(responseCode = "404", description = "User Not Found"),
+                    @ApiResponse(responseCode = "409", description = "차단한 유저에 대한 피드 목록 조회 요청입니다.")
+            })
     @RequestMapping(value = "/score/exercise/list", method = GET)
-    public ResponseEntity<Page<Exercise>> getAllUsersFeeds(@RequestParam("id") @Parameter(required = true, description = "피드 목록을 요청할 유저의 고유 번호") Long id,
+    public ResponseEntity<Page<Exercise>> getAllUsersFeeds(@RequestParam("id1") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long id1,
+                                                           @RequestParam("id1") @Parameter(required = true, description = "id1 유저가 피드를 조회하고자 하는 유저의 고유 번호") Long id2,
                                       @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
-        return ResponseEntity.ok(exerciseService.getUsersAllExercises(page, id));
+        try {
+            Page<Exercise> feeds = exerciseService.getUsersAllExercises(page, id1, id2);
+            return ResponseEntity.ok(feeds);
+        } catch (NoSuchElementException e1) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+        } catch (RuntimeException e2) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(409));
+        }
+
     }
 
     @Operation(summary = "그룹 피드 목록 조회", description = "그룹원이 업로드한 전체 피드 목록을 페이지 단위로 제공합니다.")
