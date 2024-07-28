@@ -99,7 +99,7 @@ public class ExerciseController {
             })
     @RequestMapping(value = "/score/exercise/list", method = GET)
     public ResponseEntity<Page<Exercise>> getAllUsersFeeds(@RequestParam("id1") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long id1,
-                                                           @RequestParam("id1") @Parameter(required = true, description = "id1 유저가 피드를 조회하고자 하는 유저의 고유 번호") Long id2,
+                                                           @RequestParam("id2") @Parameter(required = true, description = "id1 유저가 피드를 조회하고자 하는 유저의 고유 번호") Long id2,
                                       @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
         try {
             Page<Exercise> feeds = exerciseService.getUsersAllExercises(page, id1, id2);
