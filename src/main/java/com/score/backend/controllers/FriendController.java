@@ -20,7 +20,7 @@ public class FriendController {
     private final FriendService friendService;
 
     @Operation(summary = "친구 추가", description = "새로운 친구를 추가합니다.")
-    @RequestMapping(value = "/score/friends/new/{id1}/{id2}", method = RequestMethod.GET)
+    @RequestMapping(value = "/score/friends/new/{id1}/{id2}", method = RequestMethod.POST)
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "친구 추가 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
@@ -28,6 +28,21 @@ public class FriendController {
                                                    @Parameter(required = true, description = "친구 신청 받은 유저의 고유 id 값") @PathVariable Long id2) {
         try {
             friendService.saveNewFriend(id1, id2);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @Operation(summary = "친구 삭제", description = "친구를 삭제합니다.")
+    @RequestMapping(value = "/score/friends/delete/{id1}/{id2}", method = RequestMethod.DELETE)
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "친구 삭제 완료"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")})
+    public ResponseEntity<HttpStatus> removeFriend(@Parameter(required = true, description = "친구 삭제 요청을 한 유저의 고유 id 값")@PathVariable Long id1,
+                                                   @Parameter(required = true, description = "id1이 삭제하고자 하는 친구의 고유 id 값") @PathVariable Long id2) {
+        try {
+            friendService.deleteFriend(id1, id2);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

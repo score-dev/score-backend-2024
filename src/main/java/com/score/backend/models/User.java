@@ -133,9 +133,11 @@ public class User extends BaseEntity {
     }
     public void addFriend(User user) {
         this.friends.add(user);
-        this.mates.add(user);
-        user.getMates().add(this);
         user.getFriends().add(this);
+    }
+    public void deleteFriend(User user) {
+        this.friends.remove(user);
+        user.getFriends().remove(this);
     }
     public void setSchoolAndStudent(School school) {
         this.school = school;

@@ -24,6 +24,14 @@ public class FriendService {
         user1.addFriend(user2);
     }
 
+    public void deleteFriend(Long userId1, Long userId2) {
+        User user1 = userRepository.findById(userId1).orElseThrow(
+                () -> new RuntimeException("User not found"));
+        User user2 = userRepository.findById(userId2).orElseThrow(
+                () -> new RuntimeException("User not found"));
+        user1.deleteFriend(user2);
+    }
+
     @Transactional(readOnly = true)
     public Page<User> getAllFriends(int page, Long userId) {
         Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("createdAt")));
