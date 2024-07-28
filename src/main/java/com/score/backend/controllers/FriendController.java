@@ -49,6 +49,21 @@ public class FriendController {
         }
     }
 
+    @Operation(summary = "친구 차단", description = "친구룰 차단합니다.")
+    @RequestMapping(value = "/score/friends/block/{id1}/{id2}", method = RequestMethod.POST)
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "친구 차단 완료"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")})
+    public ResponseEntity<HttpStatus> blockFriend(@Parameter(required = true, description = "친구 차단 요청을 한 유저의 고유 id 값")@PathVariable Long id1,
+                                                   @Parameter(required = true, description = "id1이 차단하고자 하는 친구의 고유 id 값") @PathVariable Long id2) {
+        try {
+            friendService.blockFriend(id1, id2);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @Operation(summary = "친구 목록 조회", description = "친구 목록을 조회합니다.")
     @RequestMapping(value = "/score/friends/list/{id1}", method = RequestMethod.GET)
     @ApiResponses(
@@ -59,4 +74,7 @@ public class FriendController {
             @RequestParam("page") @Parameter(required = true, description = "출력할 친구 리스트의 페이지 번호") int page) {
         return ResponseEntity.ok(friendService.getAllFriends(page, id));
     }
+
+
+
 }
