@@ -2,10 +2,13 @@ package com.score.backend.models;
 
 import com.score.backend.models.enums.UserReportReason;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserReport {
     @Id
     @GeneratedValue
