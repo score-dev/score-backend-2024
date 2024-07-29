@@ -95,6 +95,9 @@ public class User extends BaseEntity {
 
     private String loginKey;
 
+    @Setter
+    private LocalDateTime joinedAt;
+
     public void addGroup(Group group) {
         this.groups.add(group);
         group.getMembers().add(this);
