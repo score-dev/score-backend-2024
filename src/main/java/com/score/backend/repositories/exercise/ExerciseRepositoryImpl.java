@@ -2,6 +2,7 @@ package com.score.backend.repositories.exercise;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.QExercise;
@@ -38,18 +39,33 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
 
     @Override
     public Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable) {
-        List<Exercise> exercises = queryFactory
+        JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
-                .where(e.agent.id.eq(userId))
+                .where(e.agent.id.eq(userId));
+        List<Exercise> exercises = where
                 .orderBy(e.completedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory
+        long total = where.stream().count();
+
+        return new PageImpl<>(exercises, pageable, total);
+    }
+
+    @Override
+    public Page<Exercise> findExercisePageByGroupId(Long groupId, Pageable pageable) {
+
+        JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
-                .where(e.agent.id.eq(userId))
-                .stream().count();
+                .where(e.agent.group.groupId.eq(groupId));
+        List<Exercise> exercises = where
+                .orderBy(e.completedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = where.stream().count();
 
         return new PageImpl<>(exercises, pageable, total);
     }

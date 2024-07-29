@@ -78,6 +78,9 @@ public class User extends BaseEntity {
     @JsonIgnore
     private final List<User> mates = new ArrayList<>();
 
+    @OneToMany
+    private final List<User> blockedUsers = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name = "user_group",
@@ -131,12 +134,22 @@ public class User extends BaseEntity {
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
     }
+
+
     public void addFriend(User user) {
         this.friends.add(user);
-        this.mates.add(user);
-        user.getMates().add(this);
         user.getFriends().add(this);
     }
+    public void deleteFriend(User user) {
+        this.friends.remove(user);
+        user.getFriends().remove(this);
+    }
+    public void blockUser(User user) {
+        this.blockedUsers.add(user);
+        user.getBlockedUsers().add(this);
+    }
+
+
     public void setSchoolAndStudent(School school) {
         this.school = school;
         school.getStudents().add(this);
