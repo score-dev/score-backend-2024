@@ -1,12 +1,13 @@
 package com.score.backend.services;
 
+import com.score.backend.models.Group;
 import com.score.backend.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,5 +23,13 @@ public class GroupRankingService {
         for (User user : allUsers) {
             user.initLevel();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> getWeeklyGroupRanking(Long groupId) {
+        Group group = groupService.findById(groupId);
+        List<User> groupMates = new ArrayList<>(group.getMembers().stream().toList());
+        groupMates.sort((o1, o2) -> o2.getLastWeekLevelIncrement() - o1.getLastWeekLevelIncrement());
+        return groupMates;
     }
 }
