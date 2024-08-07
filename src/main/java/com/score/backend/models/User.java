@@ -55,7 +55,9 @@ public class User extends BaseEntity {
 
     private int point;
 
-    private int weekLevelIncrement; // 한 주간의 레벨 상승 횟수
+    private int thisWeekLevelIncrement; // 한 주간의 레벨 상승 횟수
+
+    private int lastWeekLevelIncrement; // 지난 주의 레벨 상승 횟수
 
     private LocalDateTime lastExerciseDateTime;
 
@@ -133,7 +135,7 @@ public class User extends BaseEntity {
     public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime) {this.lastExerciseDateTime = lastExerciseDateTime;}
     public void increaseLevel(int amount) {
         this.level = this.level + amount;
-        this.weekLevelIncrement = this.weekLevelIncrement + amount;
+        this.thisWeekLevelIncrement = this.thisWeekLevelIncrement + amount;
     }
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
