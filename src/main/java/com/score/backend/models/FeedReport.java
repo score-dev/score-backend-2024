@@ -3,13 +3,11 @@ package com.score.backend.models;
 import com.score.backend.models.enums.FeedReportReason;
 import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedReport {
