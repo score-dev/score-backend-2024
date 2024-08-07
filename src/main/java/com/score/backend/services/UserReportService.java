@@ -4,7 +4,6 @@ import com.score.backend.models.User;
 import com.score.backend.models.UserReport;
 import com.score.backend.models.dtos.UserReportDto;
 import com.score.backend.models.enums.UserReportReason;
-import com.score.backend.repositories.user.UserRepository;
 import com.score.backend.repositories.userreport.UserReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,13 +15,13 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 @Transactional
 public class UserReportService {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final UserReportRepository userReportRepository;
 
     public void createReport(UserReportDto userReportDto) {
-        User agent = userRepository.findById(userReportDto.getAgentId()).orElseThrow(
+        User agent = userService.findUserById(userReportDto.getAgentId()).orElseThrow(
                 () -> new NoSuchElementException("User Not Found"));
-        User object = userRepository.findById(userReportDto.getAgentId()).orElseThrow(
+        User object = userService.findUserById(userReportDto.getAgentId()).orElseThrow(
                 () -> new NoSuchElementException("User Not Found"));
 
         UserReport userReport = UserReport.builder()
