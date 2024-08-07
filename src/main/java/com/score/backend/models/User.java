@@ -137,6 +137,12 @@ public class User extends BaseEntity {
         this.level = this.level + amount;
         this.thisWeekLevelIncrement = this.thisWeekLevelIncrement + amount;
     }
+    public void initLevel() {
+        this.lastWeekLevelIncrement = this.thisWeekLevelIncrement;
+        this.thisWeekLevelIncrement = 0;
+    }
+
+
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
     }
