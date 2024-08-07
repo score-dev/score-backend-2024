@@ -64,6 +64,7 @@ public class UserDto {
                 .weight(weight)
                 .gender(gender)
                 .cumulativeTime(0.0)
+                .weekLevelIncrement(0)
                 .level(1)
                 .point(0)
                 .consecutiveDate(0)
