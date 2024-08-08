@@ -8,16 +8,26 @@ import com.score.backend.repositories.user.UserRepository;
 import com.score.backend.models.dtos.GroupCreateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class GroupService{
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public Group findById(Long id){
+        return groupRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("Group not found")
+        );
+    }
 
 
     public void createGroup(GroupCreateDto groupCreateDto, Long adminId) {
