@@ -24,7 +24,7 @@ public class FeedReportController {
     private final FeedReportService feedReportService;
 
     @Operation(summary = "유저 신고", description = "유저를 신고합니다.")
-    @RequestMapping(value = "/score/user/report", method = RequestMethod.POST)
+    @RequestMapping(value = "/score/exercise/report", method = RequestMethod.POST)
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "유저 신고 완료"),
                     @ApiResponse(responseCode = "404", description = "User or Feed Not Found")})
