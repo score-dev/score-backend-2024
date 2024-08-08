@@ -16,11 +16,11 @@ public class UserReport {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "agent_id")
     private User reportAgent; // 신고를 한 유저
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "object_id")
     private User reportObject; // 신고를 당한 유저
 
     @Enumerated(EnumType.STRING)
