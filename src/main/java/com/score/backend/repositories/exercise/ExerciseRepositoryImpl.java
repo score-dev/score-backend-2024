@@ -2,7 +2,10 @@ package com.score.backend.repositories.exercise;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.score.backend.models.QGroup;
+import com.score.backend.models.QUser;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.QExercise;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,8 @@ import java.util.List;
 public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     QExercise e = new QExercise("e");
+    QUser u = new QUser("u");
+    QGroup g = new QGroup("g");
 
     @Override
     public List<Exercise> findUsersExerciseToday(Long userId, LocalDateTime today) {
@@ -38,18 +43,35 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
 
     @Override
     public Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable) {
-        List<Exercise> exercises = queryFactory
+        JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
-                .where(e.agent.id.eq(userId))
+                .where();
+        List<Exercise> exercises = where
                 .orderBy(e.completedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory
+        long total = where.stream().count();
+
+        return new PageImpl<>(exercises, pageable, total);
+    }
+
+    @Override
+    public Page<Exercise> findExercisePageByGroupId(Long groupId, Pageable pageable) {
+
+        JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
-                .where(e.agent.id.eq(userId))
-                .stream().count();
+                .join(e.agent, u)
+                .join(u.groups, g)
+                .where(g.groupId.eq(groupId));
+        List<Exercise> exercises = where
+                .orderBy(e.completedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = where.stream().count();
 
         return new PageImpl<>(exercises, pageable, total);
     }

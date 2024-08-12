@@ -55,6 +55,10 @@ public class User extends BaseEntity {
 
     private int point;
 
+    private int thisWeekLevelIncrement; // 한 주간의 레벨 상승 횟수
+
+    private int lastWeekLevelIncrement; // 지난 주의 레벨 상승 횟수
+
     private LocalDateTime lastExerciseDateTime;
 
     @Column(nullable = false)
@@ -77,6 +81,10 @@ public class User extends BaseEntity {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private final List<User> mates = new ArrayList<>();
+
+    @OneToMany
+    @JsonIgnore
+    private final List<User> blockedUsers = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -130,16 +138,33 @@ public class User extends BaseEntity {
     public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime) {this.lastExerciseDateTime = lastExerciseDateTime;}
     public void increaseLevel(int amount) {
         this.level = this.level + amount;
+        this.thisWeekLevelIncrement = this.thisWeekLevelIncrement + amount;
     }
+    public void initLevel() {
+        this.lastWeekLevelIncrement = this.thisWeekLevelIncrement;
+        this.thisWeekLevelIncrement = 0;
+    }
+
+
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
     }
+
+
     public void addFriend(User user) {
         this.friends.add(user);
-        this.mates.add(user);
-        user.getMates().add(this);
         user.getFriends().add(this);
     }
+    public void deleteFriend(User user) {
+        this.friends.remove(user);
+        user.getFriends().remove(this);
+    }
+    public void blockUser(User user) {
+        this.blockedUsers.add(user);
+        user.getBlockedUsers().add(this);
+    }
+
+
     public void setSchoolAndStudent(School school) {
         this.school = school;
         school.getStudents().add(this);

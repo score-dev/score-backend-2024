@@ -24,6 +24,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
+    public final ListPath<User, QUser> blockedUsers = this.<User, QUser>createList("blockedUsers", User.class, QUser.class, PathInits.DIRECT2);
+
     public final NumberPath<Integer> consecutiveDate = createNumber("consecutiveDate", Integer.class);
 
     //inherited
@@ -46,7 +48,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);
 
-    public final QGroup group;
+    public final ListPath<Group, QGroup> groups = this.<Group, QGroup>createList("groups", Group.class, QGroup.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> height = createNumber("height", Integer.class);
 
@@ -56,6 +58,8 @@ public class QUser extends EntityPathBase<User> {
 
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
+
+    public final NumberPath<Integer> lastWeekLevelIncrement = createNumber("lastWeekLevelIncrement", Integer.class);
 
     public final NumberPath<Integer> level = createNumber("level", Integer.class);
 
@@ -76,6 +80,8 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath refreshToken = createString("refreshToken");
 
     public final QSchool school;
+
+    public final NumberPath<Integer> thisWeekLevelIncrement = createNumber("thisWeekLevelIncrement", Integer.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -100,7 +106,6 @@ public class QUser extends EntityPathBase<User> {
 
     public QUser(Class<? extends User> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.group = inits.isInitialized("group") ? new QGroup(forProperty("group"), inits.get("group")) : null;
         this.school = inits.isInitialized("school") ? new QSchool(forProperty("school")) : null;
     }
 
