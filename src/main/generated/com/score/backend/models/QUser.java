@@ -54,6 +54,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final DateTimePath<java.time.LocalDateTime> joinedAt = createDateTime("joinedAt", java.time.LocalDateTime.class);
+
     public final DateTimePath<java.time.LocalDateTime> lastExerciseDateTime = createDateTime("lastExerciseDateTime", java.time.LocalDateTime.class);
 
     //inherited
