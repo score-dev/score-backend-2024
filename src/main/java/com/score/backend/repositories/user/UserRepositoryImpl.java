@@ -33,4 +33,13 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         return new PageImpl<>(users, pageable, total);
     }
+
+    @Override
+    public List<User> findFriendsByNicknameContaining(long userId, String nickname) {
+        return queryFactory
+                .selectFrom(friend)
+                .where(user.id.eq(userId)
+                        .and(friend.nickname.containsIgnoreCase(nickname)))
+                .fetch();
+    }
 }
