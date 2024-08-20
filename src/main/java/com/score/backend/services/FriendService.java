@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -44,5 +46,10 @@ public class FriendService {
     public Page<User> getAllFriends(int page, Long userId) {
         Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("createdAt")));
         return userRepository.findFriendsPage(userId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> getFriendsByNicknameContaining(Long userId, String nickname) {
+        return userRepository.findFriendsByNicknameContaining(userId, nickname);
     }
 }
