@@ -1,8 +1,11 @@
 package com.score.backend.controllers;
 
+import com.score.backend.models.User;
+import com.score.backend.models.dtos.FriendsSearchResponse;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.services.ExerciseService;
+import com.score.backend.services.FriendService;
 import com.score.backend.services.LevelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -31,7 +36,25 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class ExerciseController {
     private final ExerciseService exerciseService;
     private final LevelService levelService;
+    private final FriendService friendService;
 
+    @Operation(summary = "함께 운동한 친구 검색", description = "함께 운동한 친구를 선택하기 위해 닉네임으로 검색합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "검색 완료."),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")}
+    )
+    @RequestMapping(value = "/score/exercise/friends")
+    public ResponseEntity<List<FriendsSearchResponse>> searchFriendsByNickname(
+            @Parameter(description = "운동을 기록하고자 하는(함께 운동할 친구를 선택하고자 하는) 유저의 고유 id 값", required = true) @RequestParam Long id,
+            @Parameter(description = "유저가 필드에 입력한 내친구의 닉네임", required = true) @RequestParam String nickname) {
+
+        List<User> searched = friendService.getFriendsByNicknameContaining(id, nickname);
+        List<FriendsSearchResponse> responses = new ArrayList<>();
+        for (User user : searched) {
+            responses.add(new FriendsSearchResponse(user.getId(), user.getNickname(), user.getProfileImg()));
+        }
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
 
     @Operation(summary = "피드 저장", description = "운동이 끝난 후 운동 기록을 업데이트하고, 피드를 업로드합니다.")
     @ApiResponses(
