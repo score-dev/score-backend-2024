@@ -1,5 +1,6 @@
 package com.score.backend.models;
 
+import com.score.backend.models.grouprank.GroupRanking;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,7 +9,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import com.score.backend.config.BaseEntity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -61,4 +64,22 @@ public class Group extends BaseEntity {
     @ManyToMany(mappedBy = "groups")
     private Set<User> members = new HashSet<>(); //회원들과의 관계
 
+    @OneToMany(mappedBy = "group")
+    private List<GroupRanking> groupRankings = new ArrayList<>();
+
+    @Column(name = "cumulativeTime")
+    private double cumulativeTime; // 그룹의 누적 운동 시간 (단위: 초)
+
+    @Column(name = "todayExercisedCount")
+    private int todayExercisedCount; // 오늘 운동한 메이트 수
+
+    public void updateCumulativeTime(double duration) {
+        this.cumulativeTime += duration;
+    }
+    public void increaseTodayExercisedCount() {
+        this.todayExercisedCount++;
+    }
+    public void initTodayExercisedCount() {
+        this.todayExercisedCount = 0;
+    }
 }

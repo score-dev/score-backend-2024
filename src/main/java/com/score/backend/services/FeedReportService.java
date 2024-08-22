@@ -1,11 +1,11 @@
-package com.score.backend.models;
+package com.score.backend.services;
 
+import com.score.backend.models.FeedReport;
+import com.score.backend.models.User;
 import com.score.backend.models.dtos.FeedReportDto;
 import com.score.backend.models.enums.FeedReportReason;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.repositories.FeedReportRepository;
-import com.score.backend.services.ExerciseService;
-import com.score.backend.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

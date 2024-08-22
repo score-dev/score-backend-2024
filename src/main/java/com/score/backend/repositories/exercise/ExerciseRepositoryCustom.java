@@ -12,4 +12,5 @@ public interface ExerciseRepositoryCustom {
     List<Exercise> findByUserId(Long userId);
     Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable);
     Page<Exercise> findExercisePageByGroupId(Long groupId, Pageable pageable);
+    Page<String> findFeedsImgPageByGroupId(Long groupId, Pageable pageable);
 }

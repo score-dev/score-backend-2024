@@ -55,17 +55,19 @@ public class User extends BaseEntity {
 
     private int point;
 
-    private int thisWeekLevelIncrement; // 한 주간의 레벨 상승 횟수
-
-    private int lastWeekLevelIncrement; // 지난 주의 레벨 상승 횟수
-
     private LocalDateTime lastExerciseDateTime;
 
     @Column(nullable = false)
     private int consecutiveDate; // 며칠 연속으로 운동 중인지?
 
+    private double weeklyCumulativeTime; // 한 주간의 누적 운동 시간
+
+    private int weeklyExerciseCount; // 한 주간 운동한 날짜 수
+
+    private int weeklyLevelIncrement; // 한 주간 레벨 상승 횟수
+
     @Column(nullable = false)
-    private double cumulativeTime; // 누적 운동 시간
+    private double totalCumulativeTime; // 누적 운동 시간
 
     @Column(nullable = false)
     private double cumulativeDistance; // 누적 운동 거리
@@ -74,15 +76,30 @@ public class User extends BaseEntity {
     @JsonIgnore
     private final List<Exercise> feeds = new ArrayList<>();
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    @JsonIgnore
     private final List<User> friends = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @ManyToMany
+    @JoinTable(
+            name = "user_mates",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "mate_id")
+    )
     @JsonIgnore
     private final List<User> mates = new ArrayList<>();
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "user_blocked_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
+    )
     @JsonIgnore
     private final List<User> blockedUsers = new ArrayList<>();
 
@@ -117,13 +134,18 @@ public class User extends BaseEntity {
     }
 
     public void updateCumulativeTime(double duration) {
-        this.cumulativeTime += duration;
+        this.totalCumulativeTime += duration;
     }
     public void updateCumulativeDistance(double distance) {
         this.cumulativeDistance += distance;
     }
     public void updatePoint(int point) {
         this.point += point;
+        // 500 포인트 달성 시 레벨업 + 포인트 초기화
+        if (point >= 500) {
+            this.increaseLevel(point / 500);
+            this.initPoint(point % 500);
+        }
     }
     public void initPoint(int point) {
         this.point = point;
@@ -138,13 +160,19 @@ public class User extends BaseEntity {
     public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime) {this.lastExerciseDateTime = lastExerciseDateTime;}
     public void increaseLevel(int amount) {
         this.level = this.level + amount;
-        this.thisWeekLevelIncrement = this.thisWeekLevelIncrement + amount;
+        this.weeklyLevelIncrement = this.weeklyLevelIncrement + amount;
     }
-    public void initLevel() {
-        this.lastWeekLevelIncrement = this.thisWeekLevelIncrement;
-        this.thisWeekLevelIncrement = 0;
+    public void initWeeklyExerciseStatus() {
+        this.weeklyLevelIncrement = 0;
+        this.weeklyCumulativeTime = 0;
+        this.weeklyExerciseCount = 0;
     }
-
+    public void updateWeeklyExerciseStatus(boolean needToIncreaseCount, double duration) {
+        if (needToIncreaseCount) {
+            this.weeklyExerciseCount++;
+        }
+        this.weeklyCumulativeTime += duration;
+    }
 
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;

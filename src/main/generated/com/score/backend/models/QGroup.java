@@ -34,6 +34,8 @@ public class QGroup extends EntityPathBase<Group> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
+    public final NumberPath<Double> cumulativeTime = createNumber("cumulativeTime", Double.class);
+
     public final DateTimePath<java.time.LocalDateTime> groupCreatedAt = createDateTime("groupCreatedAt", java.time.LocalDateTime.class);
 
     public final StringPath groupDescription = createString("groupDescription");
@@ -46,6 +48,8 @@ public class QGroup extends EntityPathBase<Group> {
 
     public final StringPath groupPassword = createString("groupPassword");
 
+    public final ListPath<com.score.backend.models.grouprank.GroupRanking, com.score.backend.models.grouprank.QGroupRanking> groupRankings = this.<com.score.backend.models.grouprank.GroupRanking, com.score.backend.models.grouprank.QGroupRanking>createList("groupRankings", com.score.backend.models.grouprank.GroupRanking.class, com.score.backend.models.grouprank.QGroupRanking.class, PathInits.DIRECT2);
+
     public final DateTimePath<java.time.LocalDateTime> groupUpdatedAt = createDateTime("groupUpdatedAt", java.time.LocalDateTime.class);
 
     public final BooleanPath isPrivate = createBoolean("isPrivate");
@@ -54,6 +58,8 @@ public class QGroup extends EntityPathBase<Group> {
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
     public final SetPath<User, QUser> members = this.<User, QUser>createSet("members", User.class, QUser.class, PathInits.DIRECT2);
+
+    public final NumberPath<Integer> todayExercisedCount = createNumber("todayExercisedCount", Integer.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

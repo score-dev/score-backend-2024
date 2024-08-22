@@ -3,15 +3,21 @@ package com.score.backend.services;
 import com.score.backend.models.dtos.GroupDto;
 import com.score.backend.models.Group;
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.MemberGroupInfoResponse;
+import com.score.backend.models.dtos.NotMemberGroupInfoResponse;
+import com.score.backend.models.exercise.Exercise;
 import com.score.backend.repositories.group.GroupRepository;
 import com.score.backend.repositories.user.UserRepository;
 import com.score.backend.models.dtos.GroupCreateDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,12 +27,19 @@ public class GroupService{
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+    private final ExerciseService exerciseService;
+    private final UserService userService;
+    private final SchoolRankingService schoolRankingService;
 
     @Transactional(readOnly = true)
     public Group findById(Long id){
         return groupRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("Group not found")
         );
+    }
+
+    public List<Group> findAll() {
+        return groupRepository.findAll();
     }
 
 
@@ -111,5 +124,52 @@ public class GroupService{
         //user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
         groupRepository.save(group);
         userRepository.save(user);
+    }
+
+    // 유저가 속한 모든 그룹의 누적 운동 시간 증가
+    public void increaseCumulativeTime(Long userId, LocalDateTime start, LocalDateTime end) {
+        List<Group> groups = this.findAllGroupsByUserId(userId);
+        if (!groups.isEmpty()) {
+            double duration = exerciseService.calculateExerciseDuration(start, end);
+            for (Group group : groups) {
+                group.updateCumulativeTime(duration);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Group> findAllGroupsByUserId(Long userId) {
+        return groupRepository.findAllGroupsByUserId(userId);
+    }
+
+    // 오늘 운동한 그룹원 수 1 증가
+    public void increaseTodayExercisedCount(Long groupId) {
+        Group group = this.findById(groupId);
+        group.increaseTodayExercisedCount();
+    }
+
+    // 해당 유저가 그룹의 멤버인지 여부 확인
+    @Transactional(readOnly = true)
+    public boolean isMemberOfGroup(Long groupId, Long userId) {
+        Group group = this.findById(groupId);
+        return group.getMembers().contains(userService.findUserById(userId).orElseThrow(
+                () -> new NoSuchElementException("User Not Found.")
+        ));
+    }
+
+    // 유저가 가입해 있지 않은 그룹의 정보 반환
+    @Transactional(readOnly = true)
+    public NotMemberGroupInfoResponse getGroupInfoForNonMember(Long groupId) {
+        Group group = this.findById(groupId);
+        Page<String> feedImgs = exerciseService.getGroupsAllExercisePics(0, groupId);
+        return new NotMemberGroupInfoResponse(group.getGroupName(), group.getUserLimit(), group.getCumulativeTime(), schoolRankingService.getRatioOfParticipate(group), group.getGroupImg(), feedImgs);
+    }
+
+    // 유저가 가입해 있는 그룹의 정보 반환
+    @Transactional(readOnly = true)
+    public MemberGroupInfoResponse getGroupInfoForMember(Long groupId) {
+        Group group = this.findById(groupId);
+        Page<Exercise> feeds = exerciseService.getGroupsAllExercises(0, groupId);
+        return new MemberGroupInfoResponse(group.isPrivate(), group.getGroupName(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
     }
 }

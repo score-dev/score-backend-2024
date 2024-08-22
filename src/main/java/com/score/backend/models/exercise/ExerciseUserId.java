@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 // ExerciseUser 엔티티의 복합키 사용을 위한 식별자 클래스
 public class ExerciseUserId implements Serializable {
-    private String user;
-    private String exercise;
+    private Long user;
+    private Long exercise;
 
     @Override
     public int hashCode() {

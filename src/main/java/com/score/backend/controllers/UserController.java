@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Tag(name = "User", description = "회원 정보 관리를 위한 API입니다.")
 @RestController
@@ -136,11 +139,14 @@ public class UserController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "회원 탈퇴 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
-    @RequestMapping(value = "/score/user/withdrawal/{nickname}", method = RequestMethod.DELETE)
-    public ResponseEntity<HttpStatus> withdrawUser(@PathVariable(name = "nickname") String nickname) {
+    @RequestMapping(value = "/score/user/withdrawal", method = RequestMethod.DELETE)
+    public ResponseEntity<HttpStatus> withdrawUser(@Parameter(description = "회원 탈퇴를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id,
+                                                   @Parameter(description = "회원 탈퇴 사유") @RequestParam(name = "reason") String reason) {
         try {
-            userService.withdrawUser(nickname);
-        } catch(ResponseStatusException e) {
+            userService.withdrawUser(id);
+            Logger logger = LoggerFactory.getLogger("withdrawal-logger");
+            logger.info("User ID: {}, Reason: {}", id, reason);
+        } catch(NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(404));
         }
         return new ResponseEntity<>(HttpStatus.OK);

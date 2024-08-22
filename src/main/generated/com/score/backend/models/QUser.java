@@ -36,8 +36,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Double> cumulativeDistance = createNumber("cumulativeDistance", Double.class);
 
-    public final NumberPath<Double> cumulativeTime = createNumber("cumulativeTime", Double.class);
-
     public final ListPath<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise> feeds = this.<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise>createList("feeds", com.score.backend.models.exercise.Exercise.class, com.score.backend.models.exercise.QExercise.class, PathInits.DIRECT2);
 
     public final ListPath<User, QUser> friends = this.<User, QUser>createList("friends", User.class, QUser.class, PathInits.DIRECT2);
@@ -61,8 +59,6 @@ public class QUser extends EntityPathBase<User> {
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
-    public final NumberPath<Integer> lastWeekLevelIncrement = createNumber("lastWeekLevelIncrement", Integer.class);
-
     public final NumberPath<Integer> level = createNumber("level", Integer.class);
 
     public final StringPath loginKey = createString("loginKey");
@@ -83,10 +79,16 @@ public class QUser extends EntityPathBase<User> {
 
     public final QSchool school;
 
-    public final NumberPath<Integer> thisWeekLevelIncrement = createNumber("thisWeekLevelIncrement", Integer.class);
+    public final NumberPath<Double> totalCumulativeTime = createNumber("totalCumulativeTime", Double.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+
+    public final NumberPath<Double> weeklyCumulativeTime = createNumber("weeklyCumulativeTime", Double.class);
+
+    public final NumberPath<Integer> weeklyExerciseCount = createNumber("weeklyExerciseCount", Integer.class);
+
+    public final NumberPath<Integer> weeklyLevelIncrement = createNumber("weeklyLevelIncrement", Integer.class);
 
     public final NumberPath<Integer> weight = createNumber("weight", Integer.class);
 

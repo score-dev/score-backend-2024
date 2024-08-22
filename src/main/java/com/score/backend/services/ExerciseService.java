@@ -7,14 +7,12 @@ import com.score.backend.models.exercise.ExerciseUser;
 import com.score.backend.repositories.exercise.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -53,13 +51,19 @@ public class ExerciseService {
         return exerciseRepository.findExercisePageByGroupId(groupId, pageable);
     }
 
+    @Transactional(readOnly = true)
+    public Page<String> getGroupsAllExercisePics(int page, Long groupId) {
+        Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
+        return exerciseRepository.findFeedsImgPageByGroupId(groupId, pageable);
+    }
+
     // 유저의 당일 운동 기록 전체 조회
     @Transactional(readOnly = true)
     public List<Exercise> getTodaysAllExercises(Long userId) {
         return exerciseRepository.findUsersExerciseToday(userId, LocalDateTime.now());
     }
 
-    public Long saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) {
+    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기
@@ -79,12 +83,9 @@ public class ExerciseService {
         }
         // 피드 작성자, 함께 운동한 친구 설정
         feed.setAgentAndExerciseUser(agent, exerciseUsers);
-        // 피드 작성자의 마지막 운동 시간 및 날짜 설정
-        updateLastExerciseDateTime(feed.getCompletedAt(), agent.getId());
         // 프로필 사진 설정
         feed.setExercisePicUrl(imageUploadService.uploadImage(multipartFile));
         exerciseRepository.save(feed);
-        return feed.getId();
     }
 
     public void deleteFeed(Exercise exercise) {
@@ -94,13 +95,6 @@ public class ExerciseService {
     @Transactional(readOnly = true)
     public Optional<Exercise> findFeedByExerciseId(Long exerciseId) {
         return exerciseRepository.findById(exerciseId);
-    }
-
-    // 운동한 시간 계산
-    @Transactional(readOnly = true)
-    public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) {
-        Duration duration = Duration.between(start, end);
-        return duration.getSeconds();
     }
 
     // 유저의 운동 시간 누적
@@ -120,45 +114,52 @@ public class ExerciseService {
     }
 
     // 유저의 연속 운동 일수 1 증가
-    public boolean increaseConsecutiveDate(Long userId) {
+    public void increaseConsecutiveDate(Long userId) {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
-        List<Exercise> todaysAllExercises = getTodaysAllExercises(userId);
-        if (todaysAllExercises.isEmpty()) {
-            user.updateConsecutiveDate(true);
-            return true;
-        }
-        for (Exercise exercise : todaysAllExercises) {
-            if (calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt()) >= 600) {
-                return false;
-            }
-        }
         user.updateConsecutiveDate(true);
-        return true;
     }
 
     // 유저의 마지막 운동 시간 및 날짜 설정
-    public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime, Long userId) {
+    public void updateLastExerciseDateTime(Long userId, LocalDateTime lastExerciseDateTime) {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
         user.updateLastExerciseDateTime(lastExerciseDateTime);
     }
 
-    // 유저의 연속 운동 일수 초기화
-    @Scheduled(cron = "0 0 0 * * *")
-    public void initEveryUsersConsecutiveDate() {
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-        List<User> userList = userService.findAll();
-        for (User user : userList) {
-            if (user.getLastExerciseDateTime() == null) {
-                continue;
-            }
-            LocalDateTime lastExerciseDate = user.getLastExerciseDateTime().truncatedTo(ChronoUnit.DAYS);
-            if (ChronoUnit.DAYS.between(lastExerciseDate, now) > 1) {
-                user.updateConsecutiveDate(false);
+    // 유저의 금주 운동 횟수, 운동 시간 업데이트
+    public void updateWeeklyExerciseStatus(Long userId, boolean needToIncrease, LocalDateTime start, LocalDateTime end) {
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        user.updateWeeklyExerciseStatus(needToIncrease, calculateExerciseDuration(start, end));
+    }
+
+    // 운동한 시간 계산
+    @Transactional(readOnly = true)
+    public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) {
+        Duration duration = Duration.between(start, end);
+        return duration.getSeconds();
+    }
+
+    // 3분 이상 운동했는지 여부 확인
+    public boolean isValidateExercise(LocalDateTime start, LocalDateTime end) {
+        return calculateExerciseDuration(start, end) >= 180;
+    }
+
+    // 오늘 처음으로 3분 이상 운동했는지 여부 확인
+    public boolean isTodaysFirstValidateExercise(Long userId) {
+        List<Exercise> todaysAllExercises = getTodaysAllExercises(userId);
+        if (todaysAllExercises.isEmpty()) {
+            return true;
+        }
+        for (Exercise exercise : todaysAllExercises) {
+            if (!isValidateExercise(exercise.getStartedAt(), exercise.getCompletedAt())) {
+                return false;
             }
         }
+        return true;
     }
 }
