@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class GroupService{
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+    private final ExerciseService exerciseService;
 
     @Transactional(readOnly = true)
     public Group findById(Long id){
@@ -115,5 +117,10 @@ public class GroupService{
         //user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
         groupRepository.save(group);
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Group> findAllGroupsByUserId(Long userId) {
+        return groupRepository.findAllGroupsByUserId(userId);
     }
 }
