@@ -1,6 +1,5 @@
 package com.score.backend.services;
 
-import com.score.backend.models.Group;
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;

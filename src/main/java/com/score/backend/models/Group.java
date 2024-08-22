@@ -8,7 +8,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import com.score.backend.config.BaseEntity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -60,6 +62,9 @@ public class Group extends BaseEntity {
 
     @ManyToMany(mappedBy = "groups")
     private Set<User> members = new HashSet<>(); //회원들과의 관계
+
+    @OneToMany
+    private List<User> ranking = new ArrayList<>();
 
     @Column(name = "cumulativeTime")
     private double cumulativeTime; // 그룹의 누적 운동 시간 (단위: 초)

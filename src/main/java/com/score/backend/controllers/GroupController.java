@@ -122,7 +122,7 @@ public class GroupController {
             return ResponseEntity.status(409).body("신규 그룹은 이번주부터 랭킹이 산정돼요.");
         }
         try {
-            return ResponseEntity.ok(groupRankingService.getWeeklyGroupRanking(groupId));
+            return ResponseEntity.ok(groupService.findById(groupId).getRanking());
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
