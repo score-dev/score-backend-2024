@@ -84,7 +84,7 @@ public class ExerciseController {
             // 유저가 속한 그룹의 누적 운동 시간 업데이트
             groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             // 유저의 금주 운동 현황 업데이트
-            exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+            exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), isIncreased, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             // 피드 업로드에 따른 포인트 증가
             levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
         } catch (RuntimeException e) {

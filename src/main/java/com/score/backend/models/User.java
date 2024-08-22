@@ -161,8 +161,10 @@ public class User extends BaseEntity {
         this.thisWeekCumulativeTime = 0;
         this.thisWeekExerciseCount = 0;
     }
-    public void updateWeeklyExerciseStatus(double duration) {
-        this.thisWeekExerciseCount++;
+    public void updateWeeklyExerciseStatus(boolean needToIncreaseCount, double duration) {
+        if (needToIncreaseCount) {
+            this.thisWeekExerciseCount++;
+        }
         this.thisWeekCumulativeTime += duration;
     }
 

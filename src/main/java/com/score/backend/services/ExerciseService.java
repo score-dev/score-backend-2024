@@ -126,18 +126,11 @@ public class ExerciseService {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
-        List<Exercise> todaysAllExercises = getTodaysAllExercises(userId);
-        if (todaysAllExercises.isEmpty()) {
+        if (this.isTodaysFirstValidateExercise(user)) {
             user.updateConsecutiveDate(true);
             return true;
         }
-        for (Exercise exercise : todaysAllExercises) {
-            if (calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt()) >= 600) {
-                return false;
-            }
-        }
-        user.updateConsecutiveDate(true);
-        return true;
+        return false;
     }
 
     // 유저의 마지막 운동 시간 및 날짜 설정
@@ -149,11 +142,11 @@ public class ExerciseService {
     }
 
     // 유저의 금주 운동 횟수, 운동 시간 업데이트
-    public void updateWeeklyExerciseStatus(Long userId, LocalDateTime start, LocalDateTime end) {
+    public void updateWeeklyExerciseStatus(Long userId, boolean needToIncrease, LocalDateTime start, LocalDateTime end) {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
-        user.updateWeeklyExerciseStatus(calculateExerciseDuration(start, end));
+        user.updateWeeklyExerciseStatus(needToIncrease, calculateExerciseDuration(start, end));
     }
 
     // 유저의 연속 운동 일수 초기화
@@ -170,5 +163,19 @@ public class ExerciseService {
                 user.updateConsecutiveDate(false);
             }
         }
+    }
+
+    private boolean isTodaysFirstValidateExercise(User user) {
+        List<Exercise> todaysAllExercises = getTodaysAllExercises(user.getId());
+        if (todaysAllExercises.isEmpty()) {
+            user.updateConsecutiveDate(true);
+            return true;
+        }
+        for (Exercise exercise : todaysAllExercises) {
+            if (calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt()) >= 600) {
+                return false;
+            }
+        }
+        return true;
     }
 }
