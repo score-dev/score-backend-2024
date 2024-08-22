@@ -149,7 +149,7 @@ public class ExerciseService {
         return calculateExerciseDuration(start, end) >= 180;
     }
 
-    // 오늘 처음으로 10분 이상 운동했는지 여부 확인
+    // 오늘 처음으로 3분 이상 운동했는지 여부 확인
     public boolean isTodaysFirstValidateExercise(Long userId) {
         List<Exercise> todaysAllExercises = getTodaysAllExercises(userId);
         if (todaysAllExercises.isEmpty()) {

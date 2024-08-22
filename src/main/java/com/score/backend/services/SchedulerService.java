@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+// 리팩토링 필요
 public class SchedulerService {
     private final UserService userService;
     private final GroupService groupService;
