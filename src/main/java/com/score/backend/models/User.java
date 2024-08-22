@@ -161,6 +161,10 @@ public class User extends BaseEntity {
         this.thisWeekCumulativeTime = 0;
         this.thisWeekExerciseCount = 0;
     }
+    public void updateWeeklyExerciseStatus(double duration) {
+        this.thisWeekExerciseCount++;
+        this.thisWeekCumulativeTime += duration;
+    }
 
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;

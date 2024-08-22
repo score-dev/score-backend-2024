@@ -148,6 +148,14 @@ public class ExerciseService {
         user.updateLastExerciseDateTime(lastExerciseDateTime);
     }
 
+    // 유저의 금주 운동 횟수, 운동 시간 업데이트
+    public void updateWeeklyExerciseStatus(Long userId, LocalDateTime start, LocalDateTime end) {
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        user.updateWeeklyExerciseStatus(calculateExerciseDuration(start, end));
+    }
+
     // 유저의 연속 운동 일수 초기화
     @Scheduled(cron = "0 0 0 * * *")
     public void initEveryUsersConsecutiveDate() {
