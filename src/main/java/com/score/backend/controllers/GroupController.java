@@ -3,16 +3,18 @@ package com.score.backend.controllers;
 import com.score.backend.models.Group;
 import com.score.backend.models.dtos.GroupCreateDto;
 import com.score.backend.models.dtos.GroupDto;
-import com.score.backend.services.GroupRankingService;
+import com.score.backend.models.exercise.Exercise;
+import com.score.backend.services.ExerciseService;
 import com.score.backend.services.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -21,6 +23,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 @Tag(name = "Group", description = "그룹 정보 관리를 위한 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +32,7 @@ import java.util.NoSuchElementException;
 public class GroupController {
 
     private final GroupService groupService;
-    private final GroupRankingService groupRankingService;
+    private final ExerciseService exerciseService;
 
     @Operation(summary = "그룹 생성", description = "새로운 그룹을 생성하는 API입니다.")
     @ApiResponses(value = {
@@ -122,9 +126,44 @@ public class GroupController {
             return ResponseEntity.status(409).body("신규 그룹은 이번주부터 랭킹이 산정돼요.");
         }
         try {
-            return ResponseEntity.ok(groupService.findById(groupId).getRanking());
+            return ResponseEntity.ok(group.getGroupRankings().get(group.getGroupRankings().size() - 1));
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @Operation(summary = "그룹 정보 조회", description = "그룹 정보를 조회합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "유저가 가입되어 있는 그룹 정보를 조회하고자 하는 경우에는 MemberGroupInfoResponse를, 가입되어 있지 않은 그룹 정보를 조회하고자 하는 경우에는 NotMemberGroupInfoResponse를 응답합니다."),
+                    @ApiResponse(responseCode = "409", description = "가입되어 있지 않은 비공개 그룹에 대한 그룹 정보 조회 요청입니다."),
+                    @ApiResponse(responseCode = "404", description = "User Not Found"),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+    )
+    @RequestMapping(value = "/score/group/info", method = GET)
+    public ResponseEntity<?> getGroupInfo(Long userId, Long groupId) {
+        try {
+            if (groupService.isMemberOfGroup(groupId, userId)) {
+                return ResponseEntity.ok(groupService.getGroupInfoForMember(groupId));
+            } else {
+                if (groupService.findById(groupId).isPrivate()) {
+                    return ResponseEntity.status(409).body("비공개 그룹입니다.");
+                } else {
+                    return ResponseEntity.ok(groupService.getGroupInfoForNonMember(groupId));
+                }
+            }
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "그룹 피드 목록 조회", description = "그룹원이 업로드한 전체 피드 목록을 페이지 단위로 제공합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "피드 페이지가 JSON 형태로 전달됩니다."),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")}
+    )
+    @RequestMapping(value = "/score/group/exercise/list", method = GET)
+    public ResponseEntity<Page<Exercise>> getAllGroupsFeeds(@RequestParam("id") @Parameter(required = true, description = "피드 목록을 요청할 그룹의 고유 번호") Long id,
+                                                            @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
+        return ResponseEntity.ok(exerciseService.getGroupsAllExercises(page, id));
     }
 }

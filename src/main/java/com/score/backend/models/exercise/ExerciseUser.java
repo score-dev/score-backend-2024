@@ -23,4 +23,8 @@ public class ExerciseUser {
     public ExerciseUser(User user) {
         this.user = user;
     }
+
+    public ExerciseUser() {
+
+    }
 }

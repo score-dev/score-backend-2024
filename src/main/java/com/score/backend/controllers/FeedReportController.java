@@ -1,6 +1,6 @@
 package com.score.backend.controllers;
 
-import com.score.backend.models.FeedReportService;
+import com.score.backend.services.FeedReportService;
 import com.score.backend.models.dtos.FeedReportDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

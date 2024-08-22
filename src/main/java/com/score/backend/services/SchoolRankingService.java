@@ -10,16 +10,14 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class SchoolRankingService {
-    private final GroupService groupService;
 
     // 그룹의 참여율 계산
-    public double getRatioOfParticipate(Long groupId) {
-        Group group = groupService.findById(groupId);
+    public double getRatioOfParticipate(Group group) {
         Set<User> members = group.getMembers();
         if (!members.isEmpty()) {
             int sum = 0;
             for (User member : members) {
-                int exerciseCount = member.getLastWeekExerciseCount();
+                int exerciseCount = member.getWeeklyExerciseCount();
                 switch (exerciseCount) {
                     case 1: sum += 14; break;
                     case 2: sum += 28; break;

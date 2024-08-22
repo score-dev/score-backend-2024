@@ -55,22 +55,16 @@ public class User extends BaseEntity {
 
     private int point;
 
-    private int thisWeekLevelIncrement; // 한 주간의 레벨 상승 횟수
-
-    private int lastWeekLevelIncrement; // 지난 주의 레벨 상승 횟수
-
     private LocalDateTime lastExerciseDateTime;
 
     @Column(nullable = false)
     private int consecutiveDate; // 며칠 연속으로 운동 중인지?
 
-    private double thisWeekCumulativeTime; // 한 주간의 누적 운동 시간
+    private double weeklyCumulativeTime; // 한 주간의 누적 운동 시간
 
-    private double lastWeekCumulativeTime; // 지난 주의 누적 운동 시간
+    private int weeklyExerciseCount; // 한 주간 운동한 날짜 수
 
-    private int thisWeekExerciseCount; // 한 주간 운동한 날짜 수
-
-    private int lastWeekExerciseCount;
+    private int weeklyLevelIncrement; // 한 주간 레벨 상승 횟수
 
     @Column(nullable = false)
     private double totalCumulativeTime; // 누적 운동 시간
@@ -82,15 +76,30 @@ public class User extends BaseEntity {
     @JsonIgnore
     private final List<Exercise> feeds = new ArrayList<>();
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    @JsonIgnore
     private final List<User> friends = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @ManyToMany
+    @JoinTable(
+            name = "user_mates",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "mate_id")
+    )
     @JsonIgnore
     private final List<User> mates = new ArrayList<>();
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "user_blocked_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
+    )
     @JsonIgnore
     private final List<User> blockedUsers = new ArrayList<>();
 
@@ -151,21 +160,18 @@ public class User extends BaseEntity {
     public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime) {this.lastExerciseDateTime = lastExerciseDateTime;}
     public void increaseLevel(int amount) {
         this.level = this.level + amount;
-        this.thisWeekLevelIncrement = this.thisWeekLevelIncrement + amount;
+        this.weeklyLevelIncrement = this.weeklyLevelIncrement + amount;
     }
     public void initWeeklyExerciseStatus() {
-        this.lastWeekLevelIncrement = this.thisWeekLevelIncrement;
-        this.lastWeekCumulativeTime = this.thisWeekCumulativeTime;
-        this.lastWeekExerciseCount = this.thisWeekExerciseCount;
-        this.thisWeekLevelIncrement = 0;
-        this.thisWeekCumulativeTime = 0;
-        this.thisWeekExerciseCount = 0;
+        this.weeklyLevelIncrement = 0;
+        this.weeklyCumulativeTime = 0;
+        this.weeklyExerciseCount = 0;
     }
     public void updateWeeklyExerciseStatus(boolean needToIncreaseCount, double duration) {
         if (needToIncreaseCount) {
-            this.thisWeekExerciseCount++;
+            this.weeklyExerciseCount++;
         }
-        this.thisWeekCumulativeTime += duration;
+        this.weeklyCumulativeTime += duration;
     }
 
     public void setProfileImageUrl(String profileImg) {

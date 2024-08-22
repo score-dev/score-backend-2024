@@ -7,14 +7,12 @@ import com.score.backend.models.exercise.ExerciseUser;
 import com.score.backend.repositories.exercise.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -137,22 +135,6 @@ public class ExerciseService {
                 () -> new RuntimeException("User not found")
         );
         user.updateWeeklyExerciseStatus(needToIncrease, calculateExerciseDuration(start, end));
-    }
-
-    // 유저의 연속 운동 일수 초기화
-    @Scheduled(cron = "0 0 0 * * *")
-    public void initEveryUsersConsecutiveDate() {
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-        List<User> userList = userService.findAll();
-        for (User user : userList) {
-            if (user.getLastExerciseDateTime() == null) {
-                continue;
-            }
-            LocalDateTime lastExerciseDate = user.getLastExerciseDateTime().truncatedTo(ChronoUnit.DAYS);
-            if (ChronoUnit.DAYS.between(lastExerciseDate, now) > 1) {
-                user.updateConsecutiveDate(false);
-            }
-        }
     }
 
     // 운동한 시간 계산
