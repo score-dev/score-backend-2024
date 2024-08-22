@@ -41,8 +41,8 @@ public class UserService {
     }
 
     @Transactional
-    public void withdrawUser(String nickname) {
-        User deletingUser = findUserByNickname(nickname).orElseThrow(
+    public void withdrawUser(Long id) {
+        User deletingUser = findUserById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         ); // 예외 처리 필요
         userRepository.delete(deletingUser);
