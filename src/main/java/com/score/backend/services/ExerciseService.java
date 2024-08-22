@@ -1,5 +1,6 @@
 package com.score.backend.services;
 
+import com.score.backend.models.Group;
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
@@ -83,6 +84,7 @@ public class ExerciseService {
         updateLastExerciseDateTime(feed.getCompletedAt(), agent.getId());
         // 프로필 사진 설정
         feed.setExercisePicUrl(imageUploadService.uploadImage(multipartFile));
+        agent.getGroups()
         exerciseRepository.save(feed);
         return feed.getId();
     }

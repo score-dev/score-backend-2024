@@ -119,6 +119,17 @@ public class GroupService{
         userRepository.save(user);
     }
 
+    // 유저가 속한 모든 그룹의 누적 운동 시간 증가
+    public void increaseCumulativeTime(Long userId, LocalDateTime start, LocalDateTime end) {
+        List<Group> groups = this.findAllGroupsByUserId(userId);
+        if (!groups.isEmpty()) {
+            double duration = exerciseService.calculateExerciseDuration(start, end);
+            for (Group group : groups) {
+                group.updateCumulativeTime(duration);
+            }
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<Group> findAllGroupsByUserId(Long userId) {
         return groupRepository.findAllGroupsByUserId(userId);

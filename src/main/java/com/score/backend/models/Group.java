@@ -61,4 +61,10 @@ public class Group extends BaseEntity {
     @ManyToMany(mappedBy = "groups")
     private Set<User> members = new HashSet<>(); //회원들과의 관계
 
+    @Column(name = "cumulativeTime")
+    private double cumulativeTime; // 그룹의 누적 운동 시간 (단위: 초)
+
+    public void updateCumulativeTime(double duration) {
+        this.cumulativeTime += duration;
+    }
 }

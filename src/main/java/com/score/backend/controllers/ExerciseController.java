@@ -6,6 +6,7 @@ import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.services.ExerciseService;
 import com.score.backend.services.FriendService;
+import com.score.backend.services.GroupService;
 import com.score.backend.services.LevelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +38,7 @@ public class ExerciseController {
     private final ExerciseService exerciseService;
     private final LevelService levelService;
     private final FriendService friendService;
+    private final GroupService groupService;
 
     @Operation(summary = "함께 운동한 친구 검색", description = "함께 운동한 친구를 선택하기 위해 닉네임으로 검색합니다.")
     @ApiResponses(
@@ -77,8 +79,10 @@ public class ExerciseController {
             levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
             // 누적 운동 거리 업데이트
             exerciseService.cumulateExerciseDistance(walkingDto.getAgentId(), walkingDto.getDistance());
-            // 누적 운동 시간 업데이트
+            // 개인 누적 운동 시간 업데이트
             exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+            // 유저가 속한 그룹의 누적 운동 시간 업데이트
+            groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             // 피드 업로드에 따른 포인트 증가
             levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
         } catch (RuntimeException e) {
