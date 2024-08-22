@@ -144,9 +144,9 @@ public class ExerciseService {
         return duration.getSeconds();
     }
 
-    // 10분 이상 운동했는지 여부 확인
+    // 3분 이상 운동했는지 여부 확인
     public boolean isValidateExercise(LocalDateTime start, LocalDateTime end) {
-        return calculateExerciseDuration(start, end) >= 600;
+        return calculateExerciseDuration(start, end) >= 180;
     }
 
     // 오늘 처음으로 10분 이상 운동했는지 여부 확인

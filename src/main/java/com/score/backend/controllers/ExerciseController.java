@@ -70,14 +70,14 @@ public class ExerciseController {
             // 피드 저장
             exerciseService.saveFeed(walkingDto, multipartFile);
 
-            ///// 10분 이상 운동한 경우 /////
+            ///// 3분 이상 운동한 경우 /////
             if (exerciseService.isValidateExercise(walkingDto.getStartedAt(), walkingDto.getCompletedAt())) {
                 // 피드 업로드에 따른 포인트 증가
                 levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
                 // 마지막 운동 날짜 업데이트
                 exerciseService.updateLastExerciseDateTime(walkingDto.getAgentId(), walkingDto.getCompletedAt());
 
-                /////// 오늘 처음으로 10분 이상 운동한 경우 ///////
+                /////// 오늘 처음으로 3분 이상 운동한 경우 ///////
                 if (exerciseService.isTodaysFirstValidateExercise(walkingDto.getAgentId())) {
                     // 유저의 연속 운동 일수 증가
                     exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
@@ -86,14 +86,14 @@ public class ExerciseController {
                     // 유저의 금주 운동 현황 업데이트, 이번주 운동한 날짜 수도 증가
                     exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
                 }
-                /////// 오늘 10분 이상 운동한 기록이 이미 존재하는 경우 ///////
+                /////// 오늘 3분 이상 운동한 기록이 이미 존재하는 경우 ///////
                 else {
                     // 유저의 금주 운동 현황 업데이트하지만 이번주 운동한 날짜 수는 더 이상 증가하지 않음
                     exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), false, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
                 }
             }
 
-            ///// 10분 이상 운동 여부와 상관 없이 실행 /////
+            ///// 3분 이상 운동 여부와 상관 없이 실행 /////
             // 누적 운동 거리에 따른 포인트 증가
             levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
             // 누적 운동 거리 업데이트
