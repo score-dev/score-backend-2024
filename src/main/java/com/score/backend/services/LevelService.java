@@ -43,22 +43,11 @@ public class LevelService {
         }
     }
 
-    // 당일 최초로 10분 이상 운동했을 경우 포인트 증가
+    // 10분 이상 운동했을 경우 포인트 증가
     public void increasePointsForTodaysFirstExercise(Long userId) {
-        List<Exercise> todaysExercises = exerciseService.getTodaysAllExercises(userId);
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
-        if (todaysExercises.isEmpty()) {
-            user.updatePoint(100);
-            return;
-        }
-        for (Exercise exercise : todaysExercises) {
-            double exerciseDuration = exerciseService.calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt());
-            if (exerciseDuration >= 600) {
-                return;
-            }
-        }
         user.updatePoint(100);
     }
 }

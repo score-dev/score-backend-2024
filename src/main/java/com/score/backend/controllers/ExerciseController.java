@@ -69,12 +69,31 @@ public class ExerciseController {
         try {
             // 피드 저장
             exerciseService.saveFeed(walkingDto, multipartFile);
-            // 유저의 연속 운동 일수 증가
-            boolean isIncreased = exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
-            // 연속 운동 일수 증가에 따른 포인트 증가
-            if (isIncreased) {
-                levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
+
+            ///// 10분 이상 운동한 경우 /////
+            if (exerciseService.isValidateExercise(walkingDto.getStartedAt(), walkingDto.getCompletedAt())) {
+                // 피드 업로드에 따른 포인트 증가
+                levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
+                // 마지막 운동 날짜 업데이트
+                exerciseService.updateLastExerciseDateTime(walkingDto.getAgentId(), walkingDto.getCompletedAt());
+
+                /////// 오늘 처음으로 10분 이상 운동한 경우 ///////
+                if (exerciseService.isTodaysFirstValidateExercise(walkingDto.getAgentId())) {
+                    // 유저의 연속 운동 일수 증가
+                    exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
+                    // 연속 운동 일수 증가에 따른 포인트 증가
+                    levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
+                    // 유저의 금주 운동 현황 업데이트, 이번주 운동한 날짜 수도 증가
+                    exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+                }
+                /////// 오늘 10분 이상 운동한 기록이 이미 존재하는 경우 ///////
+                else {
+                    // 유저의 금주 운동 현황 업데이트하지만 이번주 운동한 날짜 수는 더 이상 증가하지 않음
+                    exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), false, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+                }
             }
+
+            ///// 10분 이상 운동 여부와 상관 없이 실행 /////
             // 누적 운동 거리에 따른 포인트 증가
             levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
             // 누적 운동 거리 업데이트
@@ -83,10 +102,6 @@ public class ExerciseController {
             exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             // 유저가 속한 그룹의 누적 운동 시간 업데이트
             groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-            // 유저의 금주 운동 현황 업데이트
-            exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), isIncreased, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-            // 피드 업로드에 따른 포인트 증가
-            levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -140,17 +155,4 @@ public class ExerciseController {
         }
 
     }
-
-    @Operation(summary = "그룹 피드 목록 조회", description = "그룹원이 업로드한 전체 피드 목록을 페이지 단위로 제공합니다.")
-    @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "피드 페이지가 JSON 형태로 전달됩니다."),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
-    )
-    @RequestMapping(value = "/score/group/exercise/list", method = GET)
-    public ResponseEntity<Page<Exercise>> getAllGroupsFeeds(@RequestParam("id") @Parameter(required = true, description = "피드 목록을 요청할 그룹의 고유 번호") Long id,
-                                                      @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
-        return ResponseEntity.ok(exerciseService.getGroupsAllExercises(page, id));
-    }
-
-
 }
