@@ -124,6 +124,11 @@ public class User extends BaseEntity {
     }
     public void updatePoint(int point) {
         this.point += point;
+        // 500 포인트 달성 시 레벨업 + 포인트 초기화
+        if (point >= 500) {
+            this.increaseLevel(point / 500);
+            this.initPoint(point % 500);
+        }
     }
     public void initPoint(int point) {
         this.point = point;
