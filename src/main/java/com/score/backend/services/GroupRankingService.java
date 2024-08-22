@@ -18,12 +18,13 @@ public class GroupRankingService {
 
     // 매주 월요일 0시에 모든 유저들의 금주 레벨 상승 횟수를 지난주 레벨 상승 횟수로 이동시켜 저장, 금주의 레벨 상승 횟수는 0으로 초기화
     @Scheduled(cron = "0 0 0 * * MON")
-    public void initWeeklyLevelIncrement() {
+    public void initWeeklyExerciseStatus() {
         List<User> allUsers = userService.findAll();
         for (User user : allUsers) {
-            user.initLevel();
+            user.initWeeklyExerciseStatus();
         }
         List<Group> allGroups = groupService.findAll();
+        // 그룹 랭킹 1위인 유저에게 400포인트 지급
         for (Group group : allGroups) {
             List<User> userRanking = getWeeklyGroupRanking(group.getGroupId());
             if (!userRanking.isEmpty()) {

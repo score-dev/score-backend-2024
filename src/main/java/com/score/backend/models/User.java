@@ -153,11 +153,14 @@ public class User extends BaseEntity {
         this.level = this.level + amount;
         this.thisWeekLevelIncrement = this.thisWeekLevelIncrement + amount;
     }
-    public void initLevel() {
+    public void initWeeklyExerciseStatus() {
         this.lastWeekLevelIncrement = this.thisWeekLevelIncrement;
+        this.lastWeekCumulativeTime = this.thisWeekCumulativeTime;
+        this.lastWeekExerciseCount = this.thisWeekExerciseCount;
         this.thisWeekLevelIncrement = 0;
+        this.thisWeekCumulativeTime = 0;
+        this.thisWeekExerciseCount = 0;
     }
-
 
     public void setProfileImageUrl(String profileImg) {
         this.profileImg = profileImg;
