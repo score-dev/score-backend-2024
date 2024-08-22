@@ -23,13 +23,22 @@ public class GroupRankingService {
         for (User user : allUsers) {
             user.initLevel();
         }
+        List<Group> allGroups = groupService.findAll();
+        for (Group group : allGroups) {
+            List<User> userRanking = getWeeklyGroupRanking(group.getGroupId());
+            if (!userRanking.isEmpty()) {
+                userRanking.get(0).updatePoint(400);
+            }
+        }
     }
 
     @Transactional(readOnly = true)
     public List<User> getWeeklyGroupRanking(Long groupId) {
         Group group = groupService.findById(groupId);
         List<User> groupMates = new ArrayList<>(group.getMembers().stream().toList());
-        groupMates.sort((o1, o2) -> o2.getLastWeekLevelIncrement() - o1.getLastWeekLevelIncrement());
+        if (groupMates.size() >= 2) {
+            groupMates.sort((o1, o2) -> o2.getLastWeekLevelIncrement() - o1.getLastWeekLevelIncrement());
+        }
         return groupMates;
     }
 }

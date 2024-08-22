@@ -29,6 +29,10 @@ public class GroupService{
         );
     }
 
+    public List<Group> findAll() {
+        return groupRepository.findAll();
+    }
+
 
     public void createGroup(GroupCreateDto groupCreateDto, Long adminId) {
 
