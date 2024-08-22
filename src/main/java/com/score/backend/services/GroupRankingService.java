@@ -37,7 +37,12 @@ public class GroupRankingService {
         Group group = groupService.findById(groupId);
         List<User> groupMates = new ArrayList<>(group.getMembers().stream().toList());
         if (groupMates.size() >= 2) {
-            groupMates.sort((o1, o2) -> o2.getLastWeekLevelIncrement() - o1.getLastWeekLevelIncrement());
+            groupMates.sort((o1, o2) -> {
+                if (o1.getLastWeekLevelIncrement() == o2.getLastWeekLevelIncrement()) {
+                    return (int) (o2.getLastWeekCumulativeTime() - o1.getLastWeekCumulativeTime());
+                }
+                return o2.getLastWeekLevelIncrement() - o1.getLastWeekLevelIncrement();
+            });
         }
         return groupMates;
     }

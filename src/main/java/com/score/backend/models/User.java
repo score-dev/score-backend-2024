@@ -64,8 +64,16 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private int consecutiveDate; // 며칠 연속으로 운동 중인지?
 
+    private double thisWeekCumulativeTime; // 한 주간의 누적 운동 시간
+
+    private double lastWeekCumulativeTime; // 지난 주의 누적 운동 시간
+
+    private int thisWeekExerciseCount; // 한 주간 운동한 날짜 수
+
+    private int lastWeekExerciseCount;
+
     @Column(nullable = false)
-    private double cumulativeTime; // 누적 운동 시간
+    private double totalCumulativeTime; // 누적 운동 시간
 
     @Column(nullable = false)
     private double cumulativeDistance; // 누적 운동 거리
@@ -117,7 +125,7 @@ public class User extends BaseEntity {
     }
 
     public void updateCumulativeTime(double duration) {
-        this.cumulativeTime += duration;
+        this.totalCumulativeTime += duration;
     }
     public void updateCumulativeDistance(double distance) {
         this.cumulativeDistance += distance;
