@@ -43,7 +43,7 @@ public class ExerciseController {
             value = {@ApiResponse(responseCode = "200", description = "검색 완료."),
                     @ApiResponse(responseCode = "404", description = "User Not Found")}
     )
-    @RequestMapping(value = "/score/exercise/friends")
+    @RequestMapping(value = "/score/exercise/friends", method = GET)
     public ResponseEntity<List<FriendsSearchResponse>> searchFriendsByNickname(
             @Parameter(description = "운동을 기록하고자 하는(함께 운동할 친구를 선택하고자 하는) 유저의 고유 id 값", required = true) @RequestParam Long id,
             @Parameter(description = "유저가 필드에 입력한 내친구의 닉네임", required = true) @RequestParam String nickname) {
