@@ -31,9 +31,6 @@ public class QWalking extends EntityPathBase<Walking> {
     public final DateTimePath<java.time.LocalDateTime> completedAt;
 
     //inherited
-    public final StringPath content;
-
-    //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt;
 
     //inherited
@@ -52,6 +49,9 @@ public class QWalking extends EntityPathBase<Walking> {
 
     //inherited
     public final StringPath feeling;
+
+    //inherited
+    public final StringPath fineDust;
 
     //inherited
     public final NumberPath<Long> id;
@@ -98,13 +98,13 @@ public class QWalking extends EntityPathBase<Walking> {
         this._super = new QExercise(type, metadata, inits);
         this.agent = _super.agent;
         this.completedAt = _super.completedAt;
-        this.content = _super.content;
         this.createdAt = _super.createdAt;
         this.createdBy = _super.createdBy;
         this.emotions = _super.emotions;
         this.exercisePic = _super.exercisePic;
         this.exerciseUsers = _super.exerciseUsers;
         this.feeling = _super.feeling;
+        this.fineDust = _super.fineDust;
         this.id = _super.id;
         this.lastModifiedBy = _super.lastModifiedBy;
         this.location = _super.location;

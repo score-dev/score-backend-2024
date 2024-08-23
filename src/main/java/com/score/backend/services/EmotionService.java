@@ -24,9 +24,7 @@ public class EmotionService {
         User agent = userService.findUserById(agentId).orElseThrow(
                 () -> new RuntimeException("Agent Not Found")
         );
-        Exercise feed = exerciseService.findFeedByExerciseId(feedId).orElseThrow(
-                () -> new RuntimeException("Feed Not Found")
-        );
+        Exercise feed = exerciseService.findFeedByExerciseId(feedId);
         Emotion emotion = new Emotion();
         emotion.setEmotion(agent, feed, emotionType);
         emotionRepository.save(emotion);
