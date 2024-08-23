@@ -1,6 +1,7 @@
 package com.score.backend.controllers;
 
 import com.score.backend.models.Group;
+import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.GroupCreateDto;
 import com.score.backend.models.dtos.GroupDto;
 import com.score.backend.models.dtos.GroupInfoResponse;
@@ -171,7 +172,7 @@ public class GroupController {
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/group/exercise/list", method = GET)
-    public ResponseEntity<Page<?>> getAllGroupsFeeds(
+    public ResponseEntity<Page<FeedInfoResponse>> getAllGroupsFeeds(
             @RequestParam("userId") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long userId,
             @RequestParam("groupId") @Parameter(required = true, description = "피드 목록을 요청할 그룹의 고유 번호") Long groupId,
             @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {

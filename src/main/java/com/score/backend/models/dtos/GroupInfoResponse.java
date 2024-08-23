@@ -1,8 +1,6 @@
 package com.score.backend.models.dtos;
 
-import com.score.backend.models.exercise.Exercise;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 
 @Schema(description = "유저가 가입해 있지 않은 그룹에 대한 정보를 응답하는 DTO")
@@ -24,13 +22,11 @@ public class GroupInfoResponse {
     private int numOfTotalMembers;
     @Schema(description = "오늘 운동을 한 그룹원의 수")
     private int numOfExercisedToday;
-    @Schema(description = "최근 피드 목록(가입해 있는 그룹에 대한 요청인 경우)")
-    private Page<Exercise> feeds;
-    @Schema(description = "피드 이미지 목록(가입해있지 않은 그룹에 대한 요청인 경우)")
-    private Page<String> feedImgs;
+    @Schema(description = "최근 피드 목록(가입해 있는 그룹에 대한 요청인 경우 모든 피드 정보 응답, 가입하지 않은 그룹에 대한 요청인 경우 피드 이미지만 응답.)")
+    private Page<FeedInfoResponse> feeds;
 
     // 가입해 있는 그룹에 대한 정보
-    public GroupInfoResponse(String groupName, boolean isPrivate, int numOfTotalMembers, int numOfExercisedToday, Page<Exercise> feeds) {
+    public GroupInfoResponse(String groupName, boolean isPrivate, int numOfTotalMembers, int numOfExercisedToday, Page<FeedInfoResponse> feeds) {
         this.groupName = groupName;
         this.isPrivate = isPrivate;
         this.numOfTotalMembers = numOfTotalMembers;
@@ -39,7 +35,7 @@ public class GroupInfoResponse {
     }
 
     // 가입해있지 않은 공개 그룹에 대한 정보
-    public GroupInfoResponse(String groupName, String groupImg, boolean isPrivate, int numOfTotalMembers, int userLimit, double cumulativeTime, double averageParticipateRatio, Page<String> feedImgs) {
+    public GroupInfoResponse(String groupName, String groupImg, boolean isPrivate, int numOfTotalMembers, int userLimit, double cumulativeTime, double averageParticipateRatio, Page<FeedInfoResponse> feeds) {
         this.groupName = groupName;
         this.groupImg = groupImg;
         this.isPrivate = isPrivate;
@@ -47,12 +43,11 @@ public class GroupInfoResponse {
         this.userLimit = userLimit;
         this.cumulativeTime = cumulativeTime;
         this.averageParticipateRatio = averageParticipateRatio;
-        this.feedImgs = feedImgs;
+        this.feeds = feeds;
     }
 
     // 가입해 있지 않은 비공개 그룹에 대한 정보
     public GroupInfoResponse(boolean isPrivate) {
         this.isPrivate = isPrivate;
     }
-
 }
