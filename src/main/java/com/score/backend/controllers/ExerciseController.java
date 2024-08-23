@@ -1,6 +1,7 @@
 package com.score.backend.controllers;
 
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.FriendsSearchResponse;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
@@ -27,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -114,9 +114,13 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
     @RequestMapping(value = "/score/exercise/read", method = GET)
-    public ResponseEntity<Exercise> readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
-        Optional<Exercise> feed = exerciseService.findFeedByExerciseId(feedId);
-        return feed.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<FeedInfoResponse> readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
+        try {
+            Exercise feed = exerciseService.findFeedByExerciseId(feedId);
+            return ResponseEntity.ok(new FeedInfoResponse(feed));
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 
@@ -126,13 +130,14 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
     @RequestMapping(value = "/score/exercise/delete", method = DELETE)
-    public ResponseEntity<HttpStatusCode> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long id) {
-        Optional<Exercise> feed = exerciseService.findFeedByExerciseId(id);
-        if (feed.isEmpty()) {
+    public ResponseEntity<HttpStatusCode> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long feedId) {
+        try {
+            Exercise feed = exerciseService.findFeedByExerciseId(feedId);
+            exerciseService.deleteFeed(feed);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        exerciseService.deleteFeed(feed.get());
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "유저의 피드 목록 조회", description = "유저의 전체 피드 목록을 페이지 단위로 제공합니다.")
@@ -142,12 +147,11 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "409", description = "차단한 유저에 대한 피드 목록 조회 요청입니다.")
             })
     @RequestMapping(value = "/score/exercise/list", method = GET)
-    public ResponseEntity<Page<Exercise>> getAllUsersFeeds(@RequestParam("id1") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long id1,
-                                                           @RequestParam("id2") @Parameter(required = true, description = "id1 유저가 피드를 조회하고자 하는 유저의 고유 번호") Long id2,
-                                      @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
+    public ResponseEntity<Page<FeedInfoResponse>> getAllUsersFeeds(@RequestParam("id1") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long id1,
+                                                                   @RequestParam("id2") @Parameter(required = true, description = "id1 유저가 피드를 조회하고자 하는 유저의 고유 번호") Long id2,
+                                                                   @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
         try {
-            Page<Exercise> feeds = exerciseService.getUsersAllExercises(page, id1, id2);
-            return ResponseEntity.ok(feeds);
+            return ResponseEntity.ok(exerciseService.getUsersAllExercises(page, id1, id2));
         } catch (NoSuchElementException e1) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(404));
         } catch (RuntimeException e2) {

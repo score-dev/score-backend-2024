@@ -1,6 +1,7 @@
 package com.score.backend.services;
 
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.ExerciseUser;
@@ -28,7 +29,7 @@ public class ExerciseService {
 
     // user1이 user2의 피드 목록을 조회 (둘이 같을 경우 자기가 자기 피드를 조회)
     @Transactional(readOnly = true)
-    public Page<Exercise> getUsersAllExercises(int page, Long id1, Long id2) {
+    public Page<FeedInfoResponse> getUsersAllExercises(int page, Long id1, Long id2) {
         User user1 = userService.findUserById(id1).orElseThrow(
                 () -> new NoSuchElementException("User not found")
         );
@@ -41,20 +42,20 @@ public class ExerciseService {
             throw new RuntimeException("차단한 유저에 대한 피드 목록 조회 요청입니다.");
         }
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
-        return exerciseRepository.findExercisePageByUserId(id1, pageable);
+        return new FeedInfoResponse().toDtoListForMates(exerciseRepository.findExercisePageByUserId(id1, pageable));
     }
 
     // 그룹 전체 피드 조회
     @Transactional(readOnly = true)
-    public Page<Exercise> getGroupsAllExercises(int page, Long groupId) {
+    public Page<FeedInfoResponse> getGroupsAllExercises(int page, Long groupId) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
-        return exerciseRepository.findExercisePageByGroupId(groupId, pageable);
+        return new FeedInfoResponse().toDtoListForMates(exerciseRepository.findExercisePageByGroupId(groupId, pageable));
     }
 
     @Transactional(readOnly = true)
-    public Page<String> getGroupsAllExercisePics(int page, Long groupId) {
+    public Page<FeedInfoResponse> getGroupsAllExercisePics(int page, Long groupId) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
-        return exerciseRepository.findFeedsImgPageByGroupId(groupId, pageable);
+        return new FeedInfoResponse().toDtoListForNonMates(exerciseRepository.findExercisePageByGroupId(groupId, pageable));
     }
 
     // 유저의 당일 운동 기록 전체 조회
@@ -93,8 +94,10 @@ public class ExerciseService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Exercise> findFeedByExerciseId(Long exerciseId) {
-        return exerciseRepository.findById(exerciseId);
+    public Exercise findFeedByExerciseId(Long exerciseId) {
+        return exerciseRepository.findById(exerciseId).orElseThrow(
+                () -> new NoSuchElementException("Feed Not Found")
+        );
     }
 
     // 유저의 운동 시간 누적

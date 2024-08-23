@@ -40,13 +40,13 @@ public abstract class Exercise extends BaseEntity {
 
     private String weather;
 
+    private String fineDust;
+
     private int temperature;
 
     private String feeling;
 
     private String exercisePic;
-
-    private String content;
 
     @OneToMany(mappedBy = "feed")
     private final List<Emotion> emotions = new ArrayList<>(); // 피드에 추가된 감정 표현 리스트
@@ -72,15 +72,15 @@ public abstract class Exercise extends BaseEntity {
         this.exercisePic = exercisePicUrl;
     }
 
-    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String feeling, String exercisePic, String content) {
+    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String fineDust, String feeling, String exercisePic) {
         this.startedAt = startedAt;
         this.completedAt = completedAt;
         this.reducedKcal = reducedKcal;
         this.location = location;
         this.weather = weather;
         this.temperature = temperature;
+        this.fineDust = fineDust;
         this.feeling = feeling;
         this.exercisePic = exercisePic;
-        this.content = content;
     }
 }

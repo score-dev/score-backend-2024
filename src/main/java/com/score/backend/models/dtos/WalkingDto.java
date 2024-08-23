@@ -34,10 +34,10 @@ public class WalkingDto {
     private String weather;
     @Schema(description = "기온")
     private int temperature;
+    @Schema(description = "미세먼지 농도")
+    private String fineDust;
     @Schema(description = "오늘의 감정")
     private String feeling;
-    @Schema(description = "피드에 업로드할 내용")
-    private String content;
 
     public Exercise toEntity() {
         return Walking.builder()
@@ -48,8 +48,8 @@ public class WalkingDto {
                 .location(location)
                 .weather(weather)
                 .temperature(temperature)
+                .fineDust(fineDust)
                 .feeling(feeling)
-                .content(content)
                 .build();
     }
 }

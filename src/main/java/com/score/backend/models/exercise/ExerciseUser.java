@@ -3,10 +3,12 @@ package com.score.backend.models.exercise;
 import com.score.backend.models.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 
 // 운동과 함께 운동한 유저간의 다대다 연관 관계 중간 테이블
 @Entity
+@Getter
 @IdClass(ExerciseUserId.class)
 public class ExerciseUser {
     @Id

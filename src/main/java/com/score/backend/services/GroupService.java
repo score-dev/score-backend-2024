@@ -1,11 +1,10 @@
 package com.score.backend.services;
 
+import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.GroupDto;
 import com.score.backend.models.Group;
 import com.score.backend.models.User;
-import com.score.backend.models.dtos.MemberGroupInfoResponse;
-import com.score.backend.models.dtos.NotMemberGroupInfoResponse;
-import com.score.backend.models.exercise.Exercise;
+import com.score.backend.models.dtos.GroupInfoResponse;
 import com.score.backend.repositories.group.GroupRepository;
 import com.score.backend.repositories.user.UserRepository;
 import com.score.backend.models.dtos.GroupCreateDto;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -159,17 +157,17 @@ public class GroupService{
 
     // 유저가 가입해 있지 않은 그룹의 정보 반환
     @Transactional(readOnly = true)
-    public NotMemberGroupInfoResponse getGroupInfoForNonMember(Long groupId) {
+    public GroupInfoResponse getGroupInfoForNonMember(Long groupId) {
         Group group = this.findById(groupId);
-        Page<String> feedImgs = exerciseService.getGroupsAllExercisePics(0, groupId);
-        return new NotMemberGroupInfoResponse(group.getGroupName(), group.getUserLimit(), group.getCumulativeTime(), schoolRankingService.getRatioOfParticipate(group), group.getGroupImg(), feedImgs);
+        Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercisePics(0, groupId);
+        return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), schoolRankingService.getRatioOfParticipate(group), feeds);
     }
 
     // 유저가 가입해 있는 그룹의 정보 반환
     @Transactional(readOnly = true)
-    public MemberGroupInfoResponse getGroupInfoForMember(Long groupId) {
+    public GroupInfoResponse getGroupInfoForMember(Long groupId) {
         Group group = this.findById(groupId);
-        Page<Exercise> feeds = exerciseService.getGroupsAllExercises(0, groupId);
-        return new MemberGroupInfoResponse(group.isPrivate(), group.getGroupName(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
+        Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
+        return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
     }
 }
