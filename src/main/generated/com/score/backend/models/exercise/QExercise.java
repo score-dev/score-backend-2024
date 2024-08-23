@@ -28,8 +28,6 @@ public class QExercise extends EntityPathBase<Exercise> {
 
     public final DateTimePath<java.time.LocalDateTime> completedAt = createDateTime("completedAt", java.time.LocalDateTime.class);
 
-    public final StringPath content = createString("content");
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
@@ -43,6 +41,8 @@ public class QExercise extends EntityPathBase<Exercise> {
     public final ListPath<ExerciseUser, QExerciseUser> exerciseUsers = this.<ExerciseUser, QExerciseUser>createList("exerciseUsers", ExerciseUser.class, QExerciseUser.class, PathInits.DIRECT2);
 
     public final StringPath feeling = createString("feeling");
+
+    public final StringPath fineDust = createString("fineDust");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 

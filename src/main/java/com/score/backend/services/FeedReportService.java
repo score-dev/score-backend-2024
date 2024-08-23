@@ -24,9 +24,7 @@ public class FeedReportService {
         User agent = userService.findUserById(feedReportDto.getAgentId()).orElseThrow(
                 () -> new NoSuchElementException("Agent not found")
         );
-        Exercise feed = exerciseService.findFeedByExerciseId(feedReportDto.getFeedId()).orElseThrow(
-                () -> new NoSuchElementException("Exercise not found")
-        );
+        Exercise feed = exerciseService.findFeedByExerciseId(feedReportDto.getFeedId());
 
         FeedReport feedReport = FeedReport.builder()
                 .reportAgent(agent)
