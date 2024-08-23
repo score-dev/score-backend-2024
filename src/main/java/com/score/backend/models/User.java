@@ -121,6 +121,9 @@ public class User extends BaseEntity {
     private String loginKey;
 
     @Setter
+    private String fcmToken;
+
+    @Setter
     private LocalDateTime joinedAt;
 
     public void addGroup(Group group) {
