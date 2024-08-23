@@ -36,8 +36,6 @@ public class WalkingDto {
     private int temperature;
     @Schema(description = "오늘의 감정")
     private String feeling;
-    @Schema(description = "피드에 업로드할 내용")
-    private String content;
 
     public Exercise toEntity() {
         return Walking.builder()
@@ -49,7 +47,6 @@ public class WalkingDto {
                 .weather(weather)
                 .temperature(temperature)
                 .feeling(feeling)
-                .content(content)
                 .build();
     }
 }
