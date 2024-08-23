@@ -34,6 +34,8 @@ public class WalkingDto {
     private String weather;
     @Schema(description = "기온")
     private int temperature;
+    @Schema(description = "미세먼지 농도")
+    private String findDust;
     @Schema(description = "오늘의 감정")
     private String feeling;
 
@@ -46,6 +48,7 @@ public class WalkingDto {
                 .location(location)
                 .weather(weather)
                 .temperature(temperature)
+                .fineDust(findDust)
                 .feeling(feeling)
                 .build();
     }

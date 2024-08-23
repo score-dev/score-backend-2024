@@ -40,6 +40,8 @@ public abstract class Exercise extends BaseEntity {
 
     private String weather;
 
+    private String findDust;
+
     private int temperature;
 
     private String feeling;
@@ -70,13 +72,14 @@ public abstract class Exercise extends BaseEntity {
         this.exercisePic = exercisePicUrl;
     }
 
-    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String feeling, String exercisePic) {
+    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String findDust, String feeling, String exercisePic) {
         this.startedAt = startedAt;
         this.completedAt = completedAt;
         this.reducedKcal = reducedKcal;
         this.location = location;
         this.weather = weather;
         this.temperature = temperature;
+        this.findDust = findDust;
         this.feeling = feeling;
         this.exercisePic = exercisePic;
     }
