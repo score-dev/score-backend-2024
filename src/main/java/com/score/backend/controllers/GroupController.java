@@ -3,6 +3,7 @@ package com.score.backend.controllers;
 import com.score.backend.models.Group;
 import com.score.backend.models.dtos.GroupCreateDto;
 import com.score.backend.models.dtos.GroupDto;
+import com.score.backend.models.dtos.GroupInfoResponse;
 import com.score.backend.services.ExerciseService;
 import com.score.backend.services.GroupRankingService;
 import com.score.backend.services.GroupService;
@@ -141,19 +142,19 @@ public class GroupController {
 
     @Operation(summary = "그룹 정보 조회", description = "그룹 정보를 조회합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "유저가 가입되어 있는 그룹 정보를 조회하고자 하는 경우에는 MemberGroupInfoResponse를, 가입되어 있지 않은 그룹 정보를 조회하고자 하는 경우에는 NotMemberGroupInfoResponse를 응답합니다."),
+            value = {@ApiResponse(responseCode = "200", description = "가입된 그룹인지 여부에 따라 그룹 정보를 응답합니다."),
                     @ApiResponse(responseCode = "409", description = "가입되어 있지 않은 비공개 그룹에 대한 그룹 정보 조회 요청입니다."),
                     @ApiResponse(responseCode = "404", description = "User Not Found"),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/group/info", method = GET)
-    public ResponseEntity<?> getGroupInfo(Long userId, Long groupId) {
+    public ResponseEntity<GroupInfoResponse> getGroupInfo(Long userId, Long groupId) {
         try {
             if (groupService.isMemberOfGroup(groupId, userId)) {
                 return ResponseEntity.ok(groupService.getGroupInfoForMember(groupId));
             } else {
                 if (groupService.findById(groupId).isPrivate()) {
-                    return ResponseEntity.status(409).body("비공개 그룹입니다.");
+                    return ResponseEntity.status(409).body(new GroupInfoResponse(false));
                 } else {
                     return ResponseEntity.ok(groupService.getGroupInfoForNonMember(groupId));
                 }
