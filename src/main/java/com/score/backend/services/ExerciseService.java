@@ -1,6 +1,8 @@
 package com.score.backend.services;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.FcmMessageRequest;
 import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
@@ -17,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
     private final ImageUploadService imageUploadService;
+    private final NotificationService notificationService;
 
     // user1이 user2의 피드 목록을 조회 (둘이 같을 경우 자기가 자기 피드를 조회)
     @Transactional(readOnly = true)
@@ -80,6 +82,14 @@ public class ExerciseService {
                         () -> new RuntimeException("User not found")
                 );
                 exerciseUsers.add(new ExerciseUser(user));
+                // 태그된 유저들에게 알림 전송 및 알림 저장
+                FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
+                try {
+                    notificationService.sendMessage(fcmMessageRequest);
+                } catch (FirebaseMessagingException e) {
+                    e.printStackTrace();
+                }
+                notificationService.saveNotification(fcmMessageRequest);
             }
         }
         // 피드 작성자, 함께 운동한 친구 설정

@@ -1,18 +1,22 @@
 package com.score.backend.services;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.Group;
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.FcmMessageRequest;
 import com.score.backend.models.grouprank.GroupRanker;
 import com.score.backend.models.grouprank.GroupRanking;
 import com.score.backend.repositories.GroupRankerRepository;
 import com.score.backend.repositories.GroupRankingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,7 @@ public class SchedulerService {
     private final GroupService groupService;
     private final GroupRankingRepository groupRankingRepository;
     private final GroupRankerRepository groupRankerRepository;
+    private final NotificationService notificationService;
 
     // 매일 0시에 실행
     // 전날 운동하지 않은 유저의 연속 운동 일수를 0으로 초기화
@@ -46,7 +51,7 @@ public class SchedulerService {
 
     // 매주 월요일 0시에 실행
     @Scheduled(cron = "0 0 0 * * MON")
-    public void initWeeklyExerciseStatus() {
+    public void initWeeklyExerciseStatus() throws FirebaseMessagingException {
         List<Group> allGroups = groupService.findAll();
 
         for (Group group : allGroups) {
@@ -55,9 +60,18 @@ public class SchedulerService {
             group.getGroupRankings().add(gr);
             // 이번 주 운동한 그룹원 수 0명으로 초기화
             group.initTodayExercisedCount();
-            // 그룹 랭킹 1위인 유저에게 400포인트 지급
+
             if (!gr.getGroupRankers().isEmpty()) {
+                // 그룹 랭킹 1위인 유저에게 400포인트 지급
                 gr.getGroupRankers().get(0).getUser().updatePoint(400);
+                // 그룹 랭킹 1위인 유저에게 알림 발송
+                FcmMessageRequest message = new FcmMessageRequest(
+                        gr.getGroupRankers().get(0).getUser().getId(),
+                        gr.getGroup().getGroupName() + " 그룹에서 1위를 달성했어요!",
+                        "축하합니다\uD83C\uDF89 " + gr.getGroupRankers().get(0).getUser().getNickname() +  "님이 이번주 1등이에요! 1등이 된 기념으로 스코어에서 400pt를 쏩니다\uD83E\uDD73"
+                );
+                notificationService.sendMessage(message);
+                notificationService.saveNotification(message); // 알림 저장
             }
         }
 
@@ -102,5 +116,27 @@ public class SchedulerService {
             thisWeekGroupRanking.getGroupRankers().add(ranker);
         }
         return groupRankingRepository.save(thisWeekGroupRanking);
+    }
+
+    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    public void checkUsersGoalExercisingTime() {
+        LocalTime currentTime = LocalTime.now();
+        List<User> usersToNotify = userService.findUsersByGoal(currentTime);
+        for (User user : usersToNotify) {
+            alertExerciseTimeAndSaveNotification(user);
+        }
+    }
+
+    @Async
+    protected void alertExerciseTimeAndSaveNotification(User user) {
+        try {
+            FcmMessageRequest message = new FcmMessageRequest(user.getId(),
+                    "목표한 운동 시간이 되었어요!", "오늘도 스코어와 함께 운동을 시작해요\uD83D\uDE4C\uD83C\uDFFB");
+            notificationService.sendMessage(message);
+            notificationService.saveNotification(message);
+        } catch(FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -1,7 +1,6 @@
 package com.score.backend.services;
 
 import com.score.backend.models.User;
-import com.score.backend.models.exercise.Exercise;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

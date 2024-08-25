@@ -28,7 +28,7 @@ public class SchoolRankingService {
                     case 7: sum += 100; break;
                 }
             }
-            return (double) sum / members.size();
+            return  Math.round((double) sum / members.size());
         }
         return 0.0;
     }
