@@ -51,8 +51,7 @@ public class NotificationController {
     @PostMapping("/score/fcm")
     public ResponseEntity<String> sendFcmNotification(FcmMessageRequest fcmMessageRequest) {
         try {
-            String token = userService.findUserById(fcmMessageRequest.getUserId()).get().getFcmToken();
-            return ResponseEntity.ok(notificationService.sendMessage(token, fcmMessageRequest.getTitle(), fcmMessageRequest.getBody()));
+            return ResponseEntity.ok(notificationService.sendMessage(fcmMessageRequest));
         } catch (FirebaseMessagingException e1) {
             return ResponseEntity.badRequest().build();
         } catch (NoSuchElementException e2) {
