@@ -6,8 +6,13 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.FcmMessageRequest;
+import com.score.backend.models.dtos.FcmNotificationResponse;
 import com.score.backend.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +29,10 @@ public class NotificationService {
         return notificationRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
-
+    public Page<FcmNotificationResponse> findAllByUserId(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page, 25, Sort.by(Sort.Order.desc("createdAt")));
+        return new FcmNotificationResponse().toDto(notificationRepository.findByAgentId(userId, pageable));
+    }
 
     public void getToken(Long userId, String token) {
         User user = userService.findUserById(userId).orElseThrow(
