@@ -112,6 +112,10 @@ public class User extends BaseEntity {
     @JsonIgnore
     private List<Group> groups = new ArrayList<>();
 
+    @OneToMany(mappedBy = "agent")
+    @JsonIgnore
+    private List<Notification> notifications = new ArrayList<>();
+
     private boolean marketing;
 
     private boolean push;
