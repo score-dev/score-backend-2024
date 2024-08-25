@@ -9,12 +9,14 @@ import com.score.backend.models.grouprank.GroupRanking;
 import com.score.backend.repositories.GroupRankerRepository;
 import com.score.backend.repositories.GroupRankingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,5 +116,27 @@ public class SchedulerService {
             thisWeekGroupRanking.getGroupRankers().add(ranker);
         }
         return groupRankingRepository.save(thisWeekGroupRanking);
+    }
+
+    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    public void checkUsersGoalExercisingTime() {
+        LocalTime currentTime = LocalTime.now();
+        List<User> usersToNotify = userService.findUsersByGoal(currentTime);
+        for (User user : usersToNotify) {
+            alertExerciseTimeAndSaveNotification(user);
+        }
+    }
+
+    @Async
+    protected void alertExerciseTimeAndSaveNotification(User user) {
+        try {
+            FcmMessageRequest message = new FcmMessageRequest(user.getId(),
+                    "목표한 운동 시간이 되었어요!", "오늘도 스코어와 함께 운동을 시작해요\uD83D\uDE4C\uD83C\uDFFB");
+            notificationService.sendMessage(message);
+            notificationService.saveNotification(message);
+        } catch(FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
+
     }
 }
