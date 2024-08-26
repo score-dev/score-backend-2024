@@ -159,7 +159,7 @@ public class UserController {
                     @ApiResponse(responseCode = "409", description = "마지막 학교 정보 수정 후 30일이 경과되기 전 학교 정보 수정 시도"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             })
-    @RequestMapping(value = "/score/user/update/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/score/user/update/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Object> updateUserInfo(@Parameter(description = "회원 정보 수정을 요청한 유저의 고유 id 값") @PathVariable(name = "id") Long userId,
                                                  @Parameter(description = "수정된 회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userUpdateDto") UserUpdateDto userUpdateDto,
                                                  @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
@@ -168,7 +168,8 @@ public class UserController {
         }
         User user = userService.findUserById(userId).get();
 
-        if (!user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())
+
+        if (userUpdateDto.getSchool() != null && !user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())
                 && ChronoUnit.DAYS.between(LocalDateTime.now(), user.getSchool().getUpdatedAt()) < 30) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(409));
         }

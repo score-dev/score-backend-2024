@@ -14,7 +14,7 @@ public class UserUpdateDto {
     private String nickname;
 
     @Schema(description = "학교")
-    private School school;
+    private SchoolDto school;
 
     @Schema(description = "학년", example = "1")
     private int grade;
