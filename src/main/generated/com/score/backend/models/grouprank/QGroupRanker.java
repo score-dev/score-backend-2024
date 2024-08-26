@@ -28,7 +28,7 @@ public class QGroupRanker extends EntityPathBase<GroupRanker> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final NumberPath<Integer> rank = createNumber("rank", Integer.class);
+    public final NumberPath<Integer> ranking = createNumber("ranking", Integer.class);
 
     public final com.score.backend.models.QUser user;
 

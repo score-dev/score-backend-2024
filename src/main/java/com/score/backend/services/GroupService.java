@@ -1,8 +1,8 @@
 package com.score.backend.services;
 
+import com.score.backend.models.GroupEntity;
 import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.GroupDto;
-import com.score.backend.models.Group;
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.GroupInfoResponse;
 import com.score.backend.repositories.group.GroupRepository;
@@ -30,13 +30,13 @@ public class GroupService{
     private final SchoolRankingService schoolRankingService;
 
     @Transactional(readOnly = true)
-    public Group findById(Long id){
+    public GroupEntity findById(Long id){
         return groupRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("Group not found")
         );
     }
 
-    public List<Group> findAll() {
+    public List<GroupEntity> findAll() {
         return groupRepository.findAll();
     }
 
@@ -46,7 +46,7 @@ public class GroupService{
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹장을 못 찾습니다."));
 
-        Group group = Group.builder()
+        GroupEntity group = GroupEntity.builder()
                 .groupImg(groupCreateDto.getGroupImg())
                 .groupName(groupCreateDto.getGroupName())
                 .groupDescription(groupCreateDto.getGroupDescription())
@@ -62,12 +62,12 @@ public class GroupService{
     }
 
     public List<GroupDto> getAllGroups() {
-        List<Group> groups = groupRepository.findAll();
+        List<GroupEntity> groups = groupRepository.findAll();
         return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
     }
 
     public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
-        Group group = groupRepository.findById(groupId)
+        GroupEntity group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
 
         if (!group.getAdmin().getId().equals(adminId)) {
@@ -85,7 +85,7 @@ public class GroupService{
     }
 
     public void leaveGroup(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId)
+        GroupEntity group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
@@ -101,7 +101,7 @@ public class GroupService{
     }
 
     public void removeMember(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId)
+        GroupEntity group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
@@ -128,30 +128,30 @@ public class GroupService{
 
     // 유저가 속한 모든 그룹의 누적 운동 시간 증가
     public void increaseCumulativeTime(Long userId, LocalDateTime start, LocalDateTime end) {
-        List<Group> groups = this.findAllGroupsByUserId(userId);
+        List<GroupEntity> groups = this.findAllGroupsByUserId(userId);
         if (!groups.isEmpty()) {
             double duration = exerciseService.calculateExerciseDuration(start, end);
-            for (Group group : groups) {
+            for (GroupEntity group : groups) {
                 group.updateCumulativeTime(duration);
             }
         }
     }
 
     @Transactional(readOnly = true)
-    public List<Group> findAllGroupsByUserId(Long userId) {
+    public List<GroupEntity> findAllGroupsByUserId(Long userId) {
         return groupRepository.findAllGroupsByUserId(userId);
     }
 
     // 오늘 운동한 그룹원 수 1 증가
     public void increaseTodayExercisedCount(Long groupId) {
-        Group group = this.findById(groupId);
+        GroupEntity group = this.findById(groupId);
         group.increaseTodayExercisedCount();
     }
 
     // 해당 유저가 그룹의 멤버인지 여부 확인
     @Transactional(readOnly = true)
     public boolean isMemberOfGroup(Long groupId, Long userId) {
-        Group group = this.findById(groupId);
+        GroupEntity group = this.findById(groupId);
         return group.getMembers().contains(userService.findUserById(userId).orElseThrow(
                 () -> new NoSuchElementException("User Not Found.")
         ));
@@ -160,7 +160,7 @@ public class GroupService{
     // 유저가 가입해 있지 않은 그룹의 정보 반환
     @Transactional(readOnly = true)
     public GroupInfoResponse getGroupInfoForNonMember(Long groupId) {
-        Group group = this.findById(groupId);
+        GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercisePics(0, groupId);
         return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), schoolRankingService.getRatioOfParticipate(group), feeds);
     }
@@ -168,7 +168,7 @@ public class GroupService{
     // 유저가 가입해 있는 그룹의 정보 반환
     @Transactional(readOnly = true)
     public GroupInfoResponse getGroupInfoForMember(Long groupId) {
-        Group group = this.findById(groupId);
+        GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
         return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
     }

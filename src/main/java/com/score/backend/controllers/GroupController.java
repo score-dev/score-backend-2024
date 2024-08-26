@@ -1,6 +1,6 @@
 package com.score.backend.controllers;
 
-import com.score.backend.models.Group;
+import com.score.backend.models.GroupEntity;
 import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.GroupCreateDto;
 import com.score.backend.models.dtos.GroupDto;
@@ -127,7 +127,7 @@ public class GroupController {
         if (localDate != null) {
             localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
         }
-        Group group = groupService.findById(groupId);
+        GroupEntity group = groupService.findById(groupId);
 
         // 해당 그룹이 생성된 날짜
         LocalDate createdDate = group.getCreatedAt().toLocalDate();

@@ -79,11 +79,11 @@ public class UserController {
     // 온보딩에서 회원 정보 입력 완료시
     @Operation(summary = "신규 회원 정보 저장", description = "온보딩에서 회원 정보가 입력이 완료될 경우 수행되는 요청입니다. 해당 정보를 db에 저장하고 로그인을 진행합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "신규 회원 정보 저장 완료, 소셜 로그인 인증 페이지로 리다이렉트", headers = {@Header(name = "new URI", schema = @Schema(type = "string"))}),
+            value = {@ApiResponse(responseCode = "200", description = "신규 회원 정보 저장 완료"),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/onboarding/fin", method = RequestMethod.POST)
-    public ResponseEntity<Object> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
+    public ResponseEntity<String> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
                                               @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
                                               @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile, HttpServletResponse response) throws IOException {
 
@@ -100,9 +100,9 @@ public class UserController {
         userService.saveUser(user, multipartFile);
 
         // 소셜 로그인 인증 완료시 호출되는 페이지로 이동해 로그인 진행
-        response.getOutputStream().close();
-        response.addHeader(HttpHeaders.LOCATION, "http://23.130.135.106:8081//score/onboarding/fin/school");
-        return new ResponseEntity<>(response, HttpStatus.MOVED_PERMANENTLY);
+//        response.getOutputStream().close();
+//        response.addHeader(HttpHeaders.LOCATION, "http://23.130.135.106:8081//score/onboarding/fin/school");
+        return ResponseEntity.ok("회원가입이 완료되었습니다.");
     }
 
     private void login(String nickname, HttpServletResponse response) {

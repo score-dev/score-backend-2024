@@ -48,7 +48,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);
 
-    public final ListPath<Group, QGroup> groups = this.<Group, QGroup>createList("groups", Group.class, QGroup.class, PathInits.DIRECT2);
+    public final ListPath<GroupEntity, QGroupEntity> groups = this.<GroupEntity, QGroupEntity>createList("groups", GroupEntity.class, QGroupEntity.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> height = createNumber("height", Integer.class);
 

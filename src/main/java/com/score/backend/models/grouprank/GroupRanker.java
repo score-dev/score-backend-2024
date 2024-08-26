@@ -24,9 +24,9 @@ public class GroupRanker {
     @Setter
     private GroupRanking belongingRanking;
 
-    @Column(name = "rank")
+    @Column(name = "ranking")
     @Setter
-    private int rank;
+    private int ranking;
 
     @Column(name = "weekly_level_increment")
     private int weeklyLevelIncrement;

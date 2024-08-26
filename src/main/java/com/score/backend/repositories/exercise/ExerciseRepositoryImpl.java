@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.score.backend.models.QGroup;
+import com.score.backend.models.QGroupEntity;
 import com.score.backend.models.QUser;
 import com.score.backend.models.exercise.Exercise;
 import com.score.backend.models.exercise.QExercise;
@@ -23,7 +23,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     QExercise e = new QExercise("e");
     QUser u = new QUser("u");
-    QGroup g = new QGroup("g");
+    QGroupEntity g = new QGroupEntity("g");
 
     @Override
     public List<Exercise> findUsersExerciseToday(Long userId, LocalDateTime today) {

@@ -24,7 +24,7 @@ public class QGroupRanking extends EntityPathBase<GroupRanking> {
 
     public final DatePath<java.time.LocalDate> endDate = createDate("endDate", java.time.LocalDate.class);
 
-    public final com.score.backend.models.QGroup group;
+    public final com.score.backend.models.QGroupEntity group;
 
     public final ListPath<GroupRanker, QGroupRanker> groupRankers = this.<GroupRanker, QGroupRanker>createList("groupRankers", GroupRanker.class, QGroupRanker.class, PathInits.DIRECT2);
 
@@ -50,7 +50,7 @@ public class QGroupRanking extends EntityPathBase<GroupRanking> {
 
     public QGroupRanking(Class<? extends GroupRanking> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.group = inits.isInitialized("group") ? new com.score.backend.models.QGroup(forProperty("group"), inits.get("group")) : null;
+        this.group = inits.isInitialized("group") ? new com.score.backend.models.QGroupEntity(forProperty("group"), inits.get("group")) : null;
     }
 
 }

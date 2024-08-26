@@ -110,7 +110,7 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     @JsonIgnore
-    private List<Group> groups = new ArrayList<>();
+    private List<GroupEntity> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "agent")
     @JsonIgnore
@@ -130,12 +130,12 @@ public class User extends BaseEntity {
     @Setter
     private LocalDateTime joinedAt;
 
-    public void addGroup(Group group) {
+    public void addGroup(GroupEntity group) {
         this.groups.add(group);
         group.getMembers().add(this);
     }
 
-    public void removeGroup(Group group) {
+    public void removeGroup(GroupEntity group) {
         this.groups.remove(group);
         group.getMembers().remove(this);
     }

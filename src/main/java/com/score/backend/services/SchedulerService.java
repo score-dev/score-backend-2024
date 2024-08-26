@@ -1,7 +1,7 @@
 package com.score.backend.services;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.score.backend.models.Group;
+import com.score.backend.models.GroupEntity;
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.FcmMessageRequest;
 import com.score.backend.models.grouprank.GroupRanker;
@@ -52,9 +52,9 @@ public class SchedulerService {
     // 매주 월요일 0시에 실행
     @Scheduled(cron = "0 0 0 * * MON")
     public void initWeeklyExerciseStatus() throws FirebaseMessagingException {
-        List<Group> allGroups = groupService.findAll();
+        List<GroupEntity> allGroups = groupService.findAll();
 
-        for (Group group : allGroups) {
+        for (GroupEntity group : allGroups) {
             // 그룹 내 주간 랭킹 산정
             GroupRanking gr = calculateWeeklyGroupRanking(group.getGroupId());
             group.getGroupRankings().add(gr);
@@ -84,7 +84,7 @@ public class SchedulerService {
     }
 
     private GroupRanking calculateWeeklyGroupRanking(Long groupId) {
-        Group group = groupService.findById(groupId);
+        GroupEntity group = groupService.findById(groupId);
         GroupRanking lastWeekGroupRanking = group.getGroupRankings().get(group.getGroupRankings().size() - 1);
         List<User> groupMates = new ArrayList<>(group.getMembers().stream().toList());
         GroupRanking thisWeekGroupRanking = new GroupRanking(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), group);
@@ -104,10 +104,10 @@ public class SchedulerService {
         }
 
         for (int i = 0; i < thisWeekGroupRankers.size(); i++) {
-            thisWeekGroupRankers.get(i).setRank(i + 1); // 금주의 순위 설정
+            thisWeekGroupRankers.get(i).setRanking(i + 1); // 금주의 순위 설정
             // 지난주와의 순위 비교 후 변동 추이 계산
             if (lastWeekGroupRanking.getGroupRankers().contains(thisWeekGroupRankers.get(i))) {
-                thisWeekGroupRankers.get(i).setChangedDegree(groupRankerRepository.findByGroupRankingIdAndUserId(lastWeekGroupRanking.getId(), thisWeekGroupRankers.get(i).getUser().getId()).getRank() - (i + 1));
+                thisWeekGroupRankers.get(i).setChangedDegree(groupRankerRepository.findByGroupRankingIdAndUserId(lastWeekGroupRanking.getId(), thisWeekGroupRankers.get(i).getUser().getId()).getRanking() - (i + 1));
             } else {
                 thisWeekGroupRankers.get(i).setChangedDegree(0);
             }

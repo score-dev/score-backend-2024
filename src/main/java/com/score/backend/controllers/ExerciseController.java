@@ -102,7 +102,7 @@ public class ExerciseController {
             exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             // 유저가 속한 그룹의 누적 운동 시간 업데이트
             groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-        } catch (RuntimeException e) {
+        } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.OK);

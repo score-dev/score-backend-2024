@@ -1,6 +1,6 @@
 package com.score.backend.models.grouprank;
 
-import com.score.backend.models.Group;
+import com.score.backend.models.GroupEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,13 @@ public class GroupRanking {
     private LocalDate endDate;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @JoinColumn(name = "group_entity_id")
+    private GroupEntity group;
 
     @OneToMany(mappedBy = "belongingRanking")
     private List<GroupRanker> groupRankers = new ArrayList<>();
 
-    public GroupRanking(LocalDate startDate, LocalDate endDate, Group group) {
+    public GroupRanking(LocalDate startDate, LocalDate endDate, GroupEntity group) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.group = group;
