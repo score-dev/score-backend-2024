@@ -54,6 +54,8 @@ public class GroupService{
                 .isPrivate(groupCreateDto.isPrivate())
                 .groupPassword(groupCreateDto.getGroupPassword())
                 .admin(admin)
+                .cumulativeTime(0.0)
+                .todayExercisedCount(0)
                 .build();
 
         groupRepository.save(group);

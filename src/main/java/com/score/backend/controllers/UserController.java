@@ -101,7 +101,7 @@ public class UserController {
 
         // 소셜 로그인 인증 완료시 호출되는 페이지로 이동해 로그인 진행
         response.getOutputStream().close();
-        response.addHeader(HttpHeaders.LOCATION, "http://localhost:8080/score/onboarding/fin/school");
+        response.addHeader(HttpHeaders.LOCATION, "http://23.130.135.106:8081//score/onboarding/fin/school");
         return new ResponseEntity<>(response, HttpStatus.MOVED_PERMANENTLY);
     }
 
