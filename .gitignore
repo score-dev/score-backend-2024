@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 *.yml
 scoreFirebaseKey.json
+*.log
 
 ### STS ###
 .apt_generated

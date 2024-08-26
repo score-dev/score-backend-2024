@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class LevelService {
 
     private final UserService userService;
-    private final ExerciseService exerciseService;
 
     // 누적 운동 거리에 따른 포인트 증가
     public void increasePointsByWalkingDistance(Long userId, double newDistance) {
