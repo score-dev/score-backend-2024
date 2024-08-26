@@ -119,7 +119,7 @@ public class GroupController {
             @ApiResponse(responseCode = "409", description = "신규 생성되어 랭킹이 산정되지 않는 주차에 대한 조회 요청"),
             @ApiResponse(responseCode = "404", description = "그룹을 찾을 수 없습니다.")
     })
-    @GetMapping("/score/group/ranking")
+    @GetMapping("/ranking")
     public ResponseEntity<GroupRanking> getGroupRanking(
             @Parameter(description = "조회하고자 하는 그룹의 고유 id 값", required = true) @RequestParam Long groupId,
             @Parameter(description = "랭킹을 조회하고자 하는 주차 월요일에 해당하는 날짜. 주어지지 않을 경우 가장 최근 주차의 랭킹으로 응답.") @RequestParam(value = "localDate", required = false) @DateTimeFormat(iso = DATE) LocalDate localDate) {
@@ -149,8 +149,8 @@ public class GroupController {
                     @ApiResponse(responseCode = "404", description = "User Not Found"),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/score/group/info", method = GET)
-    public ResponseEntity<GroupInfoResponse> getGroupInfo(Long userId, Long groupId) {
+    @RequestMapping(value = "/info", method = GET)
+    public ResponseEntity<GroupInfoResponse> getGroupInfo(@RequestParam("userId") Long userId, @RequestParam("groupId") Long groupId) {
         try {
             if (groupService.isMemberOfGroup(groupId, userId)) {
                 return ResponseEntity.ok(groupService.getGroupInfoForMember(groupId));
@@ -171,7 +171,7 @@ public class GroupController {
             value = {@ApiResponse(responseCode = "200", description = "유저가 가입되어 있는 그룹에 대한 피드 목록 조회 요청이라면 피드에 대한 모든 정보를, 가입되어 있지 않은 그룹에 대한 요청이라면 피드 이미지만을 응답합니다."),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/score/group/exercise/list", method = GET)
+    @RequestMapping(value = "/exercise/list", method = GET)
     public ResponseEntity<Page<FeedInfoResponse>> getAllGroupsFeeds(
             @RequestParam("userId") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long userId,
             @RequestParam("groupId") @Parameter(required = true, description = "피드 목록을 요청할 그룹의 고유 번호") Long groupId,
