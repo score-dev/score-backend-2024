@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface UserRepositoryCustom {
     Page<User> findFriendsPage(long userId, Pageable pageable);
-    List<User> findFriendsByNicknameContaining(long userId, String nickname);
+    List<User> findFriendsByNicknameContaining(Long userId, String nickname);
+    List<User> findGroupMatesWhoDidNotExerciseToday(Long groupId);
 }

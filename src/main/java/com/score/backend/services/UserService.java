@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -72,5 +73,9 @@ public class UserService {
     public boolean isPresentUser(String key) {
         Optional<User> userOption = userRepository.findByKey(key);
         return userOption.isPresent();
+    }
+
+    public List<User> findMatesDidNotExercisedToday(Long groupId) {
+        return userRepository.findGroupMatesWhoDidNotExerciseToday(groupId);
     }
 }

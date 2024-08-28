@@ -1,8 +1,6 @@
 package com.score.backend.services;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.User;
-import com.score.backend.models.dtos.FcmMessageRequest;
 import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.WalkingDto;
 import com.score.backend.models.exercise.Exercise;
@@ -82,7 +80,7 @@ public class ExerciseService {
                         () -> new RuntimeException("User not found")
                 );
                 exerciseUsers.add(new ExerciseUser(user));
-                // 태그된 유저들에게 알림 전송 및 알림 저장
+                // 태그된 유저들에게 알림 전송 및 알림 저장 -> 프론트엔드와의 연동 이후 주석 해제 필요
 //                FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
 //                try {
 //                    notificationService.sendMessage(fcmMessageRequest);
