@@ -1,5 +1,6 @@
 package com.score.backend.controllers;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.GroupEntity;
 import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.GroupCreateDto;
@@ -186,6 +187,25 @@ public class GroupController {
         } else {
             return ResponseEntity.ok(exerciseService.getGroupsAllExercisePics(page, groupId));
         }
+    }
 
+    @Operation(summary = "바통 찌르기", description = "오늘 운동하지 않은 유저에게 바통 찌르기 알림을 보냅니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "바통 찌르기가 완료되었습니다."),
+                    @ApiResponse(responseCode = "400", description = "FirebaseMessagingException"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")
+            })
+    @PostMapping(value = "/mates/baton")
+    public ResponseEntity<Boolean> turnOverBaton(
+            @RequestParam("senderId") @Parameter(required = true, description = "바통을 찌른 유저의 id") Long senderId,
+            @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) {
+        try {
+            Boolean wasTurned = groupService.turnOverBaton(senderId, receiverId);
+            return ResponseEntity.ok(wasTurned);
+        } catch (NoSuchElementException e1) {
+            return ResponseEntity.notFound().build();
+        } catch (FirebaseMessagingException e2) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
