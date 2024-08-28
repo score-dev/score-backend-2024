@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import java.util.NoSuchElementException;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+@Slf4j
 @Tag(name = "Group", description = "그룹 정보 관리를 위한 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -153,12 +155,15 @@ public class GroupController {
     public ResponseEntity<GroupInfoResponse> getGroupInfo(@RequestParam("userId") Long userId, @RequestParam("groupId") Long groupId) {
         try {
             if (groupService.isMemberOfGroup(groupId, userId)) {
-                return ResponseEntity.ok(groupService.getGroupInfoForMember(groupId));
+                GroupInfoResponse response = groupService.getGroupInfoForMember(groupId);
+                return ResponseEntity.ok(response);
             } else {
                 if (groupService.findById(groupId).isPrivate()) {
-                    return ResponseEntity.status(409).body(new GroupInfoResponse(false));
+                    GroupInfoResponse response = new GroupInfoResponse(false);
+                    return ResponseEntity.status(409).body(response);
                 } else {
-                    return ResponseEntity.ok(groupService.getGroupInfoForNonMember(groupId));
+                    GroupInfoResponse response = groupService.getGroupInfoForNonMember(groupId);
+                    return ResponseEntity.ok(response);
                 }
             }
         } catch (NoSuchElementException e) {

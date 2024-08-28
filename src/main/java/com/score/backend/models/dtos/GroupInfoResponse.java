@@ -1,8 +1,12 @@
 package com.score.backend.models.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 
+@Slf4j
+@Getter
 @Schema(description = "유저가 가입해 있지 않은 그룹에 대한 정보를 응답하는 DTO")
 public class GroupInfoResponse {
     // 학교 랭킹 추가 필요
@@ -27,6 +31,7 @@ public class GroupInfoResponse {
 
     // 가입해 있는 그룹에 대한 정보
     public GroupInfoResponse(String groupName, boolean isPrivate, int numOfTotalMembers, int numOfExercisedToday, Page<FeedInfoResponse> feeds) {
+        log.info("가입해 있는 그룹에 대한 정보를 담고 있는 dto를 생성합니다.");
         this.groupName = groupName;
         this.isPrivate = isPrivate;
         this.numOfTotalMembers = numOfTotalMembers;
@@ -36,6 +41,7 @@ public class GroupInfoResponse {
 
     // 가입해있지 않은 공개 그룹에 대한 정보
     public GroupInfoResponse(String groupName, String groupImg, boolean isPrivate, int numOfTotalMembers, int userLimit, double cumulativeTime, double averageParticipateRatio, Page<FeedInfoResponse> feeds) {
+        log.info("가입해 있지 않은 그룹에 대한 정보를 담고 있는 dto를 생성합니다.");
         this.groupName = groupName;
         this.groupImg = groupImg;
         this.isPrivate = isPrivate;
