@@ -28,7 +28,7 @@ public class QSchool extends EntityPathBase<School> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
-    public final ListPath<Group, QGroup> groups = this.<Group, QGroup>createList("groups", Group.class, QGroup.class, PathInits.DIRECT2);
+    public final ListPath<GroupEntity, QGroupEntity> groups = this.<GroupEntity, QGroupEntity>createList("groups", GroupEntity.class, QGroupEntity.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 

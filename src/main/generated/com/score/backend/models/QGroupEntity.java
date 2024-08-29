@@ -11,16 +11,16 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QGroup is a Querydsl query type for Group
+ * QGroupEntity is a Querydsl query type for GroupEntity
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QGroup extends EntityPathBase<Group> {
+public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
-    private static final long serialVersionUID = 1254130014L;
+    private static final long serialVersionUID = 656954081L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QGroup group = new QGroup("group1");
+    public static final QGroupEntity groupEntity = new QGroupEntity("groupEntity");
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
@@ -66,23 +66,23 @@ public class QGroup extends EntityPathBase<Group> {
 
     public final NumberPath<Integer> userLimit = createNumber("userLimit", Integer.class);
 
-    public QGroup(String variable) {
-        this(Group.class, forVariable(variable), INITS);
+    public QGroupEntity(String variable) {
+        this(GroupEntity.class, forVariable(variable), INITS);
     }
 
-    public QGroup(Path<? extends Group> path) {
+    public QGroupEntity(Path<? extends GroupEntity> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QGroup(PathMetadata metadata) {
+    public QGroupEntity(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QGroup(PathMetadata metadata, PathInits inits) {
-        this(Group.class, metadata, inits);
+    public QGroupEntity(PathMetadata metadata, PathInits inits) {
+        this(GroupEntity.class, metadata, inits);
     }
 
-    public QGroup(Class<? extends Group> type, PathMetadata metadata, PathInits inits) {
+    public QGroupEntity(Class<? extends GroupEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.admin = inits.isInitialized("admin") ? new QUser(forProperty("admin"), inits.get("admin")) : null;
         this.belongingSchool = inits.isInitialized("belongingSchool") ? new QSchool(forProperty("belongingSchool")) : null;

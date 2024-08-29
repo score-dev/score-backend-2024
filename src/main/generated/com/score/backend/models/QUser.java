@@ -36,6 +36,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Double> cumulativeDistance = createNumber("cumulativeDistance", Double.class);
 
+    public final StringPath fcmToken = createString("fcmToken");
+
     public final ListPath<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise> feeds = this.<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise>createList("feeds", com.score.backend.models.exercise.Exercise.class, com.score.backend.models.exercise.QExercise.class, PathInits.DIRECT2);
 
     public final ListPath<User, QUser> friends = this.<User, QUser>createList("friends", User.class, QUser.class, PathInits.DIRECT2);
@@ -46,7 +48,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);
 
-    public final ListPath<Group, QGroup> groups = this.<Group, QGroup>createList("groups", Group.class, QGroup.class, PathInits.DIRECT2);
+    public final ListPath<GroupEntity, QGroupEntity> groups = this.<GroupEntity, QGroupEntity>createList("groups", GroupEntity.class, QGroupEntity.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> height = createNumber("height", Integer.class);
 
@@ -68,6 +70,8 @@ public class QUser extends EntityPathBase<User> {
     public final ListPath<User, QUser> mates = this.<User, QUser>createList("mates", User.class, QUser.class, PathInits.DIRECT2);
 
     public final StringPath nickname = createString("nickname");
+
+    public final ListPath<Notification, QNotification> notifications = this.<Notification, QNotification>createList("notifications", Notification.class, QNotification.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> point = createNumber("point", Integer.class);
 

@@ -1,6 +1,7 @@
 package com.score.backend.controllers;
 
-import com.score.backend.models.Group;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.score.backend.models.GroupEntity;
 import com.score.backend.models.dtos.FeedInfoResponse;
 import com.score.backend.models.dtos.GroupCreateDto;
 import com.score.backend.models.dtos.GroupDto;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ import java.util.NoSuchElementException;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+@Slf4j
 @Tag(name = "Group", description = "그룹 정보 관리를 위한 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -119,7 +122,7 @@ public class GroupController {
             @ApiResponse(responseCode = "409", description = "신규 생성되어 랭킹이 산정되지 않는 주차에 대한 조회 요청"),
             @ApiResponse(responseCode = "404", description = "그룹을 찾을 수 없습니다.")
     })
-    @GetMapping("/score/group/ranking")
+    @GetMapping("/ranking")
     public ResponseEntity<GroupRanking> getGroupRanking(
             @Parameter(description = "조회하고자 하는 그룹의 고유 id 값", required = true) @RequestParam Long groupId,
             @Parameter(description = "랭킹을 조회하고자 하는 주차 월요일에 해당하는 날짜. 주어지지 않을 경우 가장 최근 주차의 랭킹으로 응답.") @RequestParam(value = "localDate", required = false) @DateTimeFormat(iso = DATE) LocalDate localDate) {
@@ -127,7 +130,7 @@ public class GroupController {
         if (localDate != null) {
             localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
         }
-        Group group = groupService.findById(groupId);
+        GroupEntity group = groupService.findById(groupId);
 
         // 해당 그룹이 생성된 날짜
         LocalDate createdDate = group.getCreatedAt().toLocalDate();
@@ -149,16 +152,19 @@ public class GroupController {
                     @ApiResponse(responseCode = "404", description = "User Not Found"),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/score/group/info", method = GET)
-    public ResponseEntity<GroupInfoResponse> getGroupInfo(Long userId, Long groupId) {
+    @RequestMapping(value = "/info", method = GET)
+    public ResponseEntity<GroupInfoResponse> getGroupInfo(@RequestParam("userId") Long userId, @RequestParam("groupId") Long groupId) {
         try {
             if (groupService.isMemberOfGroup(groupId, userId)) {
-                return ResponseEntity.ok(groupService.getGroupInfoForMember(groupId));
+                GroupInfoResponse response = groupService.getGroupInfoForMember(groupId);
+                return ResponseEntity.ok(response);
             } else {
                 if (groupService.findById(groupId).isPrivate()) {
-                    return ResponseEntity.status(409).body(new GroupInfoResponse(false));
+                    GroupInfoResponse response = new GroupInfoResponse(false);
+                    return ResponseEntity.status(409).body(response);
                 } else {
-                    return ResponseEntity.ok(groupService.getGroupInfoForNonMember(groupId));
+                    GroupInfoResponse response = groupService.getGroupInfoForNonMember(groupId);
+                    return ResponseEntity.ok(response);
                 }
             }
         } catch (NoSuchElementException e) {
@@ -171,7 +177,7 @@ public class GroupController {
             value = {@ApiResponse(responseCode = "200", description = "유저가 가입되어 있는 그룹에 대한 피드 목록 조회 요청이라면 피드에 대한 모든 정보를, 가입되어 있지 않은 그룹에 대한 요청이라면 피드 이미지만을 응답합니다."),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/score/group/exercise/list", method = GET)
+    @RequestMapping(value = "/exercise/list", method = GET)
     public ResponseEntity<Page<FeedInfoResponse>> getAllGroupsFeeds(
             @RequestParam("userId") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long userId,
             @RequestParam("groupId") @Parameter(required = true, description = "피드 목록을 요청할 그룹의 고유 번호") Long groupId,
@@ -181,6 +187,25 @@ public class GroupController {
         } else {
             return ResponseEntity.ok(exerciseService.getGroupsAllExercisePics(page, groupId));
         }
+    }
 
+    @Operation(summary = "바통 찌르기", description = "오늘 운동하지 않은 유저에게 바통 찌르기 알림을 보냅니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "바통 찌르기가 완료되었습니다."),
+                    @ApiResponse(responseCode = "400", description = "FirebaseMessagingException"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")
+            })
+    @PostMapping(value = "/mates/baton")
+    public ResponseEntity<Boolean> turnOverBaton(
+            @RequestParam("senderId") @Parameter(required = true, description = "바통을 찌른 유저의 id") Long senderId,
+            @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) {
+        try {
+            Boolean wasTurned = groupService.turnOverBaton(senderId, receiverId);
+            return ResponseEntity.ok(wasTurned);
+        } catch (NoSuchElementException e1) {
+            return ResponseEntity.notFound().build();
+        } catch (FirebaseMessagingException e2) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

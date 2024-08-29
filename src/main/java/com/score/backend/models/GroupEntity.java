@@ -16,16 +16,16 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "groups")
+@Table(name = "group_entity")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Group extends BaseEntity {
+public class GroupEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "groupId")
     private Long groupId;
 

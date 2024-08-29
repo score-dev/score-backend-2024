@@ -65,7 +65,7 @@ public class FriendController {
     }
 
     @Operation(summary = "친구 목록 조회", description = "친구 목록을 조회합니다.")
-    @RequestMapping(value = "/score/friends/list/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/score/friends/list", method = RequestMethod.GET)
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "친구 목록 조회 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})

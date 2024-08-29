@@ -1,6 +1,6 @@
 package com.score.backend.models.dtos;
 
-import com.score.backend.models.Group;
+import com.score.backend.models.GroupEntity;
 import com.score.backend.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class GroupDto {
     private int otherMembers;
 
 
-    public static GroupDto fromEntity(Group group) {
+    public static GroupDto fromEntity(GroupEntity group) {
         List<String> recentMembersPic = group.getMembers().stream()
                 .sorted((u1, u2) -> u2.getJoinedAt().compareTo(u1.getJoinedAt()))
                 .limit(3)

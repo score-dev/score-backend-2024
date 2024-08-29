@@ -30,9 +30,11 @@ public class School extends BaseEntity {
 
     @OneToMany(mappedBy="school")
     @JsonIgnore
+    @Builder.Default
     private List<User> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "belongingSchool")
     @JsonIgnore
-    private List<Group> groups = new ArrayList<>();
+    @Builder.Default
+    private List<GroupEntity> groups = new ArrayList<>();
 }

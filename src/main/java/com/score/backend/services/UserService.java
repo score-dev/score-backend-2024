@@ -36,8 +36,8 @@ public class UserService {
         user.setHeight(userUpdateDto.getHeight());
         user.setWeight(userUpdateDto.getWeight());
         user.setGrade(userUpdateDto.getGrade());
-        if (!user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())) {
-            user.setSchoolAndStudent(userUpdateDto.getSchool());
+        if (userUpdateDto.getSchool() != null && !user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())) {
+            user.setSchoolAndStudent(userUpdateDto.getSchool().toEntity());
         }
     }
 
@@ -72,5 +72,9 @@ public class UserService {
     public boolean isPresentUser(String key) {
         Optional<User> userOption = userRepository.findByKey(key);
         return userOption.isPresent();
+    }
+
+    public List<User> findMatesDidNotExercisedToday(Long groupId) {
+        return userRepository.findGroupMatesWhoDidNotExerciseToday(groupId);
     }
 }

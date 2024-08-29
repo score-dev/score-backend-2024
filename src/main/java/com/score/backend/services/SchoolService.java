@@ -6,6 +6,8 @@ import com.score.backend.repositories.school.SchoolRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class SchoolService {
