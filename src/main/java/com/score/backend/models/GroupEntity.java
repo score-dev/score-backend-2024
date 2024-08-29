@@ -62,9 +62,11 @@ public class GroupEntity extends BaseEntity {
     private User admin;
 
     @ManyToMany(mappedBy = "groups")
+    @Builder.Default
     private Set<User> members = new HashSet<>(); //회원들과의 관계
 
     @OneToMany(mappedBy = "group")
+    @Builder.Default
     private List<GroupRanking> groupRankings = new ArrayList<>();
 
     @Column(name = "cumulativeTime")

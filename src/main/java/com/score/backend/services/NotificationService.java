@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.NoSuchElementException;
 
 @Service
@@ -28,7 +27,7 @@ import java.util.NoSuchElementException;
 @Transactional
 public class NotificationService {
     private final UserService userService;
-    private final RedisTemplate<String, String> stringRedisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final NotificationRepository notificationRepository;
 
     private Duration calculateTTL() {
@@ -43,12 +42,12 @@ public class NotificationService {
     // 알림 전송 가능 여부 확인(오늘 sender가 receiver에게 바통 찌르기를 한 기록이 없으면 true 리턴)
     public boolean canSendNotification(Long senderId, Long receiverId) {
         String key = generateRedisKey(senderId, receiverId);
-        return Boolean.FALSE.equals(stringRedisTemplate.hasKey(key));
+        return Boolean.FALSE.equals(redisTemplate.hasKey(key));
     }
 
     // 바통 찌르기 알림 전송 발생 시 Redis에 전송 기록 저장
     public void saveBatonLog(Long senderId, Long receiverId) {
-        stringRedisTemplate.opsForValue().set(generateRedisKey(senderId, receiverId), "true", calculateTTL());
+        redisTemplate.opsForValue().set(generateRedisKey(senderId, receiverId), "true", calculateTTL());
     }
 
     public com.score.backend.models.Notification findById(Long id) {
