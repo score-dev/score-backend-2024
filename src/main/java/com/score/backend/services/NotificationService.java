@@ -7,6 +7,7 @@ import com.google.firebase.messaging.Notification;
 import com.score.backend.models.User;
 import com.score.backend.models.dtos.FcmMessageRequest;
 import com.score.backend.models.dtos.FcmNotificationResponse;
+import com.score.backend.models.dtos.NotificationStatusRequest;
 import com.score.backend.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,7 @@ public class NotificationService {
     }
 
     // 알림 전송 가능 여부 확인(오늘 sender가 receiver에게 바통 찌르기를 한 기록이 없으면 true 리턴)
+    @Transactional(readOnly = true)
     public boolean canSendNotification(Long senderId, Long receiverId) {
         String key = generateRedisKey(senderId, receiverId);
         return Boolean.FALSE.equals(redisTemplate.hasKey(key));
@@ -50,10 +52,12 @@ public class NotificationService {
         redisTemplate.opsForValue().set(generateRedisKey(senderId, receiverId), "true", calculateTTL());
     }
 
+    @Transactional(readOnly = true)
     public com.score.backend.models.Notification findById(Long id) {
         return notificationRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
+    @Transactional(readOnly = true)
     public Page<FcmNotificationResponse> findAllByUserId(Long userId, int page) {
         Pageable pageable = PageRequest.of(page, 25, Sort.by(Sort.Order.desc("createdAt")));
         return new FcmNotificationResponse().toDto(notificationRepository.findByAgentId(userId, pageable));
@@ -87,5 +91,13 @@ public class NotificationService {
 
     public void deleteNotification(Long notificationId) {
         notificationRepository.deleteById(notificationId);
+    }
+
+    public void changeNotificationReceivingStatus(NotificationStatusRequest request) {
+        User user = userService.findUserById(request.getUserId()).orElseThrow(
+                () -> new NoSuchElementException("User not found")
+        );
+
+        user.setNotificationReceivingStatus(request);
     }
 }

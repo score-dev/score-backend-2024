@@ -2,17 +2,17 @@ package com.score.backend.controllers;
 
 import com.score.backend.models.School;
 import com.score.backend.models.User;
+import com.score.backend.models.dtos.NotificationStatusRequest;
 import com.score.backend.models.dtos.SchoolDto;
 import com.score.backend.models.dtos.UserDto;
 import com.score.backend.models.dtos.UserUpdateDto;
 import com.score.backend.security.jwt.JwtProvider;
+import com.score.backend.services.NotificationService;
 import com.score.backend.services.SchoolService;
 import com.score.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,6 +38,7 @@ public class UserController {
     private final UserService userService;
     private final SchoolService schoolService;
     private final JwtProvider jwtProvider;
+    private final NotificationService notificationService;
 
     // 닉네임 중복 검사
     @Operation(summary = "닉네임 중복 검사", description = "온보딩이나 회원 정보 수정 시 닉네임 중복 검사를 위한 api입니다.")
@@ -175,5 +176,21 @@ public class UserController {
         }
         userService.updateUser(userId, userUpdateDto, multipartFile);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "알림 수신 여부 설정 수정", description = "알림 수신 여부 변경 사항을 db에 업데이트합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "알림 수신 여부 수정 완료"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")
+            })
+    @RequestMapping(value = "/score/user/setting/notification", method = RequestMethod.PUT)
+    public ResponseEntity<String> updateUserNotificationStatus(NotificationStatusRequest request) {
+        try {
+            notificationService.changeNotificationReceivingStatus(request);
+            return ResponseEntity.ok("알림 수신 여부 수정이 완료되었습니다.");
+        } catch(NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+        }
+
     }
 }
