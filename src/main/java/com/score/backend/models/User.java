@@ -116,9 +116,11 @@ public class User extends BaseEntity {
     @JsonIgnore
     private List<Notification> notifications = new ArrayList<>();
 
-    private boolean marketing;
+    private boolean marketing; // 마케팅 알림 수신 동의 여부
 
-    private boolean push;
+    private boolean exercisingTime; // 목표 운동 시간 알림 수신 동의 여부
+
+    private boolean tag; // 소통 알림(태그 알림) 수신 동의 여부
 
     private String refreshToken;
 

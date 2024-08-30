@@ -38,13 +38,13 @@ public class UserDto {
     @Schema(description = "마케팅 푸시 수신 동의 여부")
     private boolean marketing;
 
-    @Schema(description = "기타 알림 수신 동의 여부")
-    private boolean push;
+    @Schema(description = "목표 운동 시간 알림 수신 동의 여부")
+    private boolean exercisingTime;
 
     @Schema(description = "provider id")
     private String loginKey;
 
-    public UserDto(String nickname, int grade, int height, int weight, Gender gender, LocalTime goal, boolean marketing, boolean push, String loginKey) {
+    public UserDto(String nickname, int grade, int height, int weight, Gender gender, LocalTime goal, boolean marketing, boolean exercisingTime, String loginKey) {
         this.nickname = nickname;
         this.grade = grade;
         this.height = height;
@@ -52,7 +52,7 @@ public class UserDto {
         this.gender = gender;
         this.goal = goal;
         this.marketing = marketing;
-        this.push = push;
+        this.exercisingTime = exercisingTime;
         this.loginKey = loginKey;
     }
 
@@ -73,7 +73,7 @@ public class UserDto {
                 .cumulativeDistance(0.0)
                 .goal(goal)
                 .marketing(marketing)
-                .push(push)
+                .exercisingTime(exercisingTime)
                 .loginKey(loginKey)
                 .build();
     }
