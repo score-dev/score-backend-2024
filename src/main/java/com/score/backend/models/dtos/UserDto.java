@@ -73,6 +73,7 @@ public class UserDto {
                 .cumulativeDistance(0.0)
                 .goal(goal)
                 .marketing(marketing)
+                .tag(true)
                 .exercisingTime(exercisingTime)
                 .loginKey(loginKey)
                 .build();
