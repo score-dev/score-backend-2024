@@ -61,7 +61,7 @@ public class SchedulerService {
             // 이번 주 운동한 그룹원 수 0명으로 초기화
             group.initTodayExercisedCount();
 
-            if (!gr.getGroupRankers().isEmpty()) {
+            if (!gr.getGroupRankers().isEmpty() && gr.getGroupRankers().size() > 1) {
                 // 그룹 랭킹 1위인 유저에게 400포인트 지급
                 gr.getGroupRankers().get(0).getUser().updatePoint(400);
                 // 그룹 랭킹 1위인 유저에게 알림 발송

@@ -2,6 +2,7 @@ package com.score.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
+import com.score.backend.models.dtos.NotificationStatusRequest;
 import com.score.backend.models.enums.Gender;
 import com.score.backend.models.exercise.Exercise;
 import jakarta.persistence.*;
@@ -116,9 +117,11 @@ public class User extends BaseEntity {
     @JsonIgnore
     private List<Notification> notifications = new ArrayList<>();
 
-    private boolean marketing;
+    private boolean marketing; // 마케팅 알림 수신 동의 여부
 
-    private boolean push;
+    private boolean exercisingTime; // 목표 운동 시간 알림 수신 동의 여부
+
+    private boolean tag; // 소통 알림(태그 알림) 수신 동의 여부
 
     private String refreshToken;
 
@@ -203,5 +206,11 @@ public class User extends BaseEntity {
     public void setSchoolAndStudent(School school) {
         this.school = school;
         school.getStudents().add(this);
+    }
+
+    public void setNotificationReceivingStatus(NotificationStatusRequest request) {
+        this.marketing = request.isMarketing();
+        this.exercisingTime = request.isExercisingTime();
+        this.tag = request.isTag();
     }
 }

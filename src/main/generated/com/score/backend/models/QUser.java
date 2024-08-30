@@ -36,6 +36,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Double> cumulativeDistance = createNumber("cumulativeDistance", Double.class);
 
+    public final BooleanPath exercisingTime = createBoolean("exercisingTime");
+
     public final StringPath fcmToken = createString("fcmToken");
 
     public final ListPath<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise> feeds = this.<com.score.backend.models.exercise.Exercise, com.score.backend.models.exercise.QExercise>createList("feeds", com.score.backend.models.exercise.Exercise.class, com.score.backend.models.exercise.QExercise.class, PathInits.DIRECT2);
@@ -77,11 +79,11 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath profileImg = createString("profileImg");
 
-    public final BooleanPath push = createBoolean("push");
-
     public final StringPath refreshToken = createString("refreshToken");
 
     public final QSchool school;
+
+    public final BooleanPath tag = createBoolean("tag");
 
     public final NumberPath<Double> totalCumulativeTime = createNumber("totalCumulativeTime", Double.class);
 
