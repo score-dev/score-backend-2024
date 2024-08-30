@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: score000dep
+spec:
+  selector:
+    matchLabels:
+      app: score000kube
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: score000kube
+    spec:
+      containers:
+      - name: score000ex91
+        image: http
+        ports:
+        - containerPort: 80
