@@ -3,11 +3,9 @@ kind: Service
 metadata:
   name: score000ser
 spec:
-  type: NodePort
   ports:
-  - port: 8099
-    targetPort: 80
-    protocol: TCP
-    nodePort: 30080
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
   selector:
     app: score000kube

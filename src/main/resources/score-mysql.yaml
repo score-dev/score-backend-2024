@@ -1,0 +1,50 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: score000local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: score000pv-mysql
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: score000local-storage
+  local:
+    path: /workspace/data/kubernetes/pv/mysql
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - worker1
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: score000pvc-mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: score000local-storage
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: score000mysql-config
+data:
+  DATABASE: "MySQL"
