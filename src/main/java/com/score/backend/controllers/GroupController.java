@@ -208,6 +208,22 @@ public class GroupController {
         }
     }
 
+    @Operation(summary = "그룹 내 메이트 전체 조회", description = "그룹에 가입해 있는 전체 메이트들의 목록을 조회합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "메이트 목록 조회가 완료되었습니다."),
+                    @ApiResponse(responseCode = "404", description = "Group Not Found")
+            })
+    @GetMapping(value = "/mates/nonExercised")
+    public ResponseEntity<List<UserResponseDto>> getAllGroupMates (
+            @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId) {
+        try {
+            List<UserResponseDto> dtoList = groupService.findAllUsers(groupId);
+            return ResponseEntity.ok(dtoList);
+        } catch (NoSuchElementException e1) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @Operation(summary = "오늘 운동을 쉰 메이트의 목록 조회", description = "그룹 내에서 오늘 운동을 쉰 메이트의 목록을 조회합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "오늘 운동을 쉰 메이트 조회가 완료되었습니다."),

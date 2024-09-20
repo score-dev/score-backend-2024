@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -124,6 +126,16 @@ public class GroupService{
         //user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
         groupRepository.save(group);
         userRepository.save(user);
+    }
+
+    // 그룹 내 메이트 목록 전체 조회
+    public List<UserResponseDto> findAllUsers(Long groupId) {
+        Set<User> members = findById(groupId).getMembers();
+        List<UserResponseDto> dtos = new ArrayList<>();
+        for (User user : members) {
+            dtos.add(new UserResponseDto(user.getId(), user.getNickname(), user.getProfileImg()));
+        }
+        return dtos;
     }
 
     // 그룹에 새로운 멤버 추가
