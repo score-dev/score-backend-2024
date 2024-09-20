@@ -1,6 +1,5 @@
 package com.score.backend.services;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.GroupEntity;
 import com.score.backend.models.dtos.*;
 import com.score.backend.models.User;
@@ -13,8 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -62,10 +63,10 @@ public class GroupService{
         groupRepository.save(group);
     }
 
-    public List<GroupDto> getAllGroups() {
-        List<GroupEntity> groups = groupRepository.findAll();
-        return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
-    }
+//    public List<GroupDto> getAllGroups() {
+//        List<GroupEntity> groups = groupRepository.findAll();
+//        return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
+//    }
 
     public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
         GroupEntity group = groupRepository.findById(groupId)
@@ -127,6 +128,29 @@ public class GroupService{
         userRepository.save(user);
     }
 
+    // 그룹 내 메이트 목록 전체 조회
+    public List<UserResponseDto> findAllUsers(Long groupId) {
+        Set<User> members = findById(groupId).getMembers();
+        List<UserResponseDto> dtos = new ArrayList<>();
+        for (User user : members) {
+            dtos.add(new UserResponseDto(user.getId(), user.getNickname(), user.getProfileImg()));
+        }
+        return dtos;
+    }
+
+    // 그룹에 새로운 멤버 추가
+    public void addNewMember(Long groupId, Long userId) {
+        GroupEntity group = findById(groupId);
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new NoSuchElementException("User not found")
+        );
+        if (!group.getMembers().contains(user)) {
+            user.addGroup(group);
+            groupRepository.save(group);
+            userRepository.save(user);
+        }
+    }
+
     // 유저가 속한 모든 그룹의 누적 운동 시간 증가
     public void increaseCumulativeTime(Long userId, LocalDateTime start, LocalDateTime end) {
         List<GroupEntity> groups = this.findAllGroupsByUserId(userId);
@@ -144,9 +168,17 @@ public class GroupService{
     }
 
     // 오늘 운동한 그룹원 수 1 증가
-    public void increaseTodayExercisedCount(Long groupId) {
-        GroupEntity group = this.findById(groupId);
-        group.increaseTodayExercisedCount();
+    public void increaseTodayExercisedCount(Long userId) {
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new NoSuchElementException("User not found")
+        );
+        List<GroupEntity> groups = user.getGroups();
+        if (groups.isEmpty()) {
+            return;
+        }
+        for (GroupEntity group : groups) {
+            group.increaseTodayExercisedCount();
+        }
     }
 
     // 해당 유저가 그룹의 멤버인지 여부 확인
@@ -172,22 +204,6 @@ public class GroupService{
         GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
         return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
-    }
-
-    // 바통 찌르기
-    public boolean turnOverBaton(Long senderId, Long receiverId) throws FirebaseMessagingException {
-        User sender = userService.findUserById(senderId).orElseThrow(
-                () -> new NoSuchElementException("User Not Found.")
-        );
-        if (!notificationService.canSendNotification(senderId, receiverId)) {
-            return false;
-        }
-        FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 찔렀어요!", "오늘치 운동하러 스코어와 떠나 볼까요?");
-        notificationService.sendMessage(message);
-        notificationService.saveNotification(message);
-        notificationService.saveBatonLog(senderId, receiverId);
-
-        return true;
     }
 
 }

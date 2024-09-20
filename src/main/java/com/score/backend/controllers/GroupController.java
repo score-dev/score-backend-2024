@@ -2,11 +2,9 @@ package com.score.backend.controllers;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.GroupEntity;
-import com.score.backend.models.dtos.FeedInfoResponse;
-import com.score.backend.models.dtos.GroupCreateDto;
-import com.score.backend.models.dtos.GroupDto;
-import com.score.backend.models.dtos.GroupInfoResponse;
+import com.score.backend.models.dtos.*;
 import com.score.backend.models.grouprank.GroupRanking;
+import com.score.backend.services.BatonService;
 import com.score.backend.services.ExerciseService;
 import com.score.backend.services.GroupRankingService;
 import com.score.backend.services.GroupService;
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -42,6 +41,7 @@ public class GroupController {
     private final GroupService groupService;
     private final ExerciseService exerciseService;
     private final GroupRankingService groupRankingService;
+    private final BatonService batonService;
 
     @Operation(summary = "그룹 생성", description = "새로운 그룹을 생성하는 API입니다.")
     @ApiResponses(value = {
@@ -64,9 +64,13 @@ public class GroupController {
             @ApiResponse(responseCode = "200", description = "모든 그룹 조회가 완료되었습니다.")
     })
     @GetMapping("/all")
-    public ResponseEntity<List<GroupDto>> getAllGroups() {
-        List<GroupDto> groups = groupService.getAllGroups();
-        return ResponseEntity.ok(groups);
+    public ResponseEntity<List<GroupDto>> getAllGroups(@RequestParam("id") @Parameter(required = true, description = "그룹 목록을 요청한 유저의 고유 번호") Long userId) {
+        List<GroupEntity> groups = groupService.findAllGroupsByUserId(userId);
+        List<GroupDto> groupDtos = new ArrayList<>();
+        for (GroupEntity group : groups) {
+            groupDtos.add(GroupDto.fromEntity(group));
+        }
+        return ResponseEntity.ok(groupDtos);
     }
 
     @Operation(summary = "그룹 탈퇴", description = "사용자가 그룹을 탈퇴하는 API입니다.")
@@ -111,6 +115,21 @@ public class GroupController {
         try {
             groupService.removeMember(groupId, userId);
             return ResponseEntity.ok("멤버 강퇴가 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "그룹 가입", description = "그룹에 가입합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "그룹 가입이완료되었습니다."),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @PutMapping("/join")
+    public ResponseEntity<String> joinGroup(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) {
+        try {
+            groupService.addNewMember(groupId, userId);
+            return ResponseEntity.ok("그룹 가입이 완료되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -189,6 +208,39 @@ public class GroupController {
         }
     }
 
+    @Operation(summary = "그룹 내 메이트 전체 조회", description = "그룹에 가입해 있는 전체 메이트들의 목록을 조회합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "메이트 목록 조회가 완료되었습니다."),
+                    @ApiResponse(responseCode = "404", description = "Group Not Found")
+            })
+    @GetMapping(value = "/mates/nonExercised")
+    public ResponseEntity<List<UserResponseDto>> getAllGroupMates (
+            @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId) {
+        try {
+            List<UserResponseDto> dtoList = groupService.findAllUsers(groupId);
+            return ResponseEntity.ok(dtoList);
+        } catch (NoSuchElementException e1) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "오늘 운동을 쉰 메이트의 목록 조회", description = "그룹 내에서 오늘 운동을 쉰 메이트의 목록을 조회합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "오늘 운동을 쉰 메이트 조회가 완료되었습니다."),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")
+            })
+    @GetMapping(value = "/mates/nonExercised")
+    public ResponseEntity<List<BatonStatusDto>> getNotExercisedMatesList(
+            @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId,
+            @RequestParam("userId") @Parameter(required = true, description = "조회를 요청한 유저의 id. 바통 찌르기를 이미 했는지 여부 조회 위해 필요.") Long userId) {
+        try {
+            List<BatonStatusDto> dtoList = batonService.getBatonStatuses(userId, groupId);
+            return ResponseEntity.ok(dtoList);
+        } catch (NoSuchElementException e1) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @Operation(summary = "바통 찌르기", description = "오늘 운동하지 않은 유저에게 바통 찌르기 알림을 보냅니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "바통 찌르기가 완료되었습니다."),
@@ -200,7 +252,7 @@ public class GroupController {
             @RequestParam("senderId") @Parameter(required = true, description = "바통을 찌른 유저의 id") Long senderId,
             @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) {
         try {
-            Boolean wasTurned = groupService.turnOverBaton(senderId, receiverId);
+            Boolean wasTurned = batonService.turnOverBaton(senderId, receiverId);
             return ResponseEntity.ok(wasTurned);
         } catch (NoSuchElementException e1) {
             return ResponseEntity.notFound().build();
