@@ -2,10 +2,7 @@ package com.score.backend.controllers;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.GroupEntity;
-import com.score.backend.models.dtos.FeedInfoResponse;
-import com.score.backend.models.dtos.GroupCreateDto;
-import com.score.backend.models.dtos.GroupDto;
-import com.score.backend.models.dtos.GroupInfoResponse;
+import com.score.backend.models.dtos.*;
 import com.score.backend.models.grouprank.GroupRanking;
 import com.score.backend.services.BatonService;
 import com.score.backend.services.ExerciseService;
@@ -208,6 +205,23 @@ public class GroupController {
             return ResponseEntity.ok(exerciseService.getGroupsAllExercises(page, groupId));
         } else {
             return ResponseEntity.ok(exerciseService.getGroupsAllExercisePics(page, groupId));
+        }
+    }
+
+    @Operation(summary = "오늘 운동을 쉰 메이트의 목록 조회", description = "그룹 내에서 오늘 운동을 쉰 메이트의 목록을 조회합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "오늘 운동을 쉰 메이트 조회가 완료되었습니다."),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")
+            })
+    @GetMapping(value = "/mates/nonExercised")
+    public ResponseEntity<List<BatonStatusDto>> getNotExercisedMatesList(
+            @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId,
+            @RequestParam("userId") @Parameter(required = true, description = "조회를 요청한 유저의 id. 바통 찌르기를 이미 했는지 여부 조회 위해 필요.") Long userId) {
+        try {
+            List<BatonStatusDto> dtoList = batonService.getBatonStatuses(userId, groupId);
+            return ResponseEntity.ok(dtoList);
+        } catch (NoSuchElementException e1) {
+            return ResponseEntity.notFound().build();
         }
     }
 
