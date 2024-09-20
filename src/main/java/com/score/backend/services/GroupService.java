@@ -157,9 +157,17 @@ public class GroupService{
     }
 
     // 오늘 운동한 그룹원 수 1 증가
-    public void increaseTodayExercisedCount(Long groupId) {
-        GroupEntity group = this.findById(groupId);
-        group.increaseTodayExercisedCount();
+    public void increaseTodayExercisedCount(Long userId) {
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new NoSuchElementException("User not found")
+        );
+        List<GroupEntity> groups = user.getGroups();
+        if (groups.isEmpty()) {
+            return;
+        }
+        for (GroupEntity group : groups) {
+            group.increaseTodayExercisedCount();
+        }
     }
 
     // 해당 유저가 그룹의 멤버인지 여부 확인
