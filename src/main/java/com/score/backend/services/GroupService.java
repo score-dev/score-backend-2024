@@ -61,10 +61,10 @@ public class GroupService{
         groupRepository.save(group);
     }
 
-    public List<GroupDto> getAllGroups() {
-        List<GroupEntity> groups = groupRepository.findAll();
-        return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
-    }
+//    public List<GroupDto> getAllGroups() {
+//        List<GroupEntity> groups = groupRepository.findAll();
+//        return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
+//    }
 
     public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
         GroupEntity group = groupRepository.findById(groupId)

@@ -7,6 +7,7 @@ import com.score.backend.models.dtos.GroupCreateDto;
 import com.score.backend.models.dtos.GroupDto;
 import com.score.backend.models.dtos.GroupInfoResponse;
 import com.score.backend.models.grouprank.GroupRanking;
+import com.score.backend.services.BatonService;
 import com.score.backend.services.ExerciseService;
 import com.score.backend.services.GroupRankingService;
 import com.score.backend.services.GroupService;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -42,6 +44,7 @@ public class GroupController {
     private final GroupService groupService;
     private final ExerciseService exerciseService;
     private final GroupRankingService groupRankingService;
+    private final BatonService batonService;
 
     @Operation(summary = "그룹 생성", description = "새로운 그룹을 생성하는 API입니다.")
     @ApiResponses(value = {
@@ -64,9 +67,13 @@ public class GroupController {
             @ApiResponse(responseCode = "200", description = "모든 그룹 조회가 완료되었습니다.")
     })
     @GetMapping("/all")
-    public ResponseEntity<List<GroupDto>> getAllGroups() {
-        List<GroupDto> groups = groupService.getAllGroups();
-        return ResponseEntity.ok(groups);
+    public ResponseEntity<List<GroupDto>> getAllGroups(@RequestParam("id") @Parameter(required = true, description = "그룹 목록을 요청한 유저의 고유 번호") Long userId) {
+        List<GroupEntity> groups = groupService.findAllGroupsByUserId(userId);
+        List<GroupDto> groupDtos = new ArrayList<>();
+        for (GroupEntity group : groups) {
+            groupDtos.add(GroupDto.fromEntity(group));
+        }
+        return ResponseEntity.ok(groupDtos);
     }
 
     @Operation(summary = "그룹 탈퇴", description = "사용자가 그룹을 탈퇴하는 API입니다.")
