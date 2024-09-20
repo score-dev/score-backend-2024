@@ -73,8 +73,4 @@ public class UserService {
         Optional<User> userOption = userRepository.findByKey(key);
         return userOption.isPresent();
     }
-
-    public List<User> findMatesDidNotExercisedToday(Long groupId) {
-        return userRepository.findGroupMatesWhoDidNotExerciseToday(groupId);
-    }
 }

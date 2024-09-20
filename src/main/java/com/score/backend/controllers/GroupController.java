@@ -215,7 +215,7 @@ public class GroupController {
             @RequestParam("senderId") @Parameter(required = true, description = "바통을 찌른 유저의 id") Long senderId,
             @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) {
         try {
-            Boolean wasTurned = groupService.turnOverBaton(senderId, receiverId);
+            Boolean wasTurned = batonService.turnOverBaton(senderId, receiverId);
             return ResponseEntity.ok(wasTurned);
         } catch (NoSuchElementException e1) {
             return ResponseEntity.notFound().build();

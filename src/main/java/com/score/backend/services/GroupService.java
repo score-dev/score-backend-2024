@@ -1,6 +1,5 @@
 package com.score.backend.services;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.models.GroupEntity;
 import com.score.backend.models.dtos.*;
 import com.score.backend.models.User;
@@ -193,22 +192,6 @@ public class GroupService{
         GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
         return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
-    }
-
-    // 바통 찌르기
-    public boolean turnOverBaton(Long senderId, Long receiverId) throws FirebaseMessagingException {
-        User sender = userService.findUserById(senderId).orElseThrow(
-                () -> new NoSuchElementException("User Not Found.")
-        );
-        if (!notificationService.canSendNotification(senderId, receiverId)) {
-            return false;
-        }
-        FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 찔렀어요!", "오늘치 운동하러 스코어와 떠나 볼까요?");
-        notificationService.sendMessage(message);
-        notificationService.saveNotification(message);
-        notificationService.saveBatonLog(senderId, receiverId);
-
-        return true;
     }
 
 }
