@@ -116,6 +116,21 @@ public class GroupController {
         }
     }
 
+    @Operation(summary = "그룹 가입", description = "그룹에 가입합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "그룹 가입이완료되었습니다."),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @PutMapping("/join")
+    public ResponseEntity<String> joinGroup(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) {
+        try {
+            groupService.addNewMember(groupId, userId);
+            return ResponseEntity.ok("그룹 가입이 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @Operation(summary = "그룹 랭킹 조회", description = "그룹 내 개인 랭킹을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "랭킹 정보 응답"),

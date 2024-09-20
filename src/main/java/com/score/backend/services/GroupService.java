@@ -127,6 +127,19 @@ public class GroupService{
         userRepository.save(user);
     }
 
+    // 그룹에 새로운 멤버 추가
+    public void addNewMember(Long groupId, Long userId) {
+        GroupEntity group = findById(groupId);
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new NoSuchElementException("User not found")
+        );
+        if (!group.getMembers().contains(user)) {
+            user.addGroup(group);
+            groupRepository.save(group);
+            userRepository.save(user);
+        }
+    }
+
     // 유저가 속한 모든 그룹의 누적 운동 시간 증가
     public void increaseCumulativeTime(Long userId, LocalDateTime start, LocalDateTime end) {
         List<GroupEntity> groups = this.findAllGroupsByUserId(userId);
