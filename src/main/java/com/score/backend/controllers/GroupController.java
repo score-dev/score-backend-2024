@@ -213,7 +213,7 @@ public class GroupController {
             value = {@ApiResponse(responseCode = "200", description = "메이트 목록 조회가 완료되었습니다."),
                     @ApiResponse(responseCode = "404", description = "Group Not Found")
             })
-    @GetMapping(value = "/mates/nonExercised")
+    @GetMapping(value = "/mates/list")
     public ResponseEntity<List<UserResponseDto>> getAllGroupMates (
             @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId) {
         try {
