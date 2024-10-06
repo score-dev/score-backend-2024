@@ -83,6 +83,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final QSchool school;
 
+    public final DateTimePath<java.time.LocalDateTime> schoolUpdatedAt = createDateTime("schoolUpdatedAt", java.time.LocalDateTime.class);
+
     public final BooleanPath tag = createBoolean("tag");
 
     public final NumberPath<Double> totalCumulativeTime = createNumber("totalCumulativeTime", Double.class);

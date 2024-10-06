@@ -34,6 +34,8 @@ public class User extends BaseEntity {
     @JoinColumn(name = "school_id")
     private School school;
 
+    private LocalDateTime schoolUpdatedAt;
+
     @JdbcType(value = SmallIntJdbcType.class)
     private Gender gender;
 
@@ -206,6 +208,7 @@ public class User extends BaseEntity {
     public void setSchoolAndStudent(School school) {
         this.school = school;
         school.getStudents().add(this);
+        this.schoolUpdatedAt = LocalDateTime.now();
     }
 
     public void setNotificationReceivingStatus(NotificationStatusRequest request) {

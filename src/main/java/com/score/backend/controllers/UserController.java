@@ -89,10 +89,7 @@ public class UserController {
                                               @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile, HttpServletResponse response) throws IOException {
 
         // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
-        School school = schoolService.findSchoolByCode(schoolDto.getSchoolCode());
-        if (school == null) {
-            school = schoolService.saveSchool(schoolDto);
-        }
+        School school = schoolService.findOrSave(schoolDto);
         // 유저 엔티티에 학교 정보 set
         User user = userDto.toEntity();
         user.setSchoolAndStudent(school);
@@ -161,21 +158,21 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             })
     @RequestMapping(value = "/score/user/update/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Object> updateUserInfo(@Parameter(description = "회원 정보 수정을 요청한 유저의 고유 id 값") @PathVariable(name = "id") Long userId,
+    public ResponseEntity<String> updateUserInfo(@Parameter(description = "회원 정보 수정을 요청한 유저의 고유 id 값") @PathVariable(name = "id") Long userId,
                                                  @Parameter(description = "수정된 회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userUpdateDto") UserUpdateDto userUpdateDto,
                                                  @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
         if (userService.findUserById(userId).isEmpty()) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+            return ResponseEntity.status(409).body("User Not Found");
         }
         User user = userService.findUserById(userId).get();
 
 
         if (userUpdateDto.getSchool() != null && !user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())
-                && ChronoUnit.DAYS.between(LocalDateTime.now(), user.getSchool().getUpdatedAt()) < 30) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(409));
+                && ChronoUnit.DAYS.between(LocalDateTime.now(), user.getSchoolUpdatedAt()) < 30) {
+            return ResponseEntity.status(409).body("마지막 학교 정보 수정 후 30일이 경과하지 않았습니다.");
         }
         userService.updateUser(userId, userUpdateDto, multipartFile);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok("회원 정보 수정이 완료되었습니다.");
     }
 
     @Operation(summary = "알림 수신 여부 설정 수정", description = "알림 수신 여부 변경 사항을 db에 업데이트합니다.")
