@@ -20,6 +20,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final ImageUploadService imageUploadService;
+    private final SchoolService schoolService;
 
     @Transactional
     public void saveUser(User user, MultipartFile profileImage) {
@@ -32,12 +33,23 @@ public class UserService {
     public void updateUser(Long userId, UserUpdateDto userUpdateDto , MultipartFile profileImage) {
         User user = this.findUserById(userId).orElseThrow(null); // 예외 처리 필요
         user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
-        user.setGoal(userUpdateDto.getGoal());
-        user.setHeight(userUpdateDto.getHeight());
-        user.setWeight(userUpdateDto.getWeight());
-        user.setGrade(userUpdateDto.getGrade());
+        if (userUpdateDto.getNickname() != null) {
+            user.setNickname(userUpdateDto.getNickname());
+        }
+        if (userUpdateDto.getGoal() != null) {
+            user.setGoal(userUpdateDto.getGoal());
+        }
+        if (userUpdateDto.getHeight() != 0) {
+            user.setHeight(userUpdateDto.getHeight());
+        }
+        if (userUpdateDto.getWeight() != 0) {
+            user.setWeight(userUpdateDto.getWeight());
+        }
+        if (userUpdateDto.getGrade() != 0) {
+            user.setGrade(userUpdateDto.getGrade());
+        }
         if (userUpdateDto.getSchool() != null && !user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())) {
-            user.setSchoolAndStudent(userUpdateDto.getSchool().toEntity());
+            user.setSchoolAndStudent(schoolService.findOrSave(userUpdateDto.getSchool()));
         }
     }
 

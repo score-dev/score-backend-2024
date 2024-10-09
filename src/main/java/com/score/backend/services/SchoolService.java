@@ -6,13 +6,19 @@ import com.score.backend.repositories.school.SchoolRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 @Service
 @RequiredArgsConstructor
 public class SchoolService {
 
     private final SchoolRepository schoolRepository;
+
+    public School findOrSave(SchoolDto schoolDto) {
+        School school = findSchoolByCode(schoolDto.getSchoolCode());
+        if (school == null) {
+            school = saveSchool(schoolDto);
+        }
+        return school;
+    }
 
     // 새로운 학교 정보 db에 저장
     public School saveSchool(SchoolDto schoolDto) {
