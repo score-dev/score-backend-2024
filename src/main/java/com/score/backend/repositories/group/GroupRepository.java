@@ -1,6 +1,7 @@
 package com.score.backend.repositories.group;
 
 import com.score.backend.models.GroupEntity;
+import com.score.backend.models.School;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,9 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Long>{
     @Query("select g from GroupEntity g join g.members m where m.id = :userId")
     List<GroupEntity> findAllGroupsByUserId(@Param("userId")Long userId);
 
+    // 그룹 검색 (학교 코드, 그룹 이름)
+    List<GroupEntity> findByCodeAndName(School school, String groupName);
+
+    // 그룹 검색 최신순 추천
+    List<GroupEntity> findByRecentGroupRecommend(School school);
 }

@@ -1,6 +1,7 @@
 package com.score.backend.services;
 
 import com.score.backend.models.GroupEntity;
+import com.score.backend.models.School;
 import com.score.backend.models.dtos.*;
 import com.score.backend.models.User;
 import com.score.backend.repositories.group.GroupRepository;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+
 @RequiredArgsConstructor
 @Transactional
 public class GroupService{
@@ -30,6 +32,7 @@ public class GroupService{
     private final UserService userService;
     private final SchoolRankingService schoolRankingService;
     private final NotificationService notificationService;
+    private final SchoolService schoolService;
 
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id){
@@ -206,4 +209,35 @@ public class GroupService{
         return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
     }
 
+    // 학교 코드와 그룹 이름 키워드를 통해 같은 학교 내 그룹 검색
+    @Transactional(readOnly = true)
+    public List<GroupDto> searchingGroups(String schoolCode, String keyword) {
+        School school = schoolService.findSchoolByCode(schoolCode);
+        if (school == null) {
+            throw new IllegalArgumentException("해당 학교를 찾을 수 없습니다.");
+        }
+
+        List<GroupEntity> groups = groupRepository.findByCodeAndName(school, keyword);
+        return groups.stream()
+                .map(GroupDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // 최신순 그룹 추천
+    @Transactional(readOnly = true)
+    public List<GroupDto> getRecentGroupsBySchool(String schoolCode) {
+        // 학교 코드로 학교 조회
+        School school = schoolService.findSchoolByCode(schoolCode);
+        if (school == null) {
+            throw new IllegalArgumentException("해당 학교를 찾을 수 없습니다.");
+        }
+
+        // 최신순 그룹 조회
+        List<GroupEntity> recentGroups = groupRepository.findByRecentGroupRecommend(school);
+
+        // GroupEntity 리스트를 GroupDto 리스트로 변환하여 반환
+        return recentGroups.stream()
+                .map(GroupDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }
