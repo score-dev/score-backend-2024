@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RecentSearchService {
+public class GroupSearchService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 

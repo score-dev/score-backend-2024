@@ -258,28 +258,4 @@ public class GroupController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @Operation(summary = "그룹 검색", description = "그룹 이름을 통해 같은 학교 내 그룹을 검색합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "그룹 검색 완료"),
-            @ApiResponse(responseCode = "404", description = "검색 결과가 없습니다.")
-    })
-    @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchGroups(@RequestParam String schoolCode, @RequestParam String keyword) {
-        List<GroupDto> groupDtos = groupService.searchingGroups(schoolCode, keyword);
-
-        Map<String, Object> response = new HashMap<>();
-        if (!groupDtos.isEmpty()) {
-            response.put("groups", groupDtos);
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("message", "해당 그룹은 존재하지 않아요");
-            return ResponseEntity.status(404).body(response);
-        }
-    }
-    // 최신순 추천 그룹 목록 조회
-    @GetMapping("/recommend/recent")
-    public ResponseEntity<List<GroupDto>> getRecentGroups(@RequestParam String schoolCode) {
-        List<GroupDto> recentGroups = groupService.getRecentGroupsBySchool(schoolCode);
-        return ResponseEntity.ok(recentGroups);
-    }
 }
