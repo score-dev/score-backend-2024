@@ -71,7 +71,7 @@ public class GroupSearchService {
         }
 
         // 최신순 그룹 조회
-        List<GroupEntity> recentGroups = groupRepository.findByRecentGroupRecommend(school);
+        List<GroupEntity> recentGroups = groupRepository.findByBelongingSchoolId(school.getId());
 
         // GroupEntity 리스트를 GroupDto 리스트로 변환하여 반환
         return recentGroups.stream()
