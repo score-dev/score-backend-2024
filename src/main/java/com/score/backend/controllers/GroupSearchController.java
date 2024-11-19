@@ -2,7 +2,6 @@ package com.score.backend.controllers;
 
 import com.score.backend.models.dtos.GroupDto;
 import com.score.backend.services.GroupSearchService;
-import com.score.backend.services.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,7 +17,7 @@ import java.util.Map;
 @RequestMapping("/score/school")
 @RequiredArgsConstructor
 public class GroupSearchController {
-    private final GroupService groupService;
+    private final GroupSearchService groupSearchService;
 
     @Operation(summary = "그룹 검색", description = "그룹 이름을 통해 같은 학교 내 그룹을 검색합니다.")
     @ApiResponses(value = {
@@ -26,8 +25,8 @@ public class GroupSearchController {
             @ApiResponse(responseCode = "404", description = "검색 결과가 없습니다.")
     })
     @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchGroups(@RequestParam String keyword) {
-        List<GroupDto> groupDtos = groupService.searchGroups(keyword);
+    public ResponseEntity<Map<String, Object>> searchGroups(@RequestParam Long schoolId, @RequestParam String keyword) {
+        List<GroupDto> groupDtos = groupSearchService.getGroupSearchResult(schoolId, keyword);
 
         Map<String, Object> response = new HashMap<>();
         if (!groupDtos.isEmpty()) {
@@ -38,14 +37,13 @@ public class GroupSearchController {
             return ResponseEntity.status(404).body(response);
         }
     }
+
     // 최신순 추천 그룹 목록 조회
     @GetMapping("/recommend/recent")
     public ResponseEntity<List<GroupDto>> getRecentGroups(@RequestParam String schoolCode) {
-        List<GroupDto> recentGroups = groupService.getRecentGroupsBySchool(schoolCode);
+        List<GroupDto> recentGroups = groupSearchService.getRecentGroupsBySchool(schoolCode);
         return ResponseEntity.ok(recentGroups);
     }
-
-    private final GroupSearchService groupSearchService;
 
     // 최근 검색어 추가
     @PostMapping("/{userId}")

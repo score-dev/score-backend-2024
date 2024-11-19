@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GroupRepository extends JpaRepository<GroupEntity, Long>{
+public interface GroupRepository extends JpaRepository<GroupEntity, Long>, GroupRepositoryCustom {
     // 이거 주석 해제하면 오류 나서 일단 주석 처리해뒀습니다.
 //    List<Group> searchGroupFromSchool(School school, String groupName);
 

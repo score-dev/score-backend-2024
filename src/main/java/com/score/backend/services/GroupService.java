@@ -208,22 +208,4 @@ public class GroupService{
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
         return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
     }
-
-    // 최신순 그룹 추천
-    @Transactional(readOnly = true)
-    public List<GroupDto> getRecentGroupsBySchool(String schoolCode) {
-        // 학교 코드로 학교 조회
-        School school = schoolService.findSchoolByCode(schoolCode);
-        if (school == null) {
-            throw new IllegalArgumentException("해당 학교를 찾을 수 없습니다.");
-        }
-
-        // 최신순 그룹 조회
-        List<GroupEntity> recentGroups = groupRepository.findByRecentGroupRecommend(school);
-
-        // GroupEntity 리스트를 GroupDto 리스트로 변환하여 반환
-        return recentGroups.stream()
-                .map(GroupDto::fromEntity)
-                .collect(Collectors.toList());
-    }
 }
