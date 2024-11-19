@@ -209,20 +209,6 @@ public class GroupService{
         return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
     }
 
-    // 학교 코드와 그룹 이름 키워드를 통해 같은 학교 내 그룹 검색
-    @Transactional(readOnly = true)
-    public List<GroupDto> searchingGroups(String schoolCode, String keyword) {
-        School school = schoolService.findSchoolByCode(schoolCode);
-        if (school == null) {
-            throw new IllegalArgumentException("해당 학교를 찾을 수 없습니다.");
-        }
-
-        List<GroupEntity> groups = groupRepository.findByCodeAndName(school, keyword);
-        return groups.stream()
-                .map(GroupDto::fromEntity)
-                .collect(Collectors.toList());
-    }
-
     // 최신순 그룹 추천
     @Transactional(readOnly = true)
     public List<GroupDto> getRecentGroupsBySchool(String schoolCode) {

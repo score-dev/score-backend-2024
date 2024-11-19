@@ -5,6 +5,8 @@ import com.score.backend.models.QSchool;
 import com.score.backend.models.School;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class SchoolRepositoryImpl implements SchoolRepositoryCustom{
     private final JPAQueryFactory queryFactory;

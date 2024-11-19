@@ -26,8 +26,8 @@ public class GroupSearchController {
             @ApiResponse(responseCode = "404", description = "검색 결과가 없습니다.")
     })
     @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchGroups(@RequestParam String schoolCode, @RequestParam String keyword) {
-        List<GroupDto> groupDtos = groupService.searchingGroups(schoolCode, keyword);
+    public ResponseEntity<Map<String, Object>> searchGroups(@RequestParam String keyword) {
+        List<GroupDto> groupDtos = groupService.searchGroups(keyword);
 
         Map<String, Object> response = new HashMap<>();
         if (!groupDtos.isEmpty()) {

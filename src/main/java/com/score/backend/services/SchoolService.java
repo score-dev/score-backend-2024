@@ -31,7 +31,4 @@ public class SchoolService {
     public School findSchoolByCode(String code) {
         return schoolRepository.findSchoolByCode(code);
     }
-
-    // 학교명으로 학교 검색
-
 }
