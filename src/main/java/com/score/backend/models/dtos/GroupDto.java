@@ -8,7 +8,6 @@ import lombok.Getter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Getter
 @AllArgsConstructor
 public class GroupDto {
