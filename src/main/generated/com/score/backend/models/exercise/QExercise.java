@@ -8,6 +8,9 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
+import com.score.backend.domain.exercise.Exercise;
+import com.score.backend.domain.exercise.ExerciseUser;
+import com.score.backend.domain.exercise.emotion.Emotion;
 
 
 /**
@@ -34,7 +37,7 @@ public class QExercise extends EntityPathBase<Exercise> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
-    public final ListPath<com.score.backend.models.Emotion, com.score.backend.models.QEmotion> emotions = this.<com.score.backend.models.Emotion, com.score.backend.models.QEmotion>createList("emotions", com.score.backend.models.Emotion.class, com.score.backend.models.QEmotion.class, PathInits.DIRECT2);
+    public final ListPath<Emotion, com.score.backend.models.QEmotion> emotions = this.<Emotion, com.score.backend.models.QEmotion>createList("emotions", Emotion.class, com.score.backend.models.QEmotion.class, PathInits.DIRECT2);
 
     public final StringPath exercisePic = createString("exercisePic");
 

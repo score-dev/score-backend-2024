@@ -8,6 +8,9 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
+import com.score.backend.domain.group.GroupEntity;
+import com.score.backend.domain.group.rank.GroupRanking;
+import com.score.backend.domain.user.User;
 
 
 /**
@@ -48,7 +51,7 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
     public final StringPath groupPassword = createString("groupPassword");
 
-    public final ListPath<com.score.backend.models.grouprank.GroupRanking, com.score.backend.models.grouprank.QGroupRanking> groupRankings = this.<com.score.backend.models.grouprank.GroupRanking, com.score.backend.models.grouprank.QGroupRanking>createList("groupRankings", com.score.backend.models.grouprank.GroupRanking.class, com.score.backend.models.grouprank.QGroupRanking.class, PathInits.DIRECT2);
+    public final ListPath<GroupRanking, com.score.backend.models.grouprank.QGroupRanking> groupRankings = this.<GroupRanking, com.score.backend.models.grouprank.QGroupRanking>createList("groupRankings", GroupRanking.class, com.score.backend.models.grouprank.QGroupRanking.class, PathInits.DIRECT2);
 
     public final DateTimePath<java.time.LocalDateTime> groupUpdatedAt = createDateTime("groupUpdatedAt", java.time.LocalDateTime.class);
 
