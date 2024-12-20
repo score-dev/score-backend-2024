@@ -8,6 +8,8 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
+import com.score.backend.domain.group.rank.GroupRanker;
+import com.score.backend.domain.group.rank.GroupRanking;
 
 
 /**

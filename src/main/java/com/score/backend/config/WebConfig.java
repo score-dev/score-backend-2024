@@ -1,6 +1,6 @@
 package com.score.backend.config;
 
-import com.score.backend.models.enums.EmotionType;
+import com.score.backend.domain.exercise.emotion.EmotionType;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;

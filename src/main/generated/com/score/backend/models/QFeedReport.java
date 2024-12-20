@@ -8,6 +8,8 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
+import com.score.backend.domain.report.feedreport.FeedReport;
+import com.score.backend.domain.report.feedreport.FeedReportReason;
 
 
 /**
@@ -26,7 +28,7 @@ public class QFeedReport extends EntityPathBase<FeedReport> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final EnumPath<com.score.backend.models.enums.FeedReportReason> reason = createEnum("reason", com.score.backend.models.enums.FeedReportReason.class);
+    public final EnumPath<FeedReportReason> reason = createEnum("reason", FeedReportReason.class);
 
     public final QUser reportAgent;
 

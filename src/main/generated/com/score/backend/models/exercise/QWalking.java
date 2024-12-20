@@ -8,6 +8,9 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
+import com.score.backend.domain.exercise.ExerciseUser;
+import com.score.backend.domain.exercise.Walking;
+import com.score.backend.domain.exercise.emotion.Emotion;
 
 
 /**
@@ -39,7 +42,7 @@ public class QWalking extends EntityPathBase<Walking> {
     public final NumberPath<Double> distance = createNumber("distance", Double.class);
 
     //inherited
-    public final ListPath<com.score.backend.models.Emotion, com.score.backend.models.QEmotion> emotions;
+    public final ListPath<Emotion, com.score.backend.models.QEmotion> emotions;
 
     //inherited
     public final StringPath exercisePic;

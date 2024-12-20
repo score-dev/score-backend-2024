@@ -8,6 +8,8 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
+import com.score.backend.domain.exercise.emotion.Emotion;
+import com.score.backend.domain.exercise.emotion.EmotionType;
 
 
 /**
@@ -32,7 +34,7 @@ public class QEmotion extends EntityPathBase<Emotion> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
-    public final EnumPath<com.score.backend.models.enums.EmotionType> emotionType = createEnum("emotionType", com.score.backend.models.enums.EmotionType.class);
+    public final EnumPath<EmotionType> emotionType = createEnum("emotionType", EmotionType.class);
 
     public final com.score.backend.models.exercise.QExercise feed;
 
