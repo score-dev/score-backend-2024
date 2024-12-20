@@ -5,6 +5,7 @@ import com.score.backend.dtos.NotificationStatusRequest;
 import com.score.backend.dtos.SchoolDto;
 import com.score.backend.dtos.UserDto;
 import com.score.backend.dtos.UserUpdateDto;
+import com.score.backend.security.AuthService;
 import com.score.backend.security.JwtProvider;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.school.SchoolService;
@@ -21,18 +22,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Tag(name = "User", description = "회원 정보 관리를 위한 API입니다.")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
+    private final AuthService authService;
     private final UserService userService;
     private final SchoolService schoolService;
     private final JwtProvider jwtProvider;
@@ -53,26 +52,17 @@ public class UserController {
         }
     }
 
-    // 소셜 로그인 인증 완료시
-    @Operation(summary = "소셜 로그인 인증 완료", description = "소셜 로그인 인증 완료 후 기존 회원인지 여부를 응답받기 위한 api입니다.")
+    @Operation(summary = "로그인 시도 검증 및 기존 회원 여부 확인", description = "발급된 id 토큰을 검증하고 기존 회원인지 여부를 확인합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "소셜 로그인 인증 완료. RequestBody가 true이면 기존 회원, false이면 신규 회원."),
-                    @ApiResponse(responseCode = "400", description = "Bad Request"),
-                    @ApiResponse(responseCode = "404", description = "User Not Found")
-            }
+            value = {@ApiResponse(responseCode = "200", description = "소셜 로그인 인증 완료. Response Body가 true이면 기존 회원, false이면 신규 회원."),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/auth", method = RequestMethod.GET)
-    public ResponseEntity<Boolean> authorizeUser(@RequestParam("id") @Parameter(required = true, description = "provider id") String key, HttpServletResponse response) {
-        // 신규 회원이라면 온보딩 페이지로 이동
-        if (!userService.isPresentUser(key)) {
-            return ResponseEntity.ok(false);
-        } else {
-            // 기존 회원이라면 로그인 진행(토큰 갱신) 후 메인 페이지로 이동
-            User user = userService.findUserByKey(key).orElseThrow(
-                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-            login(user.getNickname(), response);
+    public ResponseEntity<Boolean> authorizeUser(@RequestParam("id") @Parameter(required = true, description = "provider id") String provider, String idToken) {
+        if (userService.isPresentUser(authService.getUserId(provider, idToken))) {
+            return ResponseEntity.ok(true);
         }
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(false);
     }
 
     // 온보딩에서 회원 정보 입력 완료시
@@ -84,32 +74,19 @@ public class UserController {
     @RequestMapping(value = "/score/onboarding/fin", method = RequestMethod.POST)
     public ResponseEntity<String> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
                                               @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
-                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile, HttpServletResponse response) throws IOException {
+                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
 
         // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
         School school = schoolService.findOrSave(schoolDto);
+        // User 엔티티 생성
+        User user = userDto.toEntity(authService.getUserId(userDto.getProvider(), userDto.getIdToken()));
         // 유저 엔티티에 학교 정보 set
-        User user = userDto.toEntity();
         user.setSchoolAndStudent(school);
 
         // 해당 회원 정보 db에 저장
         userService.saveUser(user, multipartFile);
 
-        // 소셜 로그인 인증 완료시 호출되는 페이지로 이동해 로그인 진행
-//        response.getOutputStream().close();
-//        response.addHeader(HttpHeaders.LOCATION, "http://23.130.135.106:8081//score/onboarding/fin/school");
         return ResponseEntity.ok("회원가입이 완료되었습니다.");
-    }
-
-    private void login(String nickname, HttpServletResponse response) {
-        userService.findUserByNickname(nickname).ifPresentOrElse(
-                // 로그인 시도한 회원이 기존 회원이라면 access token과 refresh token 갱신
-                user -> {
-                    List<String> tokens = jwtProvider.getNewToken(nickname);
-                    // user entity update 로직 구현 후 refresh token update 로직 추가 필요
-                    response.setHeader(HttpHeaders.AUTHORIZATION, tokens.get(0));
-                },
-                () -> {}); // 예외 처리 필요
     }
 
     // 메인 페이지 접속시 토큰의 유효성 확인
@@ -127,7 +104,6 @@ public class UserController {
         } else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
     }
 
     // 회원 탈퇴

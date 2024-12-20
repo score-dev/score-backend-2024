@@ -78,11 +78,11 @@ public class UserService {
         return userRepository.findByNickname(nickname);
     }
 
-    public Optional<User> findUserByKey(String key) {
-        return userRepository.findByKey(key);
+    public Optional<User> findUserByKey(Long sub) {
+        return userRepository.findByKey(sub);
     }
 
-    public boolean isPresentUser(String key) {
+    public boolean isPresentUser(Long key) {
         Optional<User> userOption = userRepository.findByKey(key);
         return userOption.isPresent();
     }

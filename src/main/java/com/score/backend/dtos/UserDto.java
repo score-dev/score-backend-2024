@@ -41,22 +41,13 @@ public class UserDto {
     @Schema(description = "목표 운동 시간 알림 수신 동의 여부")
     private boolean exercisingTime;
 
-    @Schema(description = "provider id")
-    private String loginKey;
+    @Schema(description = "소셜 로그인 Provider(google, kakao, apple)")
+    private String provider;
 
-    public UserDto(String nickname, int grade, int height, int weight, Gender gender, LocalTime goal, boolean marketing, boolean exercisingTime, String loginKey) {
-        this.nickname = nickname;
-        this.grade = grade;
-        this.height = height;
-        this.weight = weight;
-        this.gender = gender;
-        this.goal = goal;
-        this.marketing = marketing;
-        this.exercisingTime = exercisingTime;
-        this.loginKey = loginKey;
-    }
+    @Schema(description = "소셜 로그인 provider가 제공한 ID Token")
+    private String idToken;
 
-    public User toEntity() {
+    public User toEntity(Long sub) {
         return User.builder()
                 .nickname(nickname)
                 .grade(grade)
@@ -75,7 +66,7 @@ public class UserDto {
                 .marketing(marketing)
                 .tag(true)
                 .exercisingTime(exercisingTime)
-                .loginKey(loginKey)
+                .loginKey(sub)
                 .build();
     }
 }
