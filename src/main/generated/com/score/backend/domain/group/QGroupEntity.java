@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.domain.group;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,9 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.group.GroupEntity;
-import com.score.backend.domain.group.rank.GroupRanking;
-import com.score.backend.domain.user.User;
 
 
 /**
@@ -19,7 +16,7 @@ import com.score.backend.domain.user.User;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
-    private static final long serialVersionUID = 656954081L;
+    private static final long serialVersionUID = -1513654644L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -27,9 +24,9 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final QUser admin;
+    public final com.score.backend.domain.user.QUser admin;
 
-    public final QSchool belongingSchool;
+    public final com.score.backend.domain.school.QSchool belongingSchool;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -51,7 +48,7 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
     public final StringPath groupPassword = createString("groupPassword");
 
-    public final ListPath<GroupRanking, com.score.backend.models.grouprank.QGroupRanking> groupRankings = this.<GroupRanking, com.score.backend.models.grouprank.QGroupRanking>createList("groupRankings", GroupRanking.class, com.score.backend.models.grouprank.QGroupRanking.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.group.rank.GroupRanking, com.score.backend.domain.group.rank.QGroupRanking> groupRankings = this.<com.score.backend.domain.group.rank.GroupRanking, com.score.backend.domain.group.rank.QGroupRanking>createList("groupRankings", com.score.backend.domain.group.rank.GroupRanking.class, com.score.backend.domain.group.rank.QGroupRanking.class, PathInits.DIRECT2);
 
     public final DateTimePath<java.time.LocalDateTime> groupUpdatedAt = createDateTime("groupUpdatedAt", java.time.LocalDateTime.class);
 
@@ -60,7 +57,7 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
-    public final SetPath<User, QUser> members = this.<User, QUser>createSet("members", User.class, QUser.class, PathInits.DIRECT2);
+    public final SetPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> members = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createSet("members", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> todayExercisedCount = createNumber("todayExercisedCount", Integer.class);
 
@@ -87,8 +84,8 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
     public QGroupEntity(Class<? extends GroupEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.admin = inits.isInitialized("admin") ? new QUser(forProperty("admin"), inits.get("admin")) : null;
-        this.belongingSchool = inits.isInitialized("belongingSchool") ? new QSchool(forProperty("belongingSchool")) : null;
+        this.admin = inits.isInitialized("admin") ? new com.score.backend.domain.user.QUser(forProperty("admin"), inits.get("admin")) : null;
+        this.belongingSchool = inits.isInitialized("belongingSchool") ? new com.score.backend.domain.school.QSchool(forProperty("belongingSchool")) : null;
     }
 
 }

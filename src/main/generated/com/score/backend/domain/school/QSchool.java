@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.domain.school;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,9 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.group.GroupEntity;
-import com.score.backend.domain.school.School;
-import com.score.backend.domain.user.User;
 
 
 /**
@@ -19,7 +16,7 @@ import com.score.backend.domain.user.User;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QSchool extends EntityPathBase<School> {
 
-    private static final long serialVersionUID = 552807541L;
+    private static final long serialVersionUID = -1508059097L;
 
     public static final QSchool school = new QSchool("school");
 
@@ -31,7 +28,7 @@ public class QSchool extends EntityPathBase<School> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
-    public final ListPath<GroupEntity, QGroupEntity> groups = this.<GroupEntity, QGroupEntity>createList("groups", GroupEntity.class, QGroupEntity.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity> groups = this.<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity>createList("groups", com.score.backend.domain.group.GroupEntity.class, com.score.backend.domain.group.QGroupEntity.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -46,7 +43,7 @@ public class QSchool extends EntityPathBase<School> {
 
     public final StringPath schoolName = createString("schoolName");
 
-    public final ListPath<User, QUser> students = this.<User, QUser>createList("students", User.class, QUser.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> students = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createList("students", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

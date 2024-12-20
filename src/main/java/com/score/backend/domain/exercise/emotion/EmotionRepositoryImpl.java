@@ -1,7 +1,6 @@
 package com.score.backend.domain.exercise.emotion;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.score.backend.models.QEmotion;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

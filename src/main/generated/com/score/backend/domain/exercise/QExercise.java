@@ -1,4 +1,4 @@
-package com.score.backend.models.exercise;
+package com.score.backend.domain.exercise;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,9 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.exercise.Exercise;
-import com.score.backend.domain.exercise.ExerciseUser;
-import com.score.backend.domain.exercise.emotion.Emotion;
 
 
 /**
@@ -19,7 +16,7 @@ import com.score.backend.domain.exercise.emotion.Emotion;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QExercise extends EntityPathBase<Exercise> {
 
-    private static final long serialVersionUID = -873603635L;
+    private static final long serialVersionUID = -1124719193L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -27,7 +24,7 @@ public class QExercise extends EntityPathBase<Exercise> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final com.score.backend.models.QUser agent;
+    public final com.score.backend.domain.user.QUser agent;
 
     public final DateTimePath<java.time.LocalDateTime> completedAt = createDateTime("completedAt", java.time.LocalDateTime.class);
 
@@ -37,7 +34,7 @@ public class QExercise extends EntityPathBase<Exercise> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
-    public final ListPath<Emotion, com.score.backend.models.QEmotion> emotions = this.<Emotion, com.score.backend.models.QEmotion>createList("emotions", Emotion.class, com.score.backend.models.QEmotion.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.exercise.emotion.Emotion, com.score.backend.domain.exercise.emotion.QEmotion> emotions = this.<com.score.backend.domain.exercise.emotion.Emotion, com.score.backend.domain.exercise.emotion.QEmotion>createList("emotions", com.score.backend.domain.exercise.emotion.Emotion.class, com.score.backend.domain.exercise.emotion.QEmotion.class, PathInits.DIRECT2);
 
     public final StringPath exercisePic = createString("exercisePic");
 
@@ -83,7 +80,7 @@ public class QExercise extends EntityPathBase<Exercise> {
 
     public QExercise(Class<? extends Exercise> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.agent = inits.isInitialized("agent") ? new com.score.backend.models.QUser(forProperty("agent"), inits.get("agent")) : null;
+        this.agent = inits.isInitialized("agent") ? new com.score.backend.domain.user.QUser(forProperty("agent"), inits.get("agent")) : null;
     }
 
 }

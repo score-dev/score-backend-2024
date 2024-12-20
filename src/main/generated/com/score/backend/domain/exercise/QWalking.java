@@ -1,4 +1,4 @@
-package com.score.backend.models.exercise;
+package com.score.backend.domain.exercise;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,9 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.exercise.ExerciseUser;
-import com.score.backend.domain.exercise.Walking;
-import com.score.backend.domain.exercise.emotion.Emotion;
 
 
 /**
@@ -19,7 +16,7 @@ import com.score.backend.domain.exercise.emotion.Emotion;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QWalking extends EntityPathBase<Walking> {
 
-    private static final long serialVersionUID = -84076828L;
+    private static final long serialVersionUID = -230724662L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -28,7 +25,7 @@ public class QWalking extends EntityPathBase<Walking> {
     public final QExercise _super;
 
     // inherited
-    public final com.score.backend.models.QUser agent;
+    public final com.score.backend.domain.user.QUser agent;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> completedAt;
@@ -42,7 +39,7 @@ public class QWalking extends EntityPathBase<Walking> {
     public final NumberPath<Double> distance = createNumber("distance", Double.class);
 
     //inherited
-    public final ListPath<Emotion, com.score.backend.models.QEmotion> emotions;
+    public final ListPath<com.score.backend.domain.exercise.emotion.Emotion, com.score.backend.domain.exercise.emotion.QEmotion> emotions;
 
     //inherited
     public final StringPath exercisePic;

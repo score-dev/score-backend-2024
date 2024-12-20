@@ -1,8 +1,8 @@
 package com.score.backend.domain.school.repositories;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.score.backend.domain.school.QSchool;
 import com.score.backend.domain.school.School;
-import com.score.backend.models.QSchool;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

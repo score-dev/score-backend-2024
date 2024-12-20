@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.domain.exercise.emotion;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,8 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.exercise.emotion.Emotion;
-import com.score.backend.domain.exercise.emotion.EmotionType;
 
 
 /**
@@ -18,7 +16,7 @@ import com.score.backend.domain.exercise.emotion.EmotionType;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QEmotion extends EntityPathBase<Emotion> {
 
-    private static final long serialVersionUID = 709914490L;
+    private static final long serialVersionUID = 466643737L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -26,7 +24,7 @@ public class QEmotion extends EntityPathBase<Emotion> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final QUser agent;
+    public final com.score.backend.domain.user.QUser agent;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -36,7 +34,7 @@ public class QEmotion extends EntityPathBase<Emotion> {
 
     public final EnumPath<EmotionType> emotionType = createEnum("emotionType", EmotionType.class);
 
-    public final com.score.backend.models.exercise.QExercise feed;
+    public final com.score.backend.domain.exercise.QExercise feed;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -64,8 +62,8 @@ public class QEmotion extends EntityPathBase<Emotion> {
 
     public QEmotion(Class<? extends Emotion> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.agent = inits.isInitialized("agent") ? new QUser(forProperty("agent"), inits.get("agent")) : null;
-        this.feed = inits.isInitialized("feed") ? new com.score.backend.models.exercise.QExercise(forProperty("feed"), inits.get("feed")) : null;
+        this.agent = inits.isInitialized("agent") ? new com.score.backend.domain.user.QUser(forProperty("agent"), inits.get("agent")) : null;
+        this.feed = inits.isInitialized("feed") ? new com.score.backend.domain.exercise.QExercise(forProperty("feed"), inits.get("feed")) : null;
     }
 
 }

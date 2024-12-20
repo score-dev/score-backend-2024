@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.domain.report.userreport;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,8 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.report.userreport.UserReport;
-import com.score.backend.domain.report.userreport.UserReportReason;
 
 
 /**
@@ -18,7 +16,7 @@ import com.score.backend.domain.report.userreport.UserReportReason;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QUserReport extends EntityPathBase<UserReport> {
 
-    private static final long serialVersionUID = 1143755104L;
+    private static final long serialVersionUID = 2104150619L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -30,9 +28,9 @@ public class QUserReport extends EntityPathBase<UserReport> {
 
     public final EnumPath<UserReportReason> reason = createEnum("reason", UserReportReason.class);
 
-    public final QUser reportAgent;
+    public final com.score.backend.domain.user.QUser reportAgent;
 
-    public final QUser reportObject;
+    public final com.score.backend.domain.user.QUser reportObject;
 
     public QUserReport(String variable) {
         this(UserReport.class, forVariable(variable), INITS);
@@ -52,8 +50,8 @@ public class QUserReport extends EntityPathBase<UserReport> {
 
     public QUserReport(Class<? extends UserReport> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.reportAgent = inits.isInitialized("reportAgent") ? new QUser(forProperty("reportAgent"), inits.get("reportAgent")) : null;
-        this.reportObject = inits.isInitialized("reportObject") ? new QUser(forProperty("reportObject"), inits.get("reportObject")) : null;
+        this.reportAgent = inits.isInitialized("reportAgent") ? new com.score.backend.domain.user.QUser(forProperty("reportAgent"), inits.get("reportAgent")) : null;
+        this.reportObject = inits.isInitialized("reportObject") ? new com.score.backend.domain.user.QUser(forProperty("reportObject"), inits.get("reportObject")) : null;
     }
 
 }
