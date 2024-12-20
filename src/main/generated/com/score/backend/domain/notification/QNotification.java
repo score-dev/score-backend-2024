@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.domain.notification;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,7 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.notification.Notification;
 
 
 /**
@@ -17,7 +16,7 @@ import com.score.backend.domain.notification.Notification;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNotification extends EntityPathBase<Notification> {
 
-    private static final long serialVersionUID = 1427232044L;
+    private static final long serialVersionUID = -1100912505L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -25,7 +24,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final QUser agent;
+    public final com.score.backend.domain.user.QUser agent;
 
     public final StringPath body = createString("body");
 
@@ -62,7 +61,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public QNotification(Class<? extends Notification> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.agent = inits.isInitialized("agent") ? new QUser(forProperty("agent"), inits.get("agent")) : null;
+        this.agent = inits.isInitialized("agent") ? new com.score.backend.domain.user.QUser(forProperty("agent"), inits.get("agent")) : null;
     }
 
 }

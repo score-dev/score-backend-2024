@@ -2,7 +2,7 @@ package com.score.backend.domain.group.repositories;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.group.GroupEntity;
-import com.score.backend.models.QGroupEntity;
+import com.score.backend.domain.group.QGroupEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

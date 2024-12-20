@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.domain.report.feedreport;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,8 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.report.feedreport.FeedReport;
-import com.score.backend.domain.report.feedreport.FeedReportReason;
 
 
 /**
@@ -18,7 +16,7 @@ import com.score.backend.domain.report.feedreport.FeedReportReason;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QFeedReport extends EntityPathBase<FeedReport> {
 
-    private static final long serialVersionUID = -209100557L;
+    private static final long serialVersionUID = 83714171L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -30,9 +28,9 @@ public class QFeedReport extends EntityPathBase<FeedReport> {
 
     public final EnumPath<FeedReportReason> reason = createEnum("reason", FeedReportReason.class);
 
-    public final QUser reportAgent;
+    public final com.score.backend.domain.user.QUser reportAgent;
 
-    public final com.score.backend.models.exercise.QExercise reportedFeed;
+    public final com.score.backend.domain.exercise.QExercise reportedFeed;
 
     public QFeedReport(String variable) {
         this(FeedReport.class, forVariable(variable), INITS);
@@ -52,8 +50,8 @@ public class QFeedReport extends EntityPathBase<FeedReport> {
 
     public QFeedReport(Class<? extends FeedReport> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.reportAgent = inits.isInitialized("reportAgent") ? new QUser(forProperty("reportAgent"), inits.get("reportAgent")) : null;
-        this.reportedFeed = inits.isInitialized("reportedFeed") ? new com.score.backend.models.exercise.QExercise(forProperty("reportedFeed"), inits.get("reportedFeed")) : null;
+        this.reportAgent = inits.isInitialized("reportAgent") ? new com.score.backend.domain.user.QUser(forProperty("reportAgent"), inits.get("reportAgent")) : null;
+        this.reportedFeed = inits.isInitialized("reportedFeed") ? new com.score.backend.domain.exercise.QExercise(forProperty("reportedFeed"), inits.get("reportedFeed")) : null;
     }
 
 }

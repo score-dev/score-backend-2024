@@ -1,4 +1,4 @@
-package com.score.backend.models.grouprank;
+package com.score.backend.domain.group.rank;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,8 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.group.rank.GroupRanker;
-import com.score.backend.domain.group.rank.GroupRanking;
 
 
 /**
@@ -18,7 +16,7 @@ import com.score.backend.domain.group.rank.GroupRanking;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QGroupRanking extends EntityPathBase<GroupRanking> {
 
-    private static final long serialVersionUID = -2127673957L;
+    private static final long serialVersionUID = 2000009027L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -26,7 +24,7 @@ public class QGroupRanking extends EntityPathBase<GroupRanking> {
 
     public final DatePath<java.time.LocalDate> endDate = createDate("endDate", java.time.LocalDate.class);
 
-    public final com.score.backend.models.QGroupEntity group;
+    public final com.score.backend.domain.group.QGroupEntity group;
 
     public final ListPath<GroupRanker, QGroupRanker> groupRankers = this.<GroupRanker, QGroupRanker>createList("groupRankers", GroupRanker.class, QGroupRanker.class, PathInits.DIRECT2);
 
@@ -52,7 +50,7 @@ public class QGroupRanking extends EntityPathBase<GroupRanking> {
 
     public QGroupRanking(Class<? extends GroupRanking> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.group = inits.isInitialized("group") ? new com.score.backend.models.QGroupEntity(forProperty("group"), inits.get("group")) : null;
+        this.group = inits.isInitialized("group") ? new com.score.backend.domain.group.QGroupEntity(forProperty("group"), inits.get("group")) : null;
     }
 
 }

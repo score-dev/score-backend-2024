@@ -1,4 +1,4 @@
-package com.score.backend.models;
+package com.score.backend.domain.user;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -8,11 +8,6 @@ import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
-import com.score.backend.domain.exercise.Exercise;
-import com.score.backend.domain.group.GroupEntity;
-import com.score.backend.domain.notification.Notification;
-import com.score.backend.domain.user.Gender;
-import com.score.backend.domain.user.User;
 
 
 /**
@@ -21,7 +16,7 @@ import com.score.backend.domain.user.User;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QUser extends EntityPathBase<User> {
 
-    private static final long serialVersionUID = -1344599796L;
+    private static final long serialVersionUID = 1164835207L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -45,7 +40,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath fcmToken = createString("fcmToken");
 
-    public final ListPath<Exercise, com.score.backend.models.exercise.QExercise> feeds = this.<Exercise, com.score.backend.models.exercise.QExercise>createList("feeds", Exercise.class, com.score.backend.models.exercise.QExercise.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.exercise.Exercise, com.score.backend.domain.exercise.QExercise> feeds = this.<com.score.backend.domain.exercise.Exercise, com.score.backend.domain.exercise.QExercise>createList("feeds", com.score.backend.domain.exercise.Exercise.class, com.score.backend.domain.exercise.QExercise.class, PathInits.DIRECT2);
 
     public final ListPath<User, QUser> friends = this.<User, QUser>createList("friends", User.class, QUser.class, PathInits.DIRECT2);
 
@@ -55,7 +50,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);
 
-    public final ListPath<GroupEntity, QGroupEntity> groups = this.<GroupEntity, QGroupEntity>createList("groups", GroupEntity.class, QGroupEntity.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity> groups = this.<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity>createList("groups", com.score.backend.domain.group.GroupEntity.class, com.score.backend.domain.group.QGroupEntity.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> height = createNumber("height", Integer.class);
 
@@ -70,7 +65,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> level = createNumber("level", Integer.class);
 
-    public final StringPath loginKey = createString("loginKey");
+    public final NumberPath<Long> loginKey = createNumber("loginKey", Long.class);
 
     public final BooleanPath marketing = createBoolean("marketing");
 
@@ -78,7 +73,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath nickname = createString("nickname");
 
-    public final ListPath<Notification, QNotification> notifications = this.<Notification, QNotification>createList("notifications", Notification.class, QNotification.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.notification.Notification, com.score.backend.domain.notification.QNotification> notifications = this.<com.score.backend.domain.notification.Notification, com.score.backend.domain.notification.QNotification>createList("notifications", com.score.backend.domain.notification.Notification.class, com.score.backend.domain.notification.QNotification.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> point = createNumber("point", Integer.class);
 
@@ -86,7 +81,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath refreshToken = createString("refreshToken");
 
-    public final QSchool school;
+    public final com.score.backend.domain.school.QSchool school;
 
     public final DateTimePath<java.time.LocalDateTime> schoolUpdatedAt = createDateTime("schoolUpdatedAt", java.time.LocalDateTime.class);
 
@@ -123,7 +118,7 @@ public class QUser extends EntityPathBase<User> {
 
     public QUser(Class<? extends User> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.school = inits.isInitialized("school") ? new QSchool(forProperty("school")) : null;
+        this.school = inits.isInitialized("school") ? new com.score.backend.domain.school.QSchool(forProperty("school")) : null;
     }
 
 }
