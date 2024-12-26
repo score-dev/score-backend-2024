@@ -23,7 +23,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화 (JWT 사용 시 권장)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/score/auth/**", "/score/public/**").permitAll() // 인증 필요 없는 경로
+                        .requestMatchers("/swagger-ui/**", "/score/auth/**", "/score/public/**").permitAll() // 인증 필요 없는 경로
                         .anyRequest().authenticated() // 나머지 경로는 인증 필요
                 )
                 .sessionManagement(session -> session
