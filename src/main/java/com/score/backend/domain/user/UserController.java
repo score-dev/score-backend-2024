@@ -6,7 +6,6 @@ import com.score.backend.dtos.SchoolDto;
 import com.score.backend.dtos.UserDto;
 import com.score.backend.dtos.UserUpdateDto;
 import com.score.backend.security.AuthService;
-import com.score.backend.security.JwtProvider;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.school.SchoolService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +32,6 @@ public class UserController {
     private final AuthService authService;
     private final UserService userService;
     private final SchoolService schoolService;
-    private final JwtProvider jwtProvider;
     private final NotificationService notificationService;
 
     // 닉네임 중복 검사
@@ -50,19 +47,6 @@ public class UserController {
         } else {
             return ResponseEntity.ok(-1); // 이미 존재하는 닉네임인 경우
         }
-    }
-
-    @Operation(summary = "로그인 시도 검증 및 기존 회원 여부 확인", description = "발급된 id 토큰을 검증하고 기존 회원인지 여부를 확인합니다.")
-    @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "소셜 로그인 인증 완료. Response Body가 true이면 기존 회원, false이면 신규 회원."),
-                    @ApiResponse(responseCode = "400", description = "Bad Request")}
-    )
-    @RequestMapping(value = "/score/auth", method = RequestMethod.GET)
-    public ResponseEntity<Boolean> authorizeUser(@RequestParam("id") @Parameter(required = true, description = "provider id") String provider, String idToken) {
-        if (userService.isPresentUser(authService.getUserId(provider, idToken))) {
-            return ResponseEntity.ok(true);
-        }
-        return ResponseEntity.ok(false);
     }
 
     // 온보딩에서 회원 정보 입력 완료시
@@ -91,20 +75,20 @@ public class UserController {
 
     // 메인 페이지 접속시 토큰의 유효성 확인
     // 메인 페이지 기능 구현되면 추후 수정 필요
-    @Operation(summary = "메인 페이지", description = "메인 페이지 접속 요청 발생시 jwt 토큰을 검증합니다.")
-    @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "유저 인증 완료"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized")}
-    )
-    @RequestMapping(value = "/score/main", method = RequestMethod.GET)
-    public ResponseEntity<Object> verifyUser(@RequestHeader(name = "Authorization") @Parameter(required = true, description = "Request Header의 Authorization에 있는 jwt 토큰") String token,
-                                             HttpServletResponse response) {
-        if (jwtProvider.validateToken(token, response)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-    }
+//    @Operation(summary = "메인 페이지", description = "메인 페이지 접속 요청 발생시 jwt 토큰을 검증합니다.")
+//    @ApiResponses(
+//            value = {@ApiResponse(responseCode = "200", description = "유저 인증 완료"),
+//                    @ApiResponse(responseCode = "401", description = "Unauthorized")}
+//    )
+//    @RequestMapping(value = "/score/main", method = RequestMethod.GET)
+//    public ResponseEntity<Object> verifyUser(@RequestHeader(name = "Authorization") @Parameter(required = true, description = "Request Header의 Authorization에 있는 jwt 토큰") String token,
+//                                             HttpServletResponse response) {
+//        if (jwtProvider.validateToken(token, response)) {
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
+//    }
 
     // 회원 탈퇴
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 요청 발생시 해당 회원의 모든 정보를 db에서 삭제합니다.")
