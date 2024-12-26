@@ -1,4 +1,4 @@
-package com.score.backend.security;
+package com.score.backend.security.oauth;
 
 public class GoogleTokenVerifier extends AbstractTokenVerifier {
     @Override

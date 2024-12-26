@@ -127,6 +127,7 @@ public class User extends BaseEntity {
 
     private boolean tag; // 소통 알림(태그 알림) 수신 동의 여부
 
+    @Setter
     private String refreshToken;
 
     private Long loginKey;
