@@ -1,4 +1,4 @@
-package com.score.backend.security;
+package com.score.backend.security.oauth;
 
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
