@@ -1,6 +1,5 @@
 package com.score.backend.security;
 
-import com.score.backend.domain.user.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -24,7 +23,6 @@ public class JwtProvider {
     @Value("${custom.jwt.secretKey}")
     private String plainSecretKey;
     private SecretKey cachedSecretKey;
-    private final UserService userService;
 
 
     // plain key to secret key

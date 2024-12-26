@@ -36,7 +36,7 @@ public class UserController {
 
     // 닉네임 중복 검사
     @Operation(summary = "닉네임 중복 검사", description = "온보딩이나 회원 정보 수정 시 닉네임 중복 검사를 위한 api입니다.")
-    @RequestMapping(value = "/score/{nickname}/exists", method = RequestMethod.GET)
+    @RequestMapping(value = "/score/public/{nickname}/exists", method = RequestMethod.GET)
     @ApiResponse(responseCode = "200", description = "닉네임 중복 검사 완료. ResponseBody의 내용이 0이면 필드에 아무 것도 입력되지 않은 경우, 1이면 중복되지 않은 닉네임인 경우, -1이면 이미 존재하는 닉네임인 경우.")
     public ResponseEntity<Integer> checkNicknameUniqueness(@Parameter(description = "유저가 필드에 입력한 닉네임") @PathVariable(name = "nickname") String nickname) {
         if (nickname.isEmpty()) {
@@ -55,7 +55,7 @@ public class UserController {
             value = {@ApiResponse(responseCode = "200", description = "신규 회원 정보 저장 완료"),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/score/onboarding/fin", method = RequestMethod.POST)
+    @RequestMapping(value = "/score/public/onboarding/fin", method = RequestMethod.POST)
     public ResponseEntity<String> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
                                               @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
                                               @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
