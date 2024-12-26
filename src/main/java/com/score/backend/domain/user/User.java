@@ -79,6 +79,7 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy="agent")
     @JsonIgnore
+    @Builder.Default
     private final List<Exercise> feeds = new ArrayList<>();
 
     @ManyToMany
@@ -88,6 +89,7 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
     @JsonIgnore
+    @Builder.Default
     private final List<User> friends = new ArrayList<>();
 
     @ManyToMany
@@ -97,6 +99,7 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "mate_id")
     )
     @JsonIgnore
+    @Builder.Default
     private final List<User> mates = new ArrayList<>();
 
     @ManyToMany
@@ -106,6 +109,7 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
     )
     @JsonIgnore
+    @Builder.Default
     private final List<User> blockedUsers = new ArrayList<>();
 
     @ManyToMany
@@ -115,10 +119,12 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     @JsonIgnore
+    @Builder.Default
     private List<GroupEntity> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "agent")
     @JsonIgnore
+    @Builder.Default
     private List<Notification> notifications = new ArrayList<>();
 
     private boolean marketing; // 마케팅 알림 수신 동의 여부
