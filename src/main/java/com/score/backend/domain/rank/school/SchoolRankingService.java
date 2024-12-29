@@ -1,11 +1,11 @@
-package com.score.backend.domain.school.rank;
+package com.score.backend.domain.rank.school;
 
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +13,7 @@ public class SchoolRankingService {
 
     // 그룹의 참여율 계산
     public double getRatioOfParticipate(GroupEntity group) {
-        Set<User> members = group.getMembers();
+        List<User> members = group.getMembers();
         if (!members.isEmpty()) {
             int sum = 0;
             for (User member : members) {

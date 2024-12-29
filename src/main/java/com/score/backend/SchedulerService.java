@@ -7,10 +7,10 @@ import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FcmMessageRequest;
-import com.score.backend.domain.group.rank.GroupRanker;
-import com.score.backend.domain.group.rank.GroupRanking;
-import com.score.backend.domain.group.rank.GroupRankerRepository;
-import com.score.backend.domain.group.rank.GroupRankingRepository;
+import com.score.backend.domain.rank.group.GroupRanker;
+import com.score.backend.domain.rank.group.GroupRanking;
+import com.score.backend.domain.rank.group.GroupRankerRepository;
+import com.score.backend.domain.rank.group.GroupRankingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -107,15 +107,15 @@ public class SchedulerService {
         }
 
         for (int i = 0; i < thisWeekGroupRankers.size(); i++) {
-            thisWeekGroupRankers.get(i).setRanking(i + 1); // 금주의 순위 설정
+            thisWeekGroupRankers.get(i).setRankNum(i + 1); // 금주의 순위 설정
             // 지난주와의 순위 비교 후 변동 추이 계산
             if (lastWeekGroupRanking.getGroupRankers().contains(thisWeekGroupRankers.get(i))) {
-                thisWeekGroupRankers.get(i).setChangedDegree(groupRankerRepository.findByGroupRankingIdAndUserId(lastWeekGroupRanking.getId(), thisWeekGroupRankers.get(i).getUser().getId()).getRanking() - (i + 1));
+                thisWeekGroupRankers.get(i).setChangedDegree(groupRankerRepository.findByGroupRankingIdAndUserId(lastWeekGroupRanking.getId(), thisWeekGroupRankers.get(i).getUser().getId()).getRankNum() - (i + 1));
             } else {
                 thisWeekGroupRankers.get(i).setChangedDegree(0);
             }
             GroupRanker ranker = groupRankerRepository.save(thisWeekGroupRankers.get(i));
-            ranker.setBelongingRanking(thisWeekGroupRanking);
+            ranker.setBelongsTo(thisWeekGroupRanking);
             thisWeekGroupRanking.getGroupRankers().add(ranker);
         }
         return groupRankingRepository.save(thisWeekGroupRanking);

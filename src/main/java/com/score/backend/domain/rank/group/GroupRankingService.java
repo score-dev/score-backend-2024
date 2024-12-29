@@ -1,4 +1,4 @@
-package com.score.backend.domain.group.rank;
+package com.score.backend.domain.rank.group;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

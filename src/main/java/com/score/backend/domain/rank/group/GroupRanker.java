@@ -1,5 +1,6 @@
-package com.score.backend.domain.group.rank;
+package com.score.backend.domain.rank.group;
 
+import com.score.backend.domain.rank.Ranker;
 import com.score.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,24 +10,11 @@ import lombok.Setter;
 @Entity
 @Getter
 @RequiredArgsConstructor
-public class GroupRanker {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "group_ranker_id")
-    private Long id;
+public class GroupRanker extends Ranker {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "group_ranking_id")
-    @Setter
-    private GroupRanking belongingRanking;
-
-    @Column(name = "ranking")
-    @Setter
-    private int ranking;
 
     @Column(name = "weekly_level_increment")
     private int weeklyLevelIncrement;

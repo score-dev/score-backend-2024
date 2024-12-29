@@ -2,9 +2,9 @@ package com.score.backend.domain.group;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.dtos.*;
-import com.score.backend.domain.group.rank.GroupRanking;
+import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.exercise.ExerciseService;
-import com.score.backend.domain.group.rank.GroupRankingService;
+import com.score.backend.domain.rank.group.GroupRankingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

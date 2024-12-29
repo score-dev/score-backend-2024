@@ -2,7 +2,7 @@ package com.score.backend.domain.group;
 
 import com.score.backend.domain.school.School;
 import com.score.backend.domain.user.User;
-import com.score.backend.domain.group.rank.GroupRanking;
+import com.score.backend.domain.rank.group.GroupRanking;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,9 +12,7 @@ import com.score.backend.config.BaseEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
@@ -65,7 +63,7 @@ public class GroupEntity extends BaseEntity {
 
     @ManyToMany(mappedBy = "groups")
     @Builder.Default
-    private Set<User> members = new HashSet<>(); //회원들과의 관계
+    private List<User> members = new ArrayList<>(); //회원들과의 관계
 
     @OneToMany(mappedBy = "group")
     @Builder.Default

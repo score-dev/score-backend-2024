@@ -3,7 +3,7 @@ package com.score.backend.domain.group;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.notification.NotificationService;
-import com.score.backend.domain.school.rank.SchoolRankingService;
+import com.score.backend.domain.rank.school.SchoolRankingService;
 import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -135,7 +134,7 @@ public class GroupService{
 
     // 그룹 내 메이트 목록 전체 조회
     public List<UserResponseDto> findAllUsers(Long groupId) {
-        Set<User> members = findById(groupId).getMembers();
+        List<User> members = findById(groupId).getMembers();
         List<UserResponseDto> dtos = new ArrayList<>();
         for (User user : members) {
             dtos.add(new UserResponseDto(user.getId(), user.getNickname(), user.getProfileImg()));

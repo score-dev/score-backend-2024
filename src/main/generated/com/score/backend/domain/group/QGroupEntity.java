@@ -48,7 +48,7 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
     public final StringPath groupPassword = createString("groupPassword");
 
-    public final ListPath<com.score.backend.domain.group.rank.GroupRanking, com.score.backend.domain.group.rank.QGroupRanking> groupRankings = this.<com.score.backend.domain.group.rank.GroupRanking, com.score.backend.domain.group.rank.QGroupRanking>createList("groupRankings", com.score.backend.domain.group.rank.GroupRanking.class, com.score.backend.domain.group.rank.QGroupRanking.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.rank.group.GroupRanking, com.score.backend.domain.rank.group.QGroupRanking> groupRankings = this.<com.score.backend.domain.rank.group.GroupRanking, com.score.backend.domain.rank.group.QGroupRanking>createList("groupRankings", com.score.backend.domain.rank.group.GroupRanking.class, com.score.backend.domain.rank.group.QGroupRanking.class, PathInits.DIRECT2);
 
     public final DateTimePath<java.time.LocalDateTime> groupUpdatedAt = createDateTime("groupUpdatedAt", java.time.LocalDateTime.class);
 
@@ -57,7 +57,7 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
-    public final SetPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> members = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createSet("members", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> members = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createList("members", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> todayExercisedCount = createNumber("todayExercisedCount", Integer.class);
 
