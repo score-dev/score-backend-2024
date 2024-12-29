@@ -52,11 +52,11 @@ public class UserController {
     // 온보딩에서 회원 정보 입력 완료시
     @Operation(summary = "신규 회원 정보 저장", description = "온보딩에서 회원 정보가 입력이 완료될 경우 수행되는 요청입니다. 해당 정보를 db에 저장하고 로그인을 진행합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "신규 회원 정보 저장 완료"),
+            value = {@ApiResponse(responseCode = "200", description = "신규 회원 정보 저장 완료. 회원의 고유 ID 값 응답."),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/public/onboarding/fin", method = RequestMethod.POST)
-    public ResponseEntity<String> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
+    public ResponseEntity<Long> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
                                               @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
                                               @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
 
@@ -66,11 +66,7 @@ public class UserController {
         User user = userDto.toEntity(authService.getUserId(userDto.getProvider(), userDto.getIdToken()));
         // 유저 엔티티에 학교 정보 set
         user.setSchoolAndStudent(school);
-
-        // 해당 회원 정보 db에 저장
-        userService.saveUser(user, multipartFile);
-
-        return ResponseEntity.ok("회원가입이 완료되었습니다.");
+        return ResponseEntity.ok(userService.saveUser(user, multipartFile));
     }
 
     // 메인 페이지 접속시 토큰의 유효성 확인

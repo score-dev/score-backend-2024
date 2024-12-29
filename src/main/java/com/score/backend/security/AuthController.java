@@ -24,16 +24,13 @@ public class AuthController {
 
     @Operation(summary = "소셜 로그인 인증 완료 시 로그인 시도 검증 및 기존 회원 여부 확인", description = "발급된 id 토큰을 검증하고 기존 회원인지 여부를 확인합니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "소셜 로그인 인증 완료. Response Body가 true이면 기존 회원, false이면 신규 회원."),
+            value = {@ApiResponse(responseCode = "200", description = "소셜 로그인 인증 완료. Response Body가 -1이면 신규 회원, 기존 회원이면 회원의 고유 id 값 응답."),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/oauth", method = RequestMethod.GET)
-    public ResponseEntity<Boolean> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
+    public ResponseEntity<Long> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
                                                  @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) {
-        if (userService.isPresentUser(authService.getUserId(provider, idToken))) {
-            return ResponseEntity.ok(true);
-        }
-        return ResponseEntity.ok(false);
+        return ResponseEntity.ok(userService.isPresentUser(authService.getUserId(provider, idToken)));
     }
 
     @Operation(summary = "access token (재)발급 요청", description = "access token (재)발급 요청 시 refresh token을 검증한 후 발급을 진행합니다.")

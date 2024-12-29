@@ -24,10 +24,10 @@ public class UserService {
     private final SchoolService schoolService;
 
     @Transactional
-    public void saveUser(User user, MultipartFile profileImage) {
+    public Long saveUser(User user, MultipartFile profileImage) {
         // db에 기본 프로필 이미지 저장된 후 프로필 사진 미설정시 기본 프로필 이미지 설정되도록 하는 기능 구현 필요
         user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
-        userRepository.save(user);
+        return userRepository.save(user).getId();
     }
 
     @Transactional
@@ -82,8 +82,11 @@ public class UserService {
         return userRepository.findByKey(sub);
     }
 
-    public boolean isPresentUser(Long key) {
+    public Long isPresentUser(Long key) {
         Optional<User> userOption = userRepository.findByKey(key);
-        return userOption.isPresent();
+        if (userOption.isPresent()) {
+            return userOption.get().getId();
+        }
+        return (long) -1;
     }
 }
