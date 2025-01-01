@@ -7,6 +7,7 @@ import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.rank.group.GroupRankService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -44,10 +47,11 @@ public class GroupController {
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
     @PostMapping("/create")
-    public ResponseEntity<String> createGroup(@Valid @RequestBody GroupCreateDto groupCreateDto, @RequestParam Long adminId) {
+    public ResponseEntity<String> createGroup(@Valid @RequestPart GroupCreateDto groupCreateDto, @RequestPart Long adminId,
+                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
         try {
             groupCreateDto.isValid();  // 추가 검증
-            groupService.createGroup(groupCreateDto, adminId);
+            groupService.createGroup(groupCreateDto, adminId, multipartFile);
             return ResponseEntity.ok("그룹 생성이 완료되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

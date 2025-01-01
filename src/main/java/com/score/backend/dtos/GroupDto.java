@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class GroupDto {
     private Long id;
-    private String img;
     private String name;
     private String description;
     private int userLimit;
@@ -32,7 +31,6 @@ public class GroupDto {
 
         return new GroupDto(
                 group.getGroupId(),
-                group.getGroupImg(),
                 group.getGroupName(),
                 group.getGroupDescription(),
                 group.getUserLimit(),

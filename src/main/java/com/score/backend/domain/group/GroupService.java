@@ -1,5 +1,6 @@
 package com.score.backend.domain.group;
 
+import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.notification.NotificationService;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class GroupService {
     private final ExerciseService exerciseService;
     private final UserService userService;
     private final RankingService rankingService;
+    private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
     private final SchoolService schoolService;
 
@@ -47,14 +50,14 @@ public class GroupService {
     }
 
 
-    public void createGroup(GroupCreateDto groupCreateDto, Long adminId) {
+    public void createGroup(GroupCreateDto groupCreateDto, Long adminId, MultipartFile image) {
 
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("그룹장을 못 찾습니다."));
 
         GroupEntity group = GroupEntity.builder()
-                .groupImg(groupCreateDto.getGroupImg())
                 .groupName(groupCreateDto.getGroupName())
+                .groupImg(imageUploadService.uploadImage(image))
                 .groupDescription(groupCreateDto.getGroupDescription())
                 .userLimit(groupCreateDto.getUserLimit())
                 .isPrivate(groupCreateDto.isPrivate())
