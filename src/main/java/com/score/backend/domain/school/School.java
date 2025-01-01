@@ -3,6 +3,7 @@ package com.score.backend.domain.school;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
 import com.score.backend.domain.group.GroupEntity;
+import com.score.backend.domain.rank.school.SchoolRanking;
 import com.score.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,4 +40,9 @@ public class School extends BaseEntity {
     @JsonIgnore
     @Builder.Default
     private List<GroupEntity> groups = new ArrayList<>();
+
+    @OneToMany(mappedBy = "school")
+    @JsonIgnore
+    @Builder.Default
+    private List<SchoolRanking> schoolRankings = new ArrayList<>();
 }

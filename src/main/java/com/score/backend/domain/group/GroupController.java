@@ -2,9 +2,9 @@ package com.score.backend.domain.group;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.dtos.*;
-import com.score.backend.domain.group.rank.GroupRanking;
+import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.exercise.ExerciseService;
-import com.score.backend.domain.group.rank.GroupRankingService;
+import com.score.backend.domain.rank.group.GroupRankService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,7 +35,7 @@ public class GroupController {
 
     private final GroupService groupService;
     private final ExerciseService exerciseService;
-    private final GroupRankingService groupRankingService;
+    private final GroupRankService groupRankingService;
     private final BatonService batonService;
 
     @Operation(summary = "그룹 생성", description = "새로운 그룹을 생성하는 API입니다.")

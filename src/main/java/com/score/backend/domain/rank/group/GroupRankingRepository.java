@@ -1,4 +1,4 @@
-package com.score.backend.domain.group.rank;
+package com.score.backend.domain.rank.group;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

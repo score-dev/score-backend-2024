@@ -160,11 +160,11 @@ public class User extends BaseEntity {
     public void updateCumulativeDistance(double distance) {
         this.cumulativeDistance += distance;
     }
-    public void updatePoint(int point) {
-        this.point += point;
+    public void updatePoint(int amount) {
+        point += amount;
         // 500 포인트 달성 시 레벨업 + 포인트 초기화
         if (point >= 500) {
-            this.increaseLevel(point / 500);
+            this.increaseLevel(amount / 500);
             this.initPoint(point % 500);
         }
     }

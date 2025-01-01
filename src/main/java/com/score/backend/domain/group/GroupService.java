@@ -3,7 +3,7 @@ package com.score.backend.domain.group;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.notification.NotificationService;
-import com.score.backend.domain.school.rank.SchoolRankingService;
+import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
@@ -19,20 +19,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Slf4j
 @Service
 
 @RequiredArgsConstructor
 @Transactional
-public class GroupService{
+public class GroupService {
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final ExerciseService exerciseService;
     private final UserService userService;
-    private final SchoolRankingService schoolRankingService;
+    private final RankingService rankingService;
     private final NotificationService notificationService;
     private final SchoolService schoolService;
 
@@ -135,7 +134,7 @@ public class GroupService{
 
     // 그룹 내 메이트 목록 전체 조회
     public List<UserResponseDto> findAllUsers(Long groupId) {
-        Set<User> members = findById(groupId).getMembers();
+        List<User> members = findById(groupId).getMembers();
         List<UserResponseDto> dtos = new ArrayList<>();
         for (User user : members) {
             dtos.add(new UserResponseDto(user.getId(), user.getNickname(), user.getProfileImg()));
@@ -200,7 +199,7 @@ public class GroupService{
     public GroupInfoResponse getGroupInfoForNonMember(Long groupId) {
         GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercisePics(0, groupId);
-        return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), schoolRankingService.getRatioOfParticipate(group), feeds);
+        return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), rankingService.getRatioOfParticipate(group), feeds);
     }
 
     // 유저가 가입해 있는 그룹의 정보 반환

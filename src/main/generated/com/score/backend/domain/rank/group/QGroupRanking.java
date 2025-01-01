@@ -1,4 +1,4 @@
-package com.score.backend.domain.group.rank;
+package com.score.backend.domain.rank.group;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,21 +16,29 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QGroupRanking extends EntityPathBase<GroupRanking> {
 
-    private static final long serialVersionUID = 2000009027L;
+    private static final long serialVersionUID = -1838697855L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QGroupRanking groupRanking = new QGroupRanking("groupRanking");
 
-    public final DatePath<java.time.LocalDate> endDate = createDate("endDate", java.time.LocalDate.class);
+    public final com.score.backend.domain.rank.QRanking _super = new com.score.backend.domain.rank.QRanking(this);
+
+    //inherited
+    public final DatePath<java.time.LocalDate> endDate = _super.endDate;
 
     public final com.score.backend.domain.group.QGroupEntity group;
 
     public final ListPath<GroupRanker, QGroupRanker> groupRankers = this.<GroupRanker, QGroupRanker>createList("groupRankers", GroupRanker.class, QGroupRanker.class, PathInits.DIRECT2);
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    //inherited
+    public final NumberPath<Long> id = _super.id;
 
-    public final DatePath<java.time.LocalDate> startDate = createDate("startDate", java.time.LocalDate.class);
+    //inherited
+    public final ListPath<com.score.backend.domain.rank.Ranker, com.score.backend.domain.rank.QRanker> rankers = _super.rankers;
+
+    //inherited
+    public final DatePath<java.time.LocalDate> startDate = _super.startDate;
 
     public QGroupRanking(String variable) {
         this(GroupRanking.class, forVariable(variable), INITS);

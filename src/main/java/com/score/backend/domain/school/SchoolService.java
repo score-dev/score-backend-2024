@@ -6,12 +6,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class SchoolService {
 
     private final SchoolRepository schoolRepository;
+
+    public School findById(Long id) {
+        return schoolRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("School not found")
+        );
+    }
 
     public School findOrSave(SchoolDto schoolDto) {
         School school = findSchoolByCode(schoolDto.getSchoolCode());

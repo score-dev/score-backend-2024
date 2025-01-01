@@ -1,4 +1,4 @@
-package com.score.backend.domain.group.rank;
+package com.score.backend.domain.rank.group;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class GroupRankingService {
+public class GroupRankService {
     private final GroupRankingRepository groupRankingRepository;
     private final GroupRankerRepository groupRankerRepository;
 

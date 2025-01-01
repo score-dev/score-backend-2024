@@ -1,4 +1,4 @@
-package com.score.backend.domain.group.rank;
+package com.score.backend.domain.rank.group;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,19 +16,25 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QGroupRanker extends EntityPathBase<GroupRanker> {
 
-    private static final long serialVersionUID = -905315028L;
+    private static final long serialVersionUID = -752049618L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QGroupRanker groupRanker = new QGroupRanker("groupRanker");
 
-    public final QGroupRanking belongingRanking;
+    public final com.score.backend.domain.rank.QRanker _super;
 
-    public final NumberPath<Integer> changedDegree = createNumber("changedDegree", Integer.class);
+    // inherited
+    public final com.score.backend.domain.rank.QRanking belongsTo;
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    //inherited
+    public final NumberPath<Integer> changedAmount;
 
-    public final NumberPath<Integer> ranking = createNumber("ranking", Integer.class);
+    //inherited
+    public final NumberPath<Long> id;
+
+    //inherited
+    public final NumberPath<Integer> rankNum;
 
     public final com.score.backend.domain.user.QUser user;
 
@@ -54,7 +60,11 @@ public class QGroupRanker extends EntityPathBase<GroupRanker> {
 
     public QGroupRanker(Class<? extends GroupRanker> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.belongingRanking = inits.isInitialized("belongingRanking") ? new QGroupRanking(forProperty("belongingRanking"), inits.get("belongingRanking")) : null;
+        this._super = new com.score.backend.domain.rank.QRanker(type, metadata, inits);
+        this.belongsTo = _super.belongsTo;
+        this.changedAmount = _super.changedAmount;
+        this.id = _super.id;
+        this.rankNum = _super.rankNum;
         this.user = inits.isInitialized("user") ? new com.score.backend.domain.user.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
