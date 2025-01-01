@@ -14,5 +14,4 @@ public class GroupRankService {
     public GroupRanking findRankingByGroupIdAndDate(Long groupId, LocalDate localDate) {
         return groupRankingRepository.findByGroupIdAndDate(groupId, localDate);
     }
-
 }

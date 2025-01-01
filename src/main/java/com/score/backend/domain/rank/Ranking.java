@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -24,9 +22,6 @@ public abstract class Ranking {
 
     @Column(name = "end_date")
     private LocalDate endDate;
-
-    @OneToMany(mappedBy = "belongsTo")
-    private List<Ranker> rankers = new ArrayList<>();
 
     public Ranking(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;

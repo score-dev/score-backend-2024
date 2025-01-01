@@ -107,7 +107,7 @@ public class RankingService {
             } else {
                 info.get(i).changedDegree = 0;
             }
-            SchoolRanker sr = new SchoolRanker(info.get(i).participateRatio, info.get(i).totalExerciseTime, info.get(i).rankNum, info.get(i).changedDegree);
+            SchoolRanker sr = new SchoolRanker(info.get(i).group, info.get(i).participateRatio, info.get(i).totalExerciseTime, info.get(i).rankNum, info.get(i).changedDegree);
             schoolRankerRepository.save(sr);
             thisWeekSchoolRankers.add(sr);
         }
@@ -115,7 +115,7 @@ public class RankingService {
 
         // 연관 관계 설정
         for (SchoolRanker schoolRanker : thisWeekSchoolRankers) {
-            thisWeekSchoolRanking.getRankers().add(schoolRanker);
+            thisWeekSchoolRanking.getSchoolRankers().add(schoolRanker);
             schoolRanker.setBelongsTo(thisWeekSchoolRanking);
         }
         return thisWeekSchoolRanking;

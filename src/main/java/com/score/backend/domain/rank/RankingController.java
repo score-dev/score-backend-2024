@@ -4,6 +4,12 @@ import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.rank.group.GroupRankService;
 import com.score.backend.domain.rank.group.GroupRanking;
+import com.score.backend.domain.rank.school.SchoolRankService;
+import com.score.backend.domain.school.School;
+import com.score.backend.domain.school.SchoolService;
+import com.score.backend.domain.user.UserService;
+import com.score.backend.dtos.schoolrank.SchoolRankerResponse;
+import com.score.backend.dtos.schoolrank.SchoolRankingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
@@ -30,7 +37,11 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 @RequiredArgsConstructor
 public class RankingController {
     private final GroupService groupService;
+    private final UserService userService;
+    private final SchoolService schoolService;
     private final GroupRankService groupRankService;
+    private final SchoolRankService schoolRankService;
+
     @Operation(summary = "그룹 랭킹 조회", description = "그룹 내 개인 랭킹을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "랭킹 정보 응답"),
@@ -55,6 +66,29 @@ public class RankingController {
         }
         try {
             return ResponseEntity.ok(groupRankService.findRankingByGroupIdAndDate(groupId, localDate));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "학교 랭킹 조회", description = "학교 내 그룹 랭킹을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "랭킹 정보 응답"),
+            @ApiResponse(responseCode = "404", description = "학교를 찾을 수 없습니다.")
+    })
+    @GetMapping("/school")
+    public ResponseEntity<SchoolRankingResponse> getSchoolRanking(
+            @Parameter(description = "조회를 요청한 유저의 고유 Id 값", required = true) @RequestParam Long userId,
+            @Parameter(description = "랭킹을 조회하고자 하는 주차 월요일에 해당하는 날짜. 주어지지 않을 경우 가장 최근 주차의 랭킹으로 응답.") @RequestParam(value = "localDate", required = false) @DateTimeFormat(iso = DATE) LocalDate localDate) {
+        if (localDate != null) {
+            localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
+        }
+        try {
+            School school = userService.findUserById(userId).get().getSchool();
+            List<SchoolRankerResponse> allRankers = schoolRankService.findAllSchoolRankingByUserId(userId, localDate);
+            List<SchoolRankerResponse> myGroupRankers = schoolRankService.findMyGroupRankingByUserId(userId, localDate);
+            return ResponseEntity.ok(new SchoolRankingResponse(school.getSchoolName(), school.getId(), allRankers, myGroupRankers));
+
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }

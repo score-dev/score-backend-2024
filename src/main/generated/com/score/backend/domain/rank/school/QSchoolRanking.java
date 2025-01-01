@@ -30,10 +30,9 @@ public class QSchoolRanking extends EntityPathBase<SchoolRanking> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    //inherited
-    public final ListPath<com.score.backend.domain.rank.Ranker, com.score.backend.domain.rank.QRanker> rankers = _super.rankers;
-
     public final com.score.backend.domain.school.QSchool school;
+
+    public final ListPath<SchoolRanker, QSchoolRanker> schoolRankers = this.<SchoolRanker, QSchoolRanker>createList("schoolRankers", SchoolRanker.class, QSchoolRanker.class, PathInits.DIRECT2);
 
     //inherited
     public final DatePath<java.time.LocalDate> startDate = _super.startDate;

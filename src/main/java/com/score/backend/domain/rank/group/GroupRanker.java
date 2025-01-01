@@ -1,16 +1,21 @@
 package com.score.backend.domain.rank.group;
 
 import com.score.backend.domain.rank.Ranker;
-import com.score.backend.domain.rank.Ranking;
 import com.score.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @RequiredArgsConstructor
 public class GroupRanker extends Ranker {
+
+    @ManyToOne
+    @JoinColumn(name = "ranking_id")
+    @Setter
+    private GroupRanking belongsTo;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
