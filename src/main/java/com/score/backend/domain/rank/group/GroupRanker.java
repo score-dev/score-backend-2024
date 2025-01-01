@@ -1,11 +1,11 @@
 package com.score.backend.domain.rank.group;
 
 import com.score.backend.domain.rank.Ranker;
+import com.score.backend.domain.rank.Ranking;
 import com.score.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -22,11 +22,8 @@ public class GroupRanker extends Ranker {
     @Column(name = "weekly_exercise_time")
     private double weeklyExerciseTime;
 
-    @Column(name = "changed_degree")
-    @Setter
-    private int changedDegree;
-
-    public GroupRanker(User user, int weeklyLevelIncrement, double weeklyExerciseTime) {
+    public GroupRanker(User user, int rankNum, int changedAmount, int weeklyLevelIncrement, double weeklyExerciseTime) {
+        super(rankNum, changedAmount);
         this.user = user;
         this.weeklyLevelIncrement = weeklyLevelIncrement;
         this.weeklyExerciseTime = weeklyExerciseTime;

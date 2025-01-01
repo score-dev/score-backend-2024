@@ -27,4 +27,9 @@ public abstract class Ranker {
 
     @Column(name = "changed_amount")
     private int changedAmount;
+
+    public Ranker(int rankNum, int changedAmount) {
+        this.rankNum = rankNum;
+        this.changedAmount = changedAmount;
+    }
 }

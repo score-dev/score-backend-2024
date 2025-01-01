@@ -43,6 +43,8 @@ public class QSchool extends EntityPathBase<School> {
 
     public final StringPath schoolName = createString("schoolName");
 
+    public final ListPath<com.score.backend.domain.rank.school.SchoolRanking, com.score.backend.domain.rank.school.QSchoolRanking> schoolRankings = this.<com.score.backend.domain.rank.school.SchoolRanking, com.score.backend.domain.rank.school.QSchoolRanking>createList("schoolRankings", com.score.backend.domain.rank.school.SchoolRanking.class, com.score.backend.domain.rank.school.QSchoolRanking.class, PathInits.DIRECT2);
+
     public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> students = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createList("students", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
 
     //inherited

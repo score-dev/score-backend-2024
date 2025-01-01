@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class GroupRankingService {
+public class GroupRankService {
     private final GroupRankingRepository groupRankingRepository;
     private final GroupRankerRepository groupRankerRepository;
 

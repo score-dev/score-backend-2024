@@ -2,6 +2,7 @@ package com.score.backend.domain.rank.school;
 
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.rank.Ranker;
+import com.score.backend.domain.rank.Ranking;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -18,4 +19,10 @@ public class SchoolRanker extends Ranker {
 
     @Column(name = "total_exercise_time")
     private double totalExerciseTime;
+
+    public SchoolRanker(double participateRatio, double totalExerciseTime, int rankNum, int changeAmount) {
+        super(rankNum, changeAmount);
+        this.totalExerciseTime = totalExerciseTime;
+        this.participateRatio = participateRatio;
+    }
 }

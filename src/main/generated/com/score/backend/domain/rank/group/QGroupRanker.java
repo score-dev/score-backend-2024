@@ -30,8 +30,6 @@ public class QGroupRanker extends EntityPathBase<GroupRanker> {
     //inherited
     public final NumberPath<Integer> changedAmount;
 
-    public final NumberPath<Integer> changedDegree = createNumber("changedDegree", Integer.class);
-
     //inherited
     public final NumberPath<Long> id;
 

@@ -3,36 +3,31 @@ package com.score.backend;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.notification.NotificationService;
+import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FcmMessageRequest;
-import com.score.backend.domain.rank.group.GroupRanker;
 import com.score.backend.domain.rank.group.GroupRanking;
-import com.score.backend.domain.rank.group.GroupRankerRepository;
-import com.score.backend.domain.rank.group.GroupRankingRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-// 리팩토링 필요
 public class SchedulerService {
     private final UserService userService;
     private final GroupService groupService;
-    private final GroupRankingRepository groupRankingRepository;
-    private final GroupRankerRepository groupRankerRepository;
+    private final RankingService rankingService;
     private final NotificationService notificationService;
 
     // 매일 0시에 실행
@@ -59,7 +54,7 @@ public class SchedulerService {
 
         for (GroupEntity group : allGroups) {
             // 그룹 내 주간 랭킹 산정
-            GroupRanking gr = calculateWeeklyGroupRanking(group.getGroupId());
+            GroupRanking gr = rankingService.calculateWeeklyGroupRanking(group);
             group.getGroupRankings().add(gr);
             // 이번 주 운동한 그룹원 수 0명으로 초기화
             group.initTodayExercisedCount();
@@ -84,41 +79,6 @@ public class SchedulerService {
         }
 
         // 학교 그룹 산정 필요
-    }
-
-    private GroupRanking calculateWeeklyGroupRanking(Long groupId) {
-        GroupEntity group = groupService.findById(groupId);
-        GroupRanking lastWeekGroupRanking = group.getGroupRankings().get(group.getGroupRankings().size() - 1);
-        List<User> groupMates = new ArrayList<>(group.getMembers().stream().toList());
-        GroupRanking thisWeekGroupRanking = new GroupRanking(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), group);
-        List<GroupRanker> thisWeekGroupRankers = new ArrayList<>();
-        for (User user : groupMates) {
-            GroupRanker gr = new GroupRanker(user, user.getWeeklyLevelIncrement(), user.getWeeklyCumulativeTime());
-            thisWeekGroupRankers.add(gr);
-        }
-
-        if (thisWeekGroupRankers.size() >= 2) {
-            thisWeekGroupRankers.sort((o1, o2) -> {
-                if (o1.getWeeklyLevelIncrement() == o2.getWeeklyLevelIncrement()) {
-                    return (int) (o2.getWeeklyExerciseTime() - o1.getWeeklyExerciseTime());
-                }
-                return o2.getWeeklyLevelIncrement() - o1.getWeeklyLevelIncrement();
-            });
-        }
-
-        for (int i = 0; i < thisWeekGroupRankers.size(); i++) {
-            thisWeekGroupRankers.get(i).setRankNum(i + 1); // 금주의 순위 설정
-            // 지난주와의 순위 비교 후 변동 추이 계산
-            if (lastWeekGroupRanking.getGroupRankers().contains(thisWeekGroupRankers.get(i))) {
-                thisWeekGroupRankers.get(i).setChangedDegree(groupRankerRepository.findByGroupRankingIdAndUserId(lastWeekGroupRanking.getId(), thisWeekGroupRankers.get(i).getUser().getId()).getRankNum() - (i + 1));
-            } else {
-                thisWeekGroupRankers.get(i).setChangedDegree(0);
-            }
-            GroupRanker ranker = groupRankerRepository.save(thisWeekGroupRankers.get(i));
-            ranker.setBelongsTo(thisWeekGroupRanking);
-            thisWeekGroupRanking.getGroupRankers().add(ranker);
-        }
-        return groupRankingRepository.save(thisWeekGroupRanking);
     }
 
     @Scheduled(fixedRate = 60000) // 1분마다 실행

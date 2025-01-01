@@ -3,7 +3,7 @@ package com.score.backend.domain.group;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.notification.NotificationService;
-import com.score.backend.domain.rank.school.SchoolRankingService;
+import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
@@ -25,13 +25,13 @@ import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Transactional
-public class GroupService{
+public class GroupService {
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final ExerciseService exerciseService;
     private final UserService userService;
-    private final SchoolRankingService schoolRankingService;
+    private final RankingService rankingService;
     private final NotificationService notificationService;
     private final SchoolService schoolService;
 
@@ -199,7 +199,7 @@ public class GroupService{
     public GroupInfoResponse getGroupInfoForNonMember(Long groupId) {
         GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercisePics(0, groupId);
-        return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), schoolRankingService.getRatioOfParticipate(group), feeds);
+        return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), rankingService.getRatioOfParticipate(group), feeds);
     }
 
     // 유저가 가입해 있는 그룹의 정보 반환
