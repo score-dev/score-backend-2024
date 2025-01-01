@@ -35,9 +35,6 @@ public class QGroupRanking extends EntityPathBase<GroupRanking> {
     public final NumberPath<Long> id = _super.id;
 
     //inherited
-    public final ListPath<com.score.backend.domain.rank.Ranker, com.score.backend.domain.rank.QRanker> rankers = _super.rankers;
-
-    //inherited
     public final DatePath<java.time.LocalDate> startDate = _super.startDate;
 
     public QGroupRanking(String variable) {

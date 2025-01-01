@@ -2,16 +2,19 @@ package com.score.backend.domain.rank.school;
 
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.rank.Ranker;
-import com.score.backend.domain.rank.Ranking;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
 @DiscriminatorValue("S")
 public class SchoolRanker extends Ranker {
     @ManyToOne
-    @JoinColumn(name = "group_id")
+    @Setter
+    private SchoolRanking belongsTo;
+
+    @ManyToOne
     private GroupEntity group;
 
     @Column(name = "participate_ratio")
@@ -20,8 +23,9 @@ public class SchoolRanker extends Ranker {
     @Column(name = "total_exercise_time")
     private double totalExerciseTime;
 
-    public SchoolRanker(double participateRatio, double totalExerciseTime, int rankNum, int changeAmount) {
+    public SchoolRanker(GroupEntity group, double participateRatio, double totalExerciseTime, int rankNum, int changeAmount) {
         super(rankNum, changeAmount);
+        this.group = group;
         this.totalExerciseTime = totalExerciseTime;
         this.participateRatio = participateRatio;
     }

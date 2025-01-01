@@ -22,19 +22,18 @@ public class QGroupRanker extends EntityPathBase<GroupRanker> {
 
     public static final QGroupRanker groupRanker = new QGroupRanker("groupRanker");
 
-    public final com.score.backend.domain.rank.QRanker _super;
+    public final com.score.backend.domain.rank.QRanker _super = new com.score.backend.domain.rank.QRanker(this);
 
-    // inherited
-    public final com.score.backend.domain.rank.QRanking belongsTo;
-
-    //inherited
-    public final NumberPath<Integer> changedAmount;
+    public final QGroupRanking belongsTo;
 
     //inherited
-    public final NumberPath<Long> id;
+    public final NumberPath<Integer> changedAmount = _super.changedAmount;
 
     //inherited
-    public final NumberPath<Integer> rankNum;
+    public final NumberPath<Long> id = _super.id;
+
+    //inherited
+    public final NumberPath<Integer> rankNum = _super.rankNum;
 
     public final com.score.backend.domain.user.QUser user;
 
@@ -60,11 +59,7 @@ public class QGroupRanker extends EntityPathBase<GroupRanker> {
 
     public QGroupRanker(Class<? extends GroupRanker> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this._super = new com.score.backend.domain.rank.QRanker(type, metadata, inits);
-        this.belongsTo = _super.belongsTo;
-        this.changedAmount = _super.changedAmount;
-        this.id = _super.id;
-        this.rankNum = _super.rankNum;
+        this.belongsTo = inits.isInitialized("belongsTo") ? new QGroupRanking(forProperty("belongsTo"), inits.get("belongsTo")) : null;
         this.user = inits.isInitialized("user") ? new com.score.backend.domain.user.QUser(forProperty("user"), inits.get("user")) : null;
     }
 

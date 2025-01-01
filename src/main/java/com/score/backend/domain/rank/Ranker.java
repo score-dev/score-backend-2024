@@ -16,11 +16,6 @@ public abstract class Ranker {
     @Column(name = "ranker_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "ranking_id")
-    @Setter
-    private Ranking belongsTo;
-
     @Column(name = "rank_num")
     @Setter
     private int rankNum;

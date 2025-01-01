@@ -22,23 +22,22 @@ public class QSchoolRanker extends EntityPathBase<SchoolRanker> {
 
     public static final QSchoolRanker schoolRanker = new QSchoolRanker("schoolRanker");
 
-    public final com.score.backend.domain.rank.QRanker _super;
+    public final com.score.backend.domain.rank.QRanker _super = new com.score.backend.domain.rank.QRanker(this);
 
-    // inherited
-    public final com.score.backend.domain.rank.QRanking belongsTo;
+    public final QSchoolRanking belongsTo;
 
     //inherited
-    public final NumberPath<Integer> changedAmount;
+    public final NumberPath<Integer> changedAmount = _super.changedAmount;
 
     public final com.score.backend.domain.group.QGroupEntity group;
 
     //inherited
-    public final NumberPath<Long> id;
+    public final NumberPath<Long> id = _super.id;
 
     public final NumberPath<Double> participateRatio = createNumber("participateRatio", Double.class);
 
     //inherited
-    public final NumberPath<Integer> rankNum;
+    public final NumberPath<Integer> rankNum = _super.rankNum;
 
     public final NumberPath<Double> totalExerciseTime = createNumber("totalExerciseTime", Double.class);
 
@@ -60,12 +59,8 @@ public class QSchoolRanker extends EntityPathBase<SchoolRanker> {
 
     public QSchoolRanker(Class<? extends SchoolRanker> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this._super = new com.score.backend.domain.rank.QRanker(type, metadata, inits);
-        this.belongsTo = _super.belongsTo;
-        this.changedAmount = _super.changedAmount;
+        this.belongsTo = inits.isInitialized("belongsTo") ? new QSchoolRanking(forProperty("belongsTo"), inits.get("belongsTo")) : null;
         this.group = inits.isInitialized("group") ? new com.score.backend.domain.group.QGroupEntity(forProperty("group"), inits.get("group")) : null;
-        this.id = _super.id;
-        this.rankNum = _super.rankNum;
     }
 
 }
