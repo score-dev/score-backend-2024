@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,10 @@ public class RankingService {
 
         // 이번주 순위 산출을 위해 참여율 및 총 운동 시간 연산
         for (GroupEntity group : school.getGroups()) {
+            // 생성된 지 일주일이 되지 않은 그룹의 경우 순위 산정에서 제외
+            if (group.getGroupCreatedAt().toLocalDate().isBefore(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1))) {
+                continue;
+            }
             double weeklyCumulativeTime = 0.0;
             for (User user : group.getMembers()) {
                 weeklyCumulativeTime += user.getWeeklyCumulativeTime();
