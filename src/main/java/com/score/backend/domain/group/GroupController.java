@@ -2,9 +2,7 @@ package com.score.backend.domain.group;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.dtos.*;
-import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.exercise.ExerciseService;
-import com.score.backend.domain.rank.group.GroupRankService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,30 +13,24 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
-import static org.springframework.format.annotation.DateTimeFormat.ISO.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Slf4j
 @Tag(name = "Group", description = "그룹 정보 관리를 위한 API입니다.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/groups")
+@RequestMapping("/score/groups")
 public class GroupController {
 
     private final GroupService groupService;
     private final ExerciseService exerciseService;
-    private final GroupRankService groupRankingService;
     private final BatonService batonService;
 
     @Operation(summary = "그룹 생성", description = "새로운 그룹을 생성하는 API입니다.")
@@ -131,35 +123,6 @@ public class GroupController {
             return ResponseEntity.ok("그룹 가입이 완료되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @Operation(summary = "그룹 랭킹 조회", description = "그룹 내 개인 랭킹을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "랭킹 정보 응답"),
-            @ApiResponse(responseCode = "409", description = "신규 생성되어 랭킹이 산정되지 않는 주차에 대한 조회 요청"),
-            @ApiResponse(responseCode = "404", description = "그룹을 찾을 수 없습니다.")
-    })
-    @GetMapping("/ranking")
-    public ResponseEntity<GroupRanking> getGroupRanking(
-            @Parameter(description = "조회하고자 하는 그룹의 고유 id 값", required = true) @RequestParam Long groupId,
-            @Parameter(description = "랭킹을 조회하고자 하는 주차 월요일에 해당하는 날짜. 주어지지 않을 경우 가장 최근 주차의 랭킹으로 응답.") @RequestParam(value = "localDate", required = false) @DateTimeFormat(iso = DATE) LocalDate localDate) {
-
-        if (localDate != null) {
-            localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
-        }
-        GroupEntity group = groupService.findById(groupId);
-
-        // 해당 그룹이 생성된 날짜
-        LocalDate createdDate = group.getCreatedAt().toLocalDate();
-
-        if (!createdDate.isBefore(localDate)) {
-            return ResponseEntity.status(409).build();
-        }
-        try {
-            return ResponseEntity.ok(groupRankingService.findRankingByGroupIdAndDate(groupId, localDate));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
         }
     }
 
