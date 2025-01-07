@@ -65,7 +65,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> level = createNumber("level", Integer.class);
 
-    public final NumberPath<Long> loginKey = createNumber("loginKey", Long.class);
+    public final StringPath loginKey = createString("loginKey");
 
     public final BooleanPath marketing = createBoolean("marketing");
 

@@ -24,23 +24,23 @@ public class AuthService {
         return verifier.verify(idToken);
     }
 
-    public Long getUserId(String provider, String idToken) {
+    public String getUserId(String provider, String idToken) {
         try {
             if (verifyToken(provider, idToken)) {
                 SignedJWT signedJWT = SignedJWT.parse(idToken);
                 JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-                return Long.parseLong(claims.getSubject());
+                return claims.getSubject();
             }
         } catch (ParseException e) {
             throw new RuntimeException("Failed to extract user info", e);
         }
-        return 0L;
+        return "";
     }
 
     @Transactional
     public Map<String, String> setJwtToken(String provider, String idToken) {
-        Long userId = getUserId(provider, idToken);
-        User user = userService.findUserByKey(userId).orElseThrow(
+        String userId = getUserId(provider, idToken);
+        User user = userService.findUserByLoginKey(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
         List<String> tokens = jwtProvider.getNewToken(userId.toString());

@@ -45,7 +45,7 @@ public class AuthController {
             User user = userService.findUserById(userId).get();
             String refreshToken = user.getRefreshToken();
             if (jwtProvider.validateToken(refreshToken)) {
-                String accessToken = jwtProvider.createAccessToken(user.getLoginKey().toString());
+                String accessToken = jwtProvider.createAccessToken(user.getLoginKey());
                 return ResponseEntity.ok(accessToken);
             }
             return ResponseEntity.status(401).build();

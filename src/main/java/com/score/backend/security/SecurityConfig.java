@@ -21,7 +21,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화 (JWT 사용 시 권장)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs/**", "/score/auth/**", "/score/public/**").permitAll() // 인증 필요 없는 경로
                         .anyRequest().authenticated() // 나머지 경로는 인증 필요

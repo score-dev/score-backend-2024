@@ -47,7 +47,7 @@ public class UserDto {
     @Schema(description = "소셜 로그인 provider가 제공한 ID Token")
     private String idToken;
 
-    public User toEntity(Long sub) {
+    public User toEntity(String sub) {
         return User.builder()
                 .nickname(nickname)
                 .grade(grade)
