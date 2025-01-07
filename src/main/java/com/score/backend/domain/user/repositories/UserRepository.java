@@ -15,8 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     @Query("select u from User u where u.nickname = :nickname")
     Optional<User> findByNickname(@Param("nickname") String nickname);
 
-    @Query("select u from User u where u.loginKey = :key")
-    Optional<User> findByKey(@Param("key") Long loginKey);
+    Optional<User> findByLoginKey(@Param("loginKey") String loginKey);
 
     List<User> findAllByGoal(LocalTime goal);
 }

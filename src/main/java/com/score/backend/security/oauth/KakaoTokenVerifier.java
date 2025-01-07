@@ -1,6 +1,12 @@
 package com.score.backend.security.oauth;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class KakaoTokenVerifier extends AbstractTokenVerifier {
+
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String kakaoClientId;
+
     @Override
     protected String getJwkUrl() {
         return "https://kauth.kakao.com/.well-known/jwks.json";
@@ -13,6 +19,6 @@ public class KakaoTokenVerifier extends AbstractTokenVerifier {
 
     @Override
     protected String getClientId() {
-        return "";
+        return kakaoClientId;
     }
 }

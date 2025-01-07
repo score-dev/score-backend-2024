@@ -136,7 +136,7 @@ public class User extends BaseEntity {
     @Setter
     private String refreshToken;
 
-    private Long loginKey;
+    private String loginKey;
 
     @Setter
     private String fcmToken;
