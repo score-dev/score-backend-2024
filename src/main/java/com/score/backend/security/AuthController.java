@@ -27,7 +27,7 @@ public class AuthController {
             value = {@ApiResponse(responseCode = "200", description = "소셜 로그인 인증 완료. Response Body가 -1이면 신규 회원, 기존 회원이면 회원의 고유 id 값 응답."),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/oauth", method = RequestMethod.GET)
+    @RequestMapping(value = "/oauth", method = RequestMethod.POST)
     public ResponseEntity<Long> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
                                                  @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) {
         return ResponseEntity.ok(userService.isPresentUser(authService.getUserId(provider, idToken)));
