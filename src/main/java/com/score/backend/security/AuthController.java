@@ -30,7 +30,14 @@ public class AuthController {
     @RequestMapping(value = "/oauth", method = RequestMethod.POST)
     public ResponseEntity<Long> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
                                                  @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) {
-        return ResponseEntity.ok(userService.isPresentUser(authService.getUserId(provider, idToken)));
+        String userKey = authService.getUserId(provider, idToken);
+        Long id = userService.isPresentUser(userKey);
+        if (id >= 0) {
+            userService.findUserById(id).ifPresent(
+                    user -> user.setRefreshToken(userKey)
+            );
+        }
+        return ResponseEntity.ok(id);
     }
 
     @Operation(summary = "access token (재)발급 요청", description = "access token (재)발급 요청 시 refresh token을 검증한 후 발급을 진행합니다.")

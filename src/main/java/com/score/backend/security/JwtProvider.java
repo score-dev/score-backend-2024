@@ -37,10 +37,10 @@ public class JwtProvider {
         return cachedSecretKey;
     }
 
-    public List<String> getNewToken(String token) {
+    public List<String> getNewToken(String userKey) {
         List<String> tokens = new ArrayList<>();
-        tokens.add(createAccessToken(token));
-        tokens.add(createRefreshToken());
+        tokens.add(createAccessToken(userKey));
+        tokens.add(createRefreshToken(userKey));
         return tokens;
     }
 
@@ -48,8 +48,6 @@ public class JwtProvider {
     public Jws<Claims> getClaimsFromJwt(String token) {
         return Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(token);
     }
-
-    //////////// 백엔드 코드에 있는 모든 'access token'은 소셜 로그인 인증 과정에서 사용되는 access token이 아니라 소셜 로그인 인증 완료 이후 발급하는 자체 jwt 토큰입니다! ////////////
 
     // access token 생성
     public String createAccessToken(String userKey) {
@@ -64,8 +62,8 @@ public class JwtProvider {
     }
 
     // access token 만료시 갱신을 위한 refresh token 생성
-    private String createRefreshToken() {
-        Claims claims = Jwts.claims().setSubject("RefreshToken");
+    public String createRefreshToken(String userKey) {
+        Claims claims = Jwts.claims().setSubject(userKey);
         Date presentDate = new Date();
         return Jwts.builder()
                 .setClaims(claims)
@@ -78,7 +76,8 @@ public class JwtProvider {
     // refresh token 검증
     public boolean validateToken(String refreshToken) {
         try {
-            return Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(refreshToken).getBody().getExpiration().after(new Date());
+            Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(refreshToken);
+            return true;
         } catch (Exception e) {
             return false;
         }

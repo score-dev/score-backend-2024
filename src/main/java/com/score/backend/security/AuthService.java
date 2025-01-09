@@ -43,7 +43,7 @@ public class AuthService {
         User user = userService.findUserByLoginKey(userId).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
-        List<String> tokens = jwtProvider.getNewToken(userId.toString());
+        List<String> tokens = jwtProvider.getNewToken(userId);
         user.setRefreshToken(tokens.get(1));
 
         return Map.of(
