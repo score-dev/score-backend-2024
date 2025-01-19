@@ -11,7 +11,8 @@ public class HomeResponse {
     private String profileImgUrl;
     private int level;
     private int point;
-    private double weeklyExerciseTime;
+    private List<Double> weeklyExerciseTimeByDay;
+    private double weeklyTotalExerciseTime;
     private int weeklyExerciseCount;
     private int consecutiveDate;
     private int numOfGroups;
@@ -19,12 +20,13 @@ public class HomeResponse {
     @Setter
     private List<HomeGroupInfoResponse> groupsInfo;
 
-    public HomeResponse(String nickname, String profileImgUrl, int level, int point, double weeklyExerciseTime, int weeklyExerciseCount, int consecutiveDate, int numOfGroups) {
+    public HomeResponse(String nickname, String profileImgUrl, int level, int point, List<Double> weeklyExerciseTimeByDay, double weeklyTotalExerciseTime, int weeklyExerciseCount, int consecutiveDate, int numOfGroups) {
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
         this.level = level;
         this.point = point;
-        this.weeklyExerciseTime = weeklyExerciseTime;
+        this.weeklyExerciseTimeByDay = weeklyExerciseTimeByDay;
+        this.weeklyTotalExerciseTime = weeklyTotalExerciseTime;
         this.weeklyExerciseCount = weeklyExerciseCount;
         this.consecutiveDate = consecutiveDate;
         this.numOfGroups = numOfGroups;
