@@ -1,5 +1,6 @@
 package com.score.backend.domain.group;
 
+import com.amazonaws.Response;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.exercise.ExerciseService;
@@ -111,17 +112,43 @@ public class GroupController {
         }
     }
 
-    @Operation(summary = "그룹 가입", description = "그룹에 가입합니다.")
+    @Operation(summary = "비공개 그룹 비밀번호 일치 여부 확인", description = "비공개 그룹에 가입하고자 할 때 유저가 입력한 비밀번호가 일치하는지 여부를 확인합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "그룹 가입이완료되었습니다."),
+            @ApiResponse(responseCode = "200", description = "true 응답 시 비밀번호 일치, false 응답 시 비밀번호 불일치"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
-    @PutMapping("/join")
-    public ResponseEntity<String> joinGroup(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) {
+    @GetMapping("/join/verify")
+    public ResponseEntity<Boolean> verifyGroupPassword(@RequestParam("input") @Parameter(required = true, description = "유저가 입력한 비공개 그룹의 비밀번호") String input,
+                                                       @RequestParam("groupId") @Parameter(required = true, description = "유저가 가입하려고 하는 그룹의 id 값") Long groupId) {
+        return ResponseEntity.ok(groupService.verifyGroupPassword(input, groupId));
+    }
+
+    @Operation(summary = "그룹 가입 신청", description = "그룹 가입 신청 요청 발생 시 방장에게 알림을 전송합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "그룹 가입 신청 완료"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @GetMapping("/join/request")
+    public ResponseEntity<String> sendGroupJoinRequest(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) {
+        try {
+            groupService.sendGroupJoinRequestNotification(groupId, userId);
+            return  ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
+        } catch (FirebaseMessagingException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "그룹 가입", description = "그룹장이 그룹 가입 신청 승인 시 해당 유저를 그룹에 가입시킵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "그룹 가입이 완료되었습니다."),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @PutMapping("/join/accepted")
+    public ResponseEntity<String> joinGroup(@RequestParam("groupId") Long groupId, @Parameter(required = true, description = "가입 처리할 유저의 id 값") @RequestParam("userId") Long userId) {
         try {
             groupService.addNewMember(groupId, userId);
             return ResponseEntity.ok("그룹 가입이 완료되었습니다.");
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | FirebaseMessagingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
