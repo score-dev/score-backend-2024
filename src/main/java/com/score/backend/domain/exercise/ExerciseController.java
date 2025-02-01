@@ -79,8 +79,6 @@ public class ExerciseController {
                 if (exerciseService.isTodaysFirstValidateExercise(walkingDto.getAgentId())) {
                     // 유저의 연속 운동 일수 증가
                     exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
-                    // 유저가 속한 모든 그룹에 대해 오늘 운동한 유저 수 1 증가
-                    groupService.increaseTodayExercisedCount(walkingDto.getAgentId());
                     // 연속 운동 일수 증가에 따른 포인트 증가
                     levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
                     // 유저의 금주 운동 현황 업데이트, 이번주 운동한 날짜 수도 증가

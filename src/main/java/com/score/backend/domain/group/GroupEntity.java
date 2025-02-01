@@ -72,16 +72,8 @@ public class GroupEntity extends BaseEntity {
     @Column(name = "cumulativeTime")
     private double cumulativeTime; // 그룹의 누적 운동 시간 (단위: 초)
 
-    @Column(name = "todayExercisedCount")
-    private int todayExercisedCount; // 오늘 운동한 메이트 수
-
     public void updateCumulativeTime(double duration) {
         this.cumulativeTime += duration;
     }
-    public void increaseTodayExercisedCount() {
-        this.todayExercisedCount++;
-    }
-    public void initTodayExercisedCount() {
-        this.todayExercisedCount = 0;
-    }
+
 }

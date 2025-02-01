@@ -65,7 +65,6 @@ public class GroupService {
                 .groupPassword(groupCreateDto.getGroupPassword())
                 .admin(admin)
                 .cumulativeTime(0.0)
-                .todayExercisedCount(0)
                 .build();
 
         groupRepository.save(group);
@@ -194,20 +193,6 @@ public class GroupService {
         return groupRepository.findAllGroupsByUserId(userId);
     }
 
-    // 오늘 운동한 그룹원 수 1 증가
-    public void increaseTodayExercisedCount(Long userId) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new NoSuchElementException("User not found")
-        );
-        List<GroupEntity> groups = user.getGroups();
-        if (groups.isEmpty()) {
-            return;
-        }
-        for (GroupEntity group : groups) {
-            group.increaseTodayExercisedCount();
-        }
-    }
-
     public List<User> findAllUsersDidExerciseToday(Long groupId) {
         return userRepository.findGroupMatesWhoDidExerciseToday(groupId);
     }
@@ -234,6 +219,6 @@ public class GroupService {
     public GroupInfoResponse getGroupInfoForMember(Long groupId) {
         GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
-        return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
+        return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), findAllUsersDidExerciseToday(groupId).size(), feeds);
     }
 }
