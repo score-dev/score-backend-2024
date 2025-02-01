@@ -188,6 +188,10 @@ public class GroupService {
         }
     }
 
+    public List<User> findAllUsersDidExerciseToday(Long groupId) {
+        return userRepository.findGroupMatesWhoDidExerciseToday(groupId);
+    }
+
     // 해당 유저가 그룹의 멤버인지 여부 확인
     @Transactional(readOnly = true)
     public boolean isMemberOfGroup(Long groupId, Long userId) {

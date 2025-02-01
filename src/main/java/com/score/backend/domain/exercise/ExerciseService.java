@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ExerciseService {
+public class  ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
     private final ImageUploadService imageUploadService;
@@ -63,6 +63,11 @@ public class ExerciseService {
     @Transactional(readOnly = true)
     public List<Exercise> getTodaysAllExercises(Long userId) {
         return exerciseRepository.findUsersExerciseToday(userId, LocalDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Exercise> getWeeklyExercises(Long userId) {
+        return exerciseRepository.findUsersWeeklyExercises(userId, LocalDateTime.now());
     }
 
     public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) {

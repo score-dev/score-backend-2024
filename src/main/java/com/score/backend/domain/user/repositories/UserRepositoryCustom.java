@@ -10,4 +10,5 @@ public interface UserRepositoryCustom {
     Page<User> findFriendsPage(long userId, Pageable pageable);
     List<User> findFriendsByNicknameContaining(Long userId, String nickname);
     List<User> findGroupMatesWhoDidNotExerciseToday(Long groupId);
+    List<User> findGroupMatesWhoDidExerciseToday(Long groupId);
 }
