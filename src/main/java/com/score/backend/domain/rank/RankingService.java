@@ -70,8 +70,7 @@ public class RankingService {
         return thisWeekGroupRanking;
     }
 
-    public SchoolRanking calculateWeeklySchoolRanking(Long schoolId) {
-        School school = schoolService.findById(schoolId);
+    public SchoolRanking calculateWeeklySchoolRanking(School school) {
         SchoolRanking thisWeekSchoolRanking = new SchoolRanking(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), school);
         List<SchoolRankingInfo> info = new ArrayList<>();
 

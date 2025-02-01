@@ -13,9 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,6 +33,15 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
         return queryFactory
                 .selectFrom(e)
                 .where(userIdEq(userId), completeDateEq(today.truncatedTo(ChronoUnit.DAYS)))
+                .fetch();
+    }
+
+    @Override
+    public List<Exercise> findUsersWeeklyExercises(Long userId, LocalDateTime today) {
+        LocalDate monday = LocalDate.from(today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+        return queryFactory
+                .selectFrom(e)
+                .where(userIdEq(userId), e.completedAt.between(monday.atStartOfDay(), today))
                 .fetch();
     }
 

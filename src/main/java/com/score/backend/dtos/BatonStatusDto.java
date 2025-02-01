@@ -6,7 +6,7 @@ import lombok.Getter;
 @Schema(description = "오늘 운동을 쉰 유저의 정보 전달을 위한 DTO")
 @Getter
 public class BatonStatusDto {
-    @Schema(description = "유저의 id")
+    @Schema(description = "오늘 운동을 쉰 유저의 정보 전달을 위한 DTO")
     private Long userId;
     @Schema(description = "유저의 닉네임")
     private String nickname;

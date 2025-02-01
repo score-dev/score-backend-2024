@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -15,10 +16,16 @@ public class SchoolService {
 
     private final SchoolRepository schoolRepository;
 
+    @Transactional(readOnly = true)
     public School findById(Long id) {
         return schoolRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("School not found")
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<School> findAll() {
+        return schoolRepository.findAll();
     }
 
     public School findOrSave(SchoolDto schoolDto) {
@@ -37,6 +44,7 @@ public class SchoolService {
     }
 
     // 행정 표준 코드로 학교 검색
+    @Transactional(readOnly = true)
     public School findSchoolByCode(String code) {
         return schoolRepository.findSchoolByCode(code);
     }

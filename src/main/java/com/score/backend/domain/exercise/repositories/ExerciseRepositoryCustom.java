@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface ExerciseRepositoryCustom {
     List<Exercise> findUsersExerciseToday(Long userId, LocalDateTime today);
+    List<Exercise> findUsersWeeklyExercises(Long userId, LocalDateTime today);
     List<Exercise> findByUserId(Long userId);
     Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable);
     Page<Exercise> findExercisePageByGroupId(Long groupId, Pageable pageable);

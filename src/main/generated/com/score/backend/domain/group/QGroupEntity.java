@@ -59,8 +59,6 @@ public class QGroupEntity extends EntityPathBase<GroupEntity> {
 
     public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> members = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createList("members", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
 
-    public final NumberPath<Integer> todayExercisedCount = createNumber("todayExercisedCount", Integer.class);
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 

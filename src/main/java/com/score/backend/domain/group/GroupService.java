@@ -1,5 +1,6 @@
 package com.score.backend.domain.group;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.repositories.GroupRepository;
@@ -64,7 +65,6 @@ public class GroupService {
                 .groupPassword(groupCreateDto.getGroupPassword())
                 .admin(admin)
                 .cumulativeTime(0.0)
-                .todayExercisedCount(0)
                 .build();
 
         groupRepository.save(group);
@@ -135,6 +135,22 @@ public class GroupService {
         userRepository.save(user);
     }
 
+    // 비밀번호 일치 여부 확인
+    public boolean verifyGroupPassword(String inputPassword, Long groupId) {
+        GroupEntity group = findById(groupId);
+        return group.getGroupPassword().equals(inputPassword);
+    }
+
+    // 방장에게 그룹 가입 신청 알림 보내기
+    public void sendGroupJoinRequestNotification(Long groupId, Long userId) throws FirebaseMessagingException {
+        User requester = userService.findUserById(userId).get();
+        GroupEntity group = findById(groupId);
+        User admin = group.getAdmin();
+        FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + "에 가입을 신청했어요!", "알림 페이지에서 가입을 승인 혹은 거절할 수 있어요.");
+        notificationService.sendMessage(message);
+        notificationService.saveNotification(message);
+    }
+
     // 그룹 내 메이트 목록 전체 조회
     public List<UserResponseDto> findAllUsers(Long groupId) {
         List<User> members = findById(groupId).getMembers();
@@ -146,7 +162,7 @@ public class GroupService {
     }
 
     // 그룹에 새로운 멤버 추가
-    public void addNewMember(Long groupId, Long userId) {
+    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException {
         GroupEntity group = findById(groupId);
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new NoSuchElementException("User not found")
@@ -155,6 +171,9 @@ public class GroupService {
             user.addGroup(group);
             groupRepository.save(group);
             userRepository.save(user);
+            FcmMessageRequest message = new FcmMessageRequest(userId,  group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
+            notificationService.sendMessage(message);
+            notificationService.saveNotification(message);
         }
     }
 
@@ -174,18 +193,8 @@ public class GroupService {
         return groupRepository.findAllGroupsByUserId(userId);
     }
 
-    // 오늘 운동한 그룹원 수 1 증가
-    public void increaseTodayExercisedCount(Long userId) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new NoSuchElementException("User not found")
-        );
-        List<GroupEntity> groups = user.getGroups();
-        if (groups.isEmpty()) {
-            return;
-        }
-        for (GroupEntity group : groups) {
-            group.increaseTodayExercisedCount();
-        }
+    public List<User> findAllUsersDidExerciseToday(Long groupId) {
+        return userRepository.findGroupMatesWhoDidExerciseToday(groupId);
     }
 
     // 해당 유저가 그룹의 멤버인지 여부 확인
@@ -210,6 +219,6 @@ public class GroupService {
     public GroupInfoResponse getGroupInfoForMember(Long groupId) {
         GroupEntity group = this.findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
-        return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), group.getTodayExercisedCount(), feeds);
+        return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), findAllUsersDidExerciseToday(groupId).size(), feeds);
     }
 }
