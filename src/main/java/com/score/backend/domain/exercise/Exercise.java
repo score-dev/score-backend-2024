@@ -48,7 +48,6 @@ public abstract class Exercise extends BaseEntity {
 
     private String exercisePic;
 
-    @OneToMany(mappedBy = "feed")
     private final List<Emotion> emotions = new ArrayList<>(); // 피드에 추가된 감정 표현 리스트
 
     private void setAgent(User agent) {

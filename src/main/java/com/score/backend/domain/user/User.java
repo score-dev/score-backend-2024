@@ -77,7 +77,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private double cumulativeDistance; // 누적 운동 거리
 
-    @OneToMany(mappedBy="agent")
+    @OneToMany(mappedBy="agent", cascade = CascadeType.REMOVE)
     @JsonIgnore
     @Builder.Default
     private final List<Exercise> feeds = new ArrayList<>();
@@ -122,7 +122,7 @@ public class User extends BaseEntity {
     @Builder.Default
     private List<GroupEntity> groups = new ArrayList<>();
 
-    @OneToMany(mappedBy = "agent")
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.REMOVE)
     @JsonIgnore
     @Builder.Default
     private List<Notification> notifications = new ArrayList<>();
