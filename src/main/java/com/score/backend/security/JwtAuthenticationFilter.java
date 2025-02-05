@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -40,11 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // JWT 토큰 검증
                 Claims claims = Jwts.parserBuilder().setSigningKey(jwtProvider.getSecretKey()).build().parseClaimsJws(jwtToken).getBody();
-
-                // 만료 시간 확인
-                if (claims.getExpiration().before(new Date())) {
-                    throw new ExpiredJwtException(null, claims, "Token has expired");
-                }
 
                 userKey = claims.getSubject();
             }
