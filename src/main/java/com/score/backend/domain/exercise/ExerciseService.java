@@ -1,6 +1,8 @@
 package com.score.backend.domain.exercise;
 
 import com.score.backend.config.ImageUploadService;
+import com.score.backend.domain.exercise.emotion.Emotion;
+import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.exercise.repositories.ExerciseRepository;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
@@ -25,6 +27,7 @@ import java.util.NoSuchElementException;
 public class  ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
+    private final EmotionService emotionService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
 
@@ -106,6 +109,9 @@ public class  ExerciseService {
     }
 
     public void deleteFeed(Exercise exercise) {
+        for (Emotion emotion : exercise.getEmotions()) {
+            emotionService.deleteEmotion(emotion);
+        }
         exerciseRepository.delete(exercise);
     }
 

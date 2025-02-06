@@ -6,6 +6,8 @@ import com.score.backend.domain.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.descriptor.jdbc.SmallIntJdbcType;
 
 @Entity
@@ -17,6 +19,7 @@ public class Emotion extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User agent; // 이 감정 표현을 추가한 사람
 
     @ManyToOne(fetch = FetchType.LAZY)

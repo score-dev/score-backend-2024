@@ -60,6 +60,8 @@ public class UserService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         ); // 예외 처리 필요
         userRepository.delete(deletingUser);
+
+        //
     }
 
     public Optional<User> findUserById(Long id) {
