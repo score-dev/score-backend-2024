@@ -19,6 +19,7 @@ public class GroupRanker extends Ranker {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Setter
     private User user;
 
     @Column(name = "weekly_level_increment")
