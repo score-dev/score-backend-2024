@@ -34,6 +34,11 @@ public class EmotionService {
         emotionRepository.delete(emotion);
     }
 
+    // 피드에 남겨져 있는 모든 감정 표현 삭제
+    public void deleteAllEmotions(Exercise feed) {
+        emotionRepository.deleteAll(findAll(feed.getId()));
+    }
+
     // 피드에 남겨져 있는 모든 감정 표현 조회 (emotionType 상관 없이 모두 조회)
     @Transactional(readOnly = true)
     public List<Emotion> findAll(Long feedId) {
