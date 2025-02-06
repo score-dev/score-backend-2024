@@ -9,8 +9,6 @@ import com.score.backend.dtos.NotificationStatusRequest;
 import com.score.backend.domain.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.type.descriptor.jdbc.SmallIntJdbcType;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,6 +36,7 @@ public class User extends BaseEntity {
 
     private LocalDateTime schoolUpdatedAt;
 
+    @Column(columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

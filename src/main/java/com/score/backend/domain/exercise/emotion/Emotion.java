@@ -5,10 +5,8 @@ import com.score.backend.domain.user.User;
 import com.score.backend.domain.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.type.descriptor.jdbc.SmallIntJdbcType;
 
 @Entity
 @Getter
@@ -26,6 +24,7 @@ public class Emotion extends BaseEntity {
     @JoinColumn(name = "exercise_id")
     private Exercise feed; // 이 감정 표현이 추가된 피드
 
+    @Column(columnDefinition = "varchar")
     @Enumerated(EnumType.STRING)
     private EmotionType emotionType; // 어떤 감정 표현인지?
 
