@@ -26,7 +26,7 @@ public class Emotion extends BaseEntity {
     @JoinColumn(name = "exercise_id")
     private Exercise feed; // 이 감정 표현이 추가된 피드
 
-    @JdbcType(value = SmallIntJdbcType.class)
+    @Enumerated(EnumType.STRING)
     private EmotionType emotionType; // 어떤 감정 표현인지?
 
     public void setEmotion(User agent, Exercise feed, EmotionType emotionType) {

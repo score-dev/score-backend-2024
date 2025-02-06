@@ -38,7 +38,7 @@ public class User extends BaseEntity {
 
     private LocalDateTime schoolUpdatedAt;
 
-    @JdbcType(value = SmallIntJdbcType.class)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Setter
