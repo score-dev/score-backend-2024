@@ -1,5 +1,6 @@
 package com.score.backend.domain.exercise;
 
+import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.FriendsSearchResponse;
@@ -37,6 +38,7 @@ public class ExerciseController {
     private final LevelService levelService;
     private final FriendService friendService;
     private final GroupService groupService;
+    private final EmotionService emotionService;
 
     @Operation(summary = "함께 운동한 친구 검색", description = "함께 운동한 친구를 선택하기 위해 닉네임으로 검색합니다.")
     @ApiResponses(
@@ -132,6 +134,7 @@ public class ExerciseController {
         try {
             Exercise feed = exerciseService.findFeedByExerciseId(feedId);
             exerciseService.deleteFeed(feed);
+            emotionService.deleteAllEmotions(feed);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

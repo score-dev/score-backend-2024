@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 public class  ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final UserService userService;
-    private final EmotionService emotionService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
 
@@ -109,9 +108,6 @@ public class  ExerciseService {
     }
 
     public void deleteFeed(Exercise exercise) {
-        for (Emotion emotion : exercise.getEmotions()) {
-            emotionService.deleteEmotion(emotion);
-        }
         exerciseRepository.delete(exercise);
     }
 
