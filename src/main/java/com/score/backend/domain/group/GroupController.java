@@ -1,6 +1,5 @@
 package com.score.backend.domain.group;
 
-import com.amazonaws.Response;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.exercise.ExerciseService;
@@ -10,10 +9,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,18 +35,18 @@ public class GroupController {
 
     @Operation(summary = "그룹 생성", description = "새로운 그룹을 생성하는 API입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "그룹 생성이 완료되었습니다."),
+            @ApiResponse(responseCode = "200", description = "그룹 생성이 완료. 생성된 그룹의 고유 id 값 응답."),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
     @PostMapping("/create")
-    public ResponseEntity<String> createGroup(@Valid @RequestPart GroupCreateDto groupCreateDto, @RequestPart Long adminId,
-                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
+    public ResponseEntity<Long> createGroup(
+            @Parameter(description = "생성될 그룹 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "groupCreateDto") GroupCreateDto groupCreateDto,
+            @Parameter(description = "그룹 프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
         try {
-            groupCreateDto.isValid();  // 추가 검증
-            groupService.createGroup(groupCreateDto, adminId, multipartFile);
-            return ResponseEntity.ok("그룹 생성이 완료되었습니다.");
+            GroupEntity gr = groupService.createGroup(groupCreateDto, multipartFile);
+            return ResponseEntity.ok(gr.getGroupId());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
@@ -65,6 +64,7 @@ public class GroupController {
         return ResponseEntity.ok(groupDtos);
     }
 
+    // 현재 존재하지 않는 기능.
     @Operation(summary = "그룹 탈퇴", description = "사용자가 그룹을 탈퇴하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "그룹 탈퇴가 완료되었습니다."),
@@ -80,23 +80,23 @@ public class GroupController {
         }
     }
 
-    @Operation(summary = "그룹 정보 수정", description = "그룹 정보를 수정하는 API입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "그룹 정보 수정이 완료되었습니다."),
-            @ApiResponse(responseCode = "400", description = "Bad Request")
-    })
-    @PutMapping("/{groupId}/update")
-    public ResponseEntity<String> updateGroup(@PathVariable Long groupId,
-                                              @Valid @RequestBody GroupCreateDto groupCreateDto,
-                                              @RequestParam Long adminId) {
-        try {
-            groupService.updateGroup(groupId, groupCreateDto, adminId);
-            return ResponseEntity.ok("그룹 정보 update 완료!");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    @Operation(summary = "그룹 정보 수정", description = "그룹 정보를 수정하는 API입니다.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "그룹 정보 수정이 완료되었습니다."),
+//            @ApiResponse(responseCode = "400", description = "Bad Request")
+//    })
+//    @PutMapping("/{groupId}/update")
+//    public ResponseEntity<String> updateGroup(@PathVariable Long groupId,
+//                                              @Valid @RequestBody GroupCreateDto groupCreateDto) {
+//        try {
+//            groupService.updateGroup(groupId, groupCreateDto);
+//            return ResponseEntity.ok("그룹 정보 update 완료!");
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
+    // 현재 존재하지 않는 기능
     @Operation(summary = "그룹 멤버 강퇴", description = "방장이 그룹에서 멤버를 강퇴하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "멤버 강퇴가 완료되었습니다."),

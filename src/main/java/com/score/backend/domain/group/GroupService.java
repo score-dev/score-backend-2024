@@ -51,9 +51,9 @@ public class GroupService {
     }
 
 
-    public void createGroup(GroupCreateDto groupCreateDto, Long adminId, MultipartFile image) {
+    public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) {
 
-        User admin = userRepository.findById(adminId)
+        User admin = userRepository.findById(groupCreateDto.getAdminId())
                 .orElseThrow(() -> new IllegalArgumentException("그룹장을 못 찾습니다."));
 
         GroupEntity group = GroupEntity.builder()
@@ -67,31 +67,26 @@ public class GroupService {
                 .cumulativeTime(0.0)
                 .build();
 
-        groupRepository.save(group);
+        return groupRepository.save(group);
     }
 
-//    public List<GroupDto> getAllGroups() {
-//        List<GroupEntity> groups = groupRepository.findAll();
-//        return groups.stream().map(GroupDto::fromEntity).collect(Collectors.toList());
+//    public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
+//        GroupEntity group = groupRepository.findById(groupId)
+//                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
+//
+//        if (!group.getAdmin().getId().equals(adminId)) {
+//            throw new IllegalArgumentException("권한이 없습니다.");
+//        }
+//
+//        group.setGroupImg(groupCreateDto.getGroupImg());
+//        group.setGroupName(groupCreateDto.getGroupName());
+//        group.setGroupDescription(groupCreateDto.getGroupDescription());
+//        group.setUserLimit(groupCreateDto.getUserLimit());
+//        group.setPrivate(groupCreateDto.isPrivate());
+//        group.setGroupPassword(groupCreateDto.getGroupPassword());
+//
+//        groupRepository.save(group);
 //    }
-
-    public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
-        GroupEntity group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
-
-        if (!group.getAdmin().getId().equals(adminId)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
-
-        group.setGroupImg(groupCreateDto.getGroupImg());
-        group.setGroupName(groupCreateDto.getGroupName());
-        group.setGroupDescription(groupCreateDto.getGroupDescription());
-        group.setUserLimit(groupCreateDto.getUserLimit());
-        group.setPrivate(groupCreateDto.isPrivate());
-        group.setGroupPassword(groupCreateDto.getGroupPassword());
-
-        groupRepository.save(group);
-    }
 
     public void leaveGroup(Long groupId, Long userId) {
         GroupEntity group = groupRepository.findById(groupId)

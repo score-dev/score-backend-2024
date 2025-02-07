@@ -1,5 +1,6 @@
 package com.score.backend.domain.user;
 
+import com.score.backend.domain.rank.group.GroupRankService;
 import com.score.backend.domain.school.School;
 import com.score.backend.dtos.NotificationStatusRequest;
 import com.score.backend.dtos.SchoolDto;
@@ -33,6 +34,7 @@ public class UserController {
     private final UserService userService;
     private final SchoolService schoolService;
     private final NotificationService notificationService;
+    private final GroupRankService groupRankService;
 
     // 닉네임 중복 검사
     @Operation(summary = "닉네임 중복 검사", description = "온보딩이나 회원 정보 수정 시 닉네임 중복 검사를 위한 api입니다.")
@@ -56,8 +58,8 @@ public class UserController {
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/public/onboarding/fin", method = RequestMethod.POST)
-    public ResponseEntity<Long> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
-                                              @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
+    public ResponseEntity<Long> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
+                                              @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
                                               @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
 
         // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
@@ -69,23 +71,6 @@ public class UserController {
         return ResponseEntity.ok(userService.saveUser(user, multipartFile));
     }
 
-    // 메인 페이지 접속시 토큰의 유효성 확인
-    // 메인 페이지 기능 구현되면 추후 수정 필요
-//    @Operation(summary = "메인 페이지", description = "메인 페이지 접속 요청 발생시 jwt 토큰을 검증합니다.")
-//    @ApiResponses(
-//            value = {@ApiResponse(responseCode = "200", description = "유저 인증 완료"),
-//                    @ApiResponse(responseCode = "401", description = "Unauthorized")}
-//    )
-//    @RequestMapping(value = "/score/main", method = RequestMethod.GET)
-//    public ResponseEntity<Object> verifyUser(@RequestHeader(name = "Authorization") @Parameter(required = true, description = "Request Header의 Authorization에 있는 jwt 토큰") String token,
-//                                             HttpServletResponse response) {
-//        if (jwtProvider.validateToken(token, response)) {
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//        }
-//    }
-
     // 회원 탈퇴
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 요청 발생시 해당 회원의 모든 정보를 db에서 삭제합니다.")
     @ApiResponses(
@@ -95,6 +80,7 @@ public class UserController {
     public ResponseEntity<HttpStatus> withdrawUser(@Parameter(description = "회원 탈퇴를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id,
                                                    @Parameter(description = "회원 탈퇴 사유") @RequestParam(name = "reason") String reason) {
         try {
+            groupRankService.handleWithdrawUsersRankingInfo(id);
             userService.withdrawUser(id);
             Logger logger = LoggerFactory.getLogger("withdrawal-logger");
             logger.info("User ID: {}, Reason: {}", id, reason);
