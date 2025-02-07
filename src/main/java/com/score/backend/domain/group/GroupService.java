@@ -141,9 +141,11 @@ public class GroupService {
         User requester = userService.findUserById(userId).get();
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
-        FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + "에 가입을 신청했어요!", "알림 페이지에서 가입을 승인 혹은 거절할 수 있어요.");
-        notificationService.sendMessage(message);
-        notificationService.saveNotification(message);
+        if (!admin.getLoginKey().equals("string")) {
+            FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + "에 가입을 신청했어요!", "알림 페이지에서 가입을 승인 혹은 거절할 수 있어요.");
+            notificationService.sendMessage(message);
+            notificationService.saveNotification(message);
+        }
     }
 
     // 그룹 내 메이트 목록 전체 조회
@@ -166,9 +168,11 @@ public class GroupService {
             user.addGroup(group);
             groupRepository.save(group);
             userRepository.save(user);
-            FcmMessageRequest message = new FcmMessageRequest(userId,  group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
-            notificationService.sendMessage(message);
-            notificationService.saveNotification(message);
+            if (!user.getLoginKey().equals("string")) {
+                FcmMessageRequest message = new FcmMessageRequest(userId,  group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
+                notificationService.sendMessage(message);
+                notificationService.saveNotification(message);
+            }
         }
     }
 
