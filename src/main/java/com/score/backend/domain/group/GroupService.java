@@ -50,7 +50,6 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
-
     public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) {
 
         User admin = userRepository.findById(groupCreateDto.getAdminId())
@@ -58,6 +57,7 @@ public class GroupService {
 
         GroupEntity group = GroupEntity.builder()
                 .groupName(groupCreateDto.getGroupName())
+                .belongingSchool(admin.getSchool())
                 .groupImg(imageUploadService.uploadImage(image))
                 .groupDescription(groupCreateDto.getGroupDescription())
                 .userLimit(groupCreateDto.getUserLimit())
@@ -67,7 +67,9 @@ public class GroupService {
                 .cumulativeTime(0.0)
                 .build();
 
-        return groupRepository.save(group);
+        GroupEntity generatedGroup = groupRepository.save(group);
+        admin.getSchool().getGroups().add(generatedGroup);
+        return generatedGroup;
     }
 
 //    public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
