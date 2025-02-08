@@ -19,16 +19,16 @@ import java.util.List;
 @NoArgsConstructor
 public abstract class Exercise extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exercise_id")
     private Long id;
 
     @ManyToOne @JoinColumn(name="user_id")
     private User agent; // 피드를 업로드한 유저
 
-    @OneToMany(mappedBy = "exercise")
+    @OneToMany
     @JsonIgnore
-    private List<ExerciseUser> exerciseUsers = new ArrayList<>(); // 함께 운동한 유저
+    private List<User> taggedUsers = new ArrayList<>(); // 함께 운동한 유저
 
     private LocalDateTime startedAt;
 
@@ -57,16 +57,9 @@ public abstract class Exercise extends BaseEntity {
         agent.getFeeds().add(this);
     }
 
-    private void setExerciseUser(ExerciseUser exerciseUser) {
-        exerciseUsers.add(exerciseUser);
-        exerciseUser.setExercise(this);
-    }
-
-    public void setAgentAndExerciseUser(User agent, List<ExerciseUser> exerciseUsers) {
+    public void setAgentAndExerciseUser(User agent, List<User> taggedUsers) {
         this.setAgent(agent);
-        for (ExerciseUser exerciseUser : exerciseUsers) {
-            this.setExerciseUser(exerciseUser);
-        }
+        taggedUsers.addAll(taggedUsers);
     }
 
     public void setExercisePicUrl(String exercisePicUrl) {

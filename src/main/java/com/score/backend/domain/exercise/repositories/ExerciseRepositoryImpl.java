@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.Exercise;
 import com.score.backend.domain.exercise.QExercise;
 import com.score.backend.domain.group.QGroupEntity;
+import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     QExercise e = new QExercise("e");
     QUser u = new QUser("u");
     QGroupEntity g = new QGroupEntity("g");
+    QUserGroup ug = new QUserGroup("ug");
 
     @Override
     public List<Exercise> findUsersExerciseToday(Long userId, LocalDateTime today) {
@@ -75,8 +77,8 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
         JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
                 .join(e.agent, u)
-                .join(u.groups, g)
-                .where(g.groupId.eq(groupId));
+                .join(u.userGroups, ug)
+                .where(ug.group.groupId.eq(groupId));
         List<Exercise> exercises = where
                 .orderBy(e.completedAt.desc())
                 .offset(pageable.getOffset())
@@ -93,7 +95,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
         JPAQuery<String> where = queryFactory
                 .select(e.exercisePic)
                 .from(e)
-                .join(u.groups, g)
+                .join(ug.group, g)
                 .where(g.groupId.eq(groupId));
         List<String> images = where
                 .orderBy(e.completedAt.desc())

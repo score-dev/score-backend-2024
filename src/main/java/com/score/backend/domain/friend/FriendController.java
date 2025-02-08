@@ -1,8 +1,7 @@
 package com.score.backend.domain.friend;
 
-import com.score.backend.domain.user.User;
+import com.score.backend.domain.friend.block.BlockService;
 import com.score.backend.dtos.FriendsSearchResponse;
-import com.score.backend.domain.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -23,7 +21,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class FriendController {
     private final FriendService friendService;
-    private final UserService userService;
+    private final BlockService blockService;
 
     @Operation(summary = "친구 추가", description = "새로운 친구를 추가합니다.")
     @RequestMapping(value = "/score/friends/new/{id1}/{id2}", method = RequestMethod.POST)
@@ -60,13 +58,13 @@ public class FriendController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "친구 차단 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
-    public ResponseEntity<HttpStatus> blockFriend(@Parameter(required = true, description = "친구 차단 요청을 한 유저의 고유 id 값")@PathVariable Long id1,
+    public ResponseEntity<String> blockFriend(@Parameter(required = true, description = "친구 차단 요청을 한 유저의 고유 id 값")@PathVariable Long id1,
                                                    @Parameter(required = true, description = "id1이 차단하고자 하는 친구의 고유 id 값") @PathVariable Long id2) {
         try {
-            friendService.blockFriend(id1, id2);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            blockService.blockFriend(id1, id2);
+            return ResponseEntity.ok("친구 차단이 완료되었습니다.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -75,7 +73,7 @@ public class FriendController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "친구 목록 조회 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
-    public ResponseEntity<Page<User>> getAllFriends(
+    public ResponseEntity<Page<FriendsSearchResponse>> getAllFriends(
             @RequestParam("id") @Parameter(required = true, description = "친구 목록을 요청할 유저의 고유 번호") Long id,
             @RequestParam("page") @Parameter(required = true, description = "출력할 친구 리스트의 페이지 번호") int page) {
         return ResponseEntity.ok(friendService.getAllFriends(page, id));
@@ -88,12 +86,7 @@ public class FriendController {
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
     public ResponseEntity<List<FriendsSearchResponse>> getBlockedFriends(@RequestParam("id") @Parameter(required = true, description = "차단 친구 목록을 요청한 유저의 고유 번호") Long id) {
         try {
-            List<User> blocked = friendService.findBlockingUsers(id);
-            List<FriendsSearchResponse> responses = new ArrayList<>();
-            for (User user : blocked) {
-                responses.add(new FriendsSearchResponse(user.getId(), user.getNickname(), user.getProfileImg()));
-            }
-            return ResponseEntity.ok(responses);
+            return ResponseEntity.ok(blockService.findBlockedFriends(id));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -108,7 +101,7 @@ public class FriendController {
             @RequestParam("id1") @Parameter(required = true, description = "친구 차단 해제를 요청한 유저의 고유 번호") Long id1,
             @RequestParam("id2") @Parameter(required = true, description = "차단에서 해제될 유저의 고유 번호") Long id2) {
         try {
-            friendService.unblockUser(id1, id2);
+            blockService.unblockFriend(id1, id2);
             return ResponseEntity.ok("차단 해제가 완료되었습니다.");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

@@ -2,6 +2,7 @@ package com.score.backend.domain.rank.school;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.group.QGroupEntity;
+import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ public class SchoolRankerRepositoryImpl implements SchoolRankerRepositoryCustom 
     QSchoolRanking schoolRanking = QSchoolRanking.schoolRanking;
     QSchoolRanker schoolRanker = QSchoolRanker.schoolRanker;
     QGroupEntity groupEntity = QGroupEntity.groupEntity;
+    QUserGroup userGroup = QUserGroup.userGroup;
     QUser user = QUser.user;
 
     @Override
@@ -37,7 +39,7 @@ public class SchoolRankerRepositoryImpl implements SchoolRankerRepositoryCustom 
                 .selectFrom(schoolRanker)
                 .join(schoolRanker.belongsTo, schoolRanking)
                 .join(schoolRanking.school.groups, groupEntity)
-                .join(groupEntity.members, user)
+                .join(userGroup.member, user)
                 .where(
                         schoolRanking.startDate.eq(startDate),
                         user.id.eq(userId)

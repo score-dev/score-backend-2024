@@ -1,16 +1,13 @@
 package com.score.backend.domain.user.repositories;
 
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.QExercise;
 import com.score.backend.domain.group.QGroupEntity;
+import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
 import com.score.backend.domain.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,23 +19,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     QUser friend = new QUser("friend");
     QExercise exercise = QExercise.exercise;
     QGroupEntity group = QGroupEntity.groupEntity;
-
-    @Override
-    public Page<User> findFriendsPage(long userId, Pageable pageable) {
-        JPAQuery<User> where = queryFactory
-                .select(friend)
-                .from(user)
-                .leftJoin(user.friends, friend)
-                .where(user.id.eq(userId));
-        List<User> users = where
-                .orderBy(user.createdAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-        long total = where.stream().count();
-
-        return new PageImpl<>(users, pageable, total);
-    }
+    QUserGroup userGroup = QUserGroup.userGroup;
 
     @Override
     public List<User> findFriendsByNicknameContaining(Long userId, String nickname) {
@@ -58,7 +39,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         return queryFactory
                 .select(user)
                 .from(user)
-                .join(user.groups, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
+                .join(userGroup.group, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
                 .leftJoin(user.feeds, exercise) // 유저와 운동 기록 left join (운동 기록이 존재하지 않는 유저도 포함되도록)
                 .where(group.groupId.eq(groupId)) // 주어진 특정 그룹에 속한 유저만을 필터링
                 .groupBy(user.id) // 모든 운동 기록들을 유저별로 그룹화
@@ -86,7 +67,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         return queryFactory
                 .select(user)
                 .from(user)
-                .join(user.groups, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
+                .join(userGroup.group, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
                 .leftJoin(user.feeds, exercise) // 유저와 운동 기록 left join (운동 기록이 존재하지 않는 유저도 포함되도록)
                 .where(group.groupId.eq(groupId)) // 주어진 특정 그룹에 속한 유저만을 필터링
                 .groupBy(user.id) // 모든 운동 기록들을 유저별로 그룹화

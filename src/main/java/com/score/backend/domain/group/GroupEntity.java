@@ -25,30 +25,30 @@ import java.util.List;
 public class GroupEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "groupId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "group_id")
     private Long groupId;
 
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School belongingSchool;
 
-    @Column(name = "groupName", nullable = false, unique = true, length = 15)
+    @Column(name = "group_name", nullable = false, unique = true, length = 15)
     private String groupName;
 
-    @Column(name = "groupDescription", nullable = false, length = 200)
+    @Column(name = "group_description", nullable = false, length = 200)
     private String groupDescription;
 
-    @Column(name = "groupImg", nullable = false)
+    @Column(name = "group_img", nullable = false)
     private String groupImg;
 
-    @Column(name = "isPrivate", nullable = false)
+    @Column(name = "is_private", nullable = false)
     private boolean isPrivate;
 
-    @Column(name = "groupPassword", length = 4)
+    @Column(name = "group_password", length = 4)
     private String groupPassword;
 
-    @Column(name = "userLimit", length = 50)
+    @Column(name = "user_limit", length = 50)
     private int userLimit;
 
     @CreatedDate
@@ -61,15 +61,15 @@ public class GroupEntity extends BaseEntity {
     @JoinColumn(name="admin_id", nullable=false)
     private User admin;
 
-    @ManyToMany(mappedBy = "groups")
+    @OneToMany(mappedBy = "group")
     @Builder.Default
-    private List<User> members = new ArrayList<>(); //회원들과의 관계
+    private List<UserGroup> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "group")
     @Builder.Default
     private List<GroupRanking> groupRankings = new ArrayList<>();
 
-    @Column(name = "cumulativeTime")
+    @Column(name = "cumulative_time")
     private double cumulativeTime; // 그룹의 누적 운동 시간 (단위: 초)
 
     public void updateCumulativeTime(double duration) {

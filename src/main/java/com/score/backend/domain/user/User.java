@@ -2,7 +2,10 @@ package com.score.backend.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
+import com.score.backend.domain.friend.block.BlockedUser;
+import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.group.GroupEntity;
+import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.notification.Notification;
 import com.score.backend.domain.school.School;
 import com.score.backend.dtos.NotificationStatusRequest;
@@ -22,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -81,45 +84,19 @@ public class User extends BaseEntity {
     @Builder.Default
     private final List<Exercise> feeds = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_friends",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "friend_id")
-    )
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Builder.Default
-    private final List<User> friends = new ArrayList<>();
+    private final List<Friend> friends = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_mates",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "mate_id")
-    )
-    @JsonIgnore
+    @OneToMany(mappedBy = "blocker", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private final List<User> mates = new ArrayList<>();
+    private final List<BlockedUser> blockedUsers = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_blocked_users",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
-    )
     @JsonIgnore
     @Builder.Default
-    private final List<User> blockedUsers = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_group",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "group_id")
-    )
-    @JsonIgnore
-    @Builder.Default
-    private List<GroupEntity> groups = new ArrayList<>();
+    @OneToMany(mappedBy = "member")
+    private List<UserGroup> userGroups = new ArrayList<>();
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.REMOVE)
     @JsonIgnore
@@ -144,13 +121,11 @@ public class User extends BaseEntity {
     private LocalDateTime joinedAt;
 
     public void addGroup(GroupEntity group) {
-        this.groups.add(group);
-        group.getMembers().add(this);
-    }
-
-    public void removeGroup(GroupEntity group) {
-        this.groups.remove(group);
-        group.getMembers().remove(this);
+        UserGroup userGroup = new UserGroup();
+        userGroup.setGroup(group);
+        this.userGroups.add(userGroup);
+        userGroup.setMember(this);
+        group.getMembers().add(userGroup);
     }
 
     public void updateCumulativeTime(double duration) {
@@ -200,18 +175,19 @@ public class User extends BaseEntity {
 
 
     public void addFriend(User user) {
-        this.friends.add(user);
-        user.getFriends().add(this);
+        this.friends.add(new Friend(this, user));
+        user.getFriends().add(new Friend(this, user));
     }
-    public void deleteFriend(User user) {
-        this.friends.remove(user);
-        user.getFriends().remove(this);
+    public void deleteFriend(Friend user, Friend friend) {
+        this.friends.remove(friend);
+        friend.getFriend().getFriends().remove(user);
     }
-    public void blockUser(User user) {
-        this.blockedUsers.add(user);
-        user.getBlockedUsers().add(this);
+    public void blockUser(BlockedUser blocked) {
+        this.blockedUsers.add(blocked);
     }
-
+    public void unblockUser(BlockedUser blocked) {
+        this.blockedUsers.remove(blocked);
+    }
 
     public void setSchoolAndStudent(School school) {
         this.school = school;

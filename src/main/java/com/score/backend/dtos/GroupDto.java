@@ -1,6 +1,7 @@
 package com.score.backend.dtos;
 
 import com.score.backend.domain.group.GroupEntity;
+import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,11 +23,12 @@ public class GroupDto {
 
 
     public static GroupDto fromEntity(GroupEntity group) {
-        List<String> recentMembersPic = group.getMembers().stream()
-                .sorted((u1, u2) -> u2.getJoinedAt().compareTo(u1.getJoinedAt()))
+        List<User> recentMembers = group.getMembers().stream()
+                .sorted((u1, u2) -> u2.getMember().getJoinedAt().compareTo(u1.getMember().getJoinedAt()))
                 .limit(3)
-                .map(User::getProfileImg)
-                .collect(Collectors.toList());
+                .map(UserGroup::getMember)
+                .toList();
+        List<String> recentMembersPic = recentMembers.stream().map(User::getProfileImg).collect(Collectors.toList());
         int otherMembers = group.getMembers().size() - recentMembersPic.size();
 
         return new GroupDto(

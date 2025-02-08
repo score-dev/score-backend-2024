@@ -24,7 +24,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final ListPath<User, QUser> blockedUsers = this.<User, QUser>createList("blockedUsers", User.class, QUser.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.friend.block.BlockedUser, com.score.backend.domain.friend.block.QBlockedUser> blockedUsers = this.<com.score.backend.domain.friend.block.BlockedUser, com.score.backend.domain.friend.block.QBlockedUser>createList("blockedUsers", com.score.backend.domain.friend.block.BlockedUser.class, com.score.backend.domain.friend.block.QBlockedUser.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> consecutiveDate = createNumber("consecutiveDate", Integer.class);
 
@@ -42,15 +42,13 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<com.score.backend.domain.exercise.Exercise, com.score.backend.domain.exercise.QExercise> feeds = this.<com.score.backend.domain.exercise.Exercise, com.score.backend.domain.exercise.QExercise>createList("feeds", com.score.backend.domain.exercise.Exercise.class, com.score.backend.domain.exercise.QExercise.class, PathInits.DIRECT2);
 
-    public final ListPath<User, QUser> friends = this.<User, QUser>createList("friends", User.class, QUser.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.friend.Friend, com.score.backend.domain.friend.QFriend> friends = this.<com.score.backend.domain.friend.Friend, com.score.backend.domain.friend.QFriend>createList("friends", com.score.backend.domain.friend.Friend.class, com.score.backend.domain.friend.QFriend.class, PathInits.DIRECT2);
 
     public final EnumPath<Gender> gender = createEnum("gender", Gender.class);
 
     public final TimePath<java.time.LocalTime> goal = createTime("goal", java.time.LocalTime.class);
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);
-
-    public final ListPath<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity> groups = this.<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity>createList("groups", com.score.backend.domain.group.GroupEntity.class, com.score.backend.domain.group.QGroupEntity.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> height = createNumber("height", Integer.class);
 
@@ -68,8 +66,6 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath loginKey = createString("loginKey");
 
     public final BooleanPath marketing = createBoolean("marketing");
-
-    public final ListPath<User, QUser> mates = this.<User, QUser>createList("mates", User.class, QUser.class, PathInits.DIRECT2);
 
     public final StringPath nickname = createString("nickname");
 
@@ -91,6 +87,8 @@ public class QUser extends EntityPathBase<User> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+
+    public final ListPath<com.score.backend.domain.group.UserGroup, com.score.backend.domain.group.QUserGroup> userGroups = this.<com.score.backend.domain.group.UserGroup, com.score.backend.domain.group.QUserGroup>createList("userGroups", com.score.backend.domain.group.UserGroup.class, com.score.backend.domain.group.QUserGroup.class, PathInits.DIRECT2);
 
     public final NumberPath<Double> weeklyCumulativeTime = createNumber("weeklyCumulativeTime", Double.class);
 

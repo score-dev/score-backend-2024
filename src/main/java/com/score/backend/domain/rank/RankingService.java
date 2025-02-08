@@ -1,6 +1,7 @@
 package com.score.backend.domain.rank;
 
 import com.score.backend.domain.group.GroupEntity;
+import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.rank.group.GroupRanker;
 import com.score.backend.domain.rank.group.GroupRankerRepository;
 import com.score.backend.domain.rank.group.GroupRanking;
@@ -31,11 +32,11 @@ public class RankingService {
     private final SchoolRankingRepository schoolRankingRepository;
 
     public GroupRanking calculateWeeklyGroupRanking(GroupEntity group) {
-        List<User> groupMates = group.getMembers();
+        List<UserGroup> groupMates = group.getMembers();
         GroupRanking thisWeekGroupRanking = new GroupRanking(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), group);
         List<GroupRankingInfo> info = new ArrayList<>();
-        for (User user : groupMates) {
-            info.add(new GroupRankingInfo(user, user.getWeeklyLevelIncrement(), user.getWeeklyCumulativeTime()));
+        for (UserGroup userGroup : groupMates) {
+            info.add(new GroupRankingInfo(userGroup.getMember(), userGroup.getMember().getWeeklyLevelIncrement(), userGroup.getMember().getWeeklyCumulativeTime()));
         }
 
         if (info.size() >= 2) {
@@ -81,8 +82,8 @@ public class RankingService {
                 continue;
             }
             double weeklyCumulativeTime = 0.0;
-            for (User user : group.getMembers()) {
-                weeklyCumulativeTime += user.getWeeklyCumulativeTime();
+            for (UserGroup userGroup : group.getMembers()) {
+                weeklyCumulativeTime += userGroup.getMember().getWeeklyCumulativeTime();
             }
             info.add(new SchoolRankingInfo(group, getRatioOfParticipate(group), weeklyCumulativeTime));
         }
@@ -122,11 +123,11 @@ public class RankingService {
 
     // 그룹의 참여율 계산
     public double getRatioOfParticipate(GroupEntity group) {
-        List<User> members = group.getMembers();
+        List<UserGroup> members = group.getMembers();
         if (!members.isEmpty()) {
             int sum = 0;
-            for (User member : members) {
-                int exerciseCount = member.getWeeklyExerciseCount();
+            for (UserGroup userGroup : members) {
+                int exerciseCount = userGroup.getMember().getWeeklyExerciseCount();
                 switch (exerciseCount) {
                     case 1: sum += 14; break;
                     case 2: sum += 28; break;

@@ -83,13 +83,13 @@ public class  ExerciseService {
         );
 
         // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
-        List<ExerciseUser> exerciseUsers = new ArrayList<>();
+        List<User> taggedUsers = new ArrayList<>();
         if (walkingDto.getOthersId() != null) {
             for (Long id : walkingDto.getOthersId()) {
                 User user = userService.findUserById(id).orElseThrow(
                         () -> new RuntimeException("User not found")
                 );
-                exerciseUsers.add(new ExerciseUser(user));
+                taggedUsers.add(user);
                 // 태그된 유저들에게 알림 전송 및 알림 저장 -> 프론트엔드와의 연동 이후 주석 해제 필요
                 if (user.isTag() && !user.getLoginKey().equals("string")) {
                     FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
@@ -103,7 +103,7 @@ public class  ExerciseService {
             }
         }
         // 피드 작성자, 함께 운동한 친구 설정
-        feed.setAgentAndExerciseUser(agent, exerciseUsers);
+        feed.setAgentAndExerciseUser(agent, taggedUsers);
         // 프로필 사진 설정
         feed.setExercisePicUrl(imageUploadService.uploadImage(multipartFile));
         exerciseRepository.save(feed);
