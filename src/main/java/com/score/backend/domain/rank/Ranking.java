@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public abstract class Ranking {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ranking_id")
     private Long id;
 

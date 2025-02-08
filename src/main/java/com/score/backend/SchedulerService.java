@@ -2,6 +2,7 @@ package com.score.backend;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.group.GroupService;
+import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.rank.school.SchoolRanking;
@@ -93,14 +94,14 @@ public class SchedulerService {
     private SchoolRanking calculateSchoolRanking(School school) throws FirebaseMessagingException {
         SchoolRanking sr = rankingService.calculateWeeklySchoolRanking(school);
         if (!sr.getSchoolRankers().isEmpty() && sr.getSchoolRankers().size() > 1) {
-            List<User> winningGroupMembers = sr.getSchoolRankers().get(0).getGroup().getMembers();
-            for (User winningGroupMember : winningGroupMembers) {
-                winningGroupMember.updatePoint(200);
-                if (!winningGroupMember.getLoginKey().equals("string")) {
+            List<UserGroup> winningGroupMembers = sr.getSchoolRankers().get(0).getGroup().getMembers();
+            for (UserGroup winningGroupMember : winningGroupMembers) {
+                winningGroupMember.getMember().updatePoint(200);
+                if (!winningGroupMember.getMember().getLoginKey().equals("string")) {
                     FcmMessageRequest message = new FcmMessageRequest(
                             winningGroupMember.getId(),
                             sr.getSchoolRankers().get(0).getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 1위를 달성했어요!",
-                            "축하합니다\uD83C\uDF89 " + winningGroupMember.getNickname() +  "님이 속한 그룹이 이번주 1위예요! 1등이 된 기념으로 스코어에서 그룹 메이트 모두에게 200pt를 쏩니다\uD83E\uDD73"
+                            "축하합니다\uD83C\uDF89 " + winningGroupMember.getMember().getNickname() +  "님이 속한 그룹이 이번주 1위예요! 1등이 된 기념으로 스코어에서 그룹 메이트 모두에게 200pt를 쏩니다\uD83E\uDD73"
                     );
                     notificationService.sendMessage(message);
                     notificationService.saveNotification(message);

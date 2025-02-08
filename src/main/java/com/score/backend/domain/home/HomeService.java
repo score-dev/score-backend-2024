@@ -5,6 +5,7 @@ import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.BatonService;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.group.GroupService;
+import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.home.HomeGroupInfoResponse;
@@ -27,11 +28,11 @@ public class HomeService {
 
     public HomeResponse getHomeInfo(Long userId) {
         User user = userService.findUserById(userId).get();
-        List<GroupEntity> joinedGroups = user.getGroups();
+        List<UserGroup> userGroups = user.getUserGroups();
         List<Exercise> usersWeeklyExercises = exerciseService.getWeeklyExercises(userId);
         return new HomeResponse(user.getNickname(), user.getProfileImg(), user.getLevel(), user.getPoint(),
                 cumulateExerciseTimeDayByDay(usersWeeklyExercises), user.getWeeklyCumulativeTime(), user.getWeeklyExerciseCount(), user.getConsecutiveDate(),
-                joinedGroups.size(), getGroupInfos(joinedGroups));
+                userGroups.size(), getGroupInfos(userGroups.stream().map(UserGroup::getGroup).toList()));
     }
 
     private List<HomeGroupInfoResponse> getGroupInfos(List<GroupEntity> joinedGroups) {

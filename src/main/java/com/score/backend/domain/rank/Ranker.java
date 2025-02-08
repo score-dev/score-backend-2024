@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public abstract class Ranker {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ranker_id")
     private Long id;
 

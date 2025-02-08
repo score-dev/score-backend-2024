@@ -3,6 +3,7 @@ package com.score.backend.domain.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
 import com.score.backend.domain.group.GroupEntity;
+import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.notification.Notification;
 import com.score.backend.domain.school.School;
 import com.score.backend.dtos.NotificationStatusRequest;
@@ -22,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -111,15 +112,10 @@ public class User extends BaseEntity {
     @Builder.Default
     private final List<User> blockedUsers = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_group",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "group_id")
-    )
     @JsonIgnore
     @Builder.Default
-    private List<GroupEntity> groups = new ArrayList<>();
+    @OneToMany(mappedBy = "member")
+    private List<UserGroup> userGroups = new ArrayList<>();
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.REMOVE)
     @JsonIgnore
@@ -144,13 +140,11 @@ public class User extends BaseEntity {
     private LocalDateTime joinedAt;
 
     public void addGroup(GroupEntity group) {
-        this.groups.add(group);
-        group.getMembers().add(this);
-    }
-
-    public void removeGroup(GroupEntity group) {
-        this.groups.remove(group);
-        group.getMembers().remove(this);
+        UserGroup userGroup = new UserGroup();
+        userGroup.setGroup(group);
+        this.userGroups.add(userGroup);
+        userGroup.setMember(this);
+        group.getMembers().add(userGroup);
     }
 
     public void updateCumulativeTime(double duration) {

@@ -50,8 +50,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> grade = createNumber("grade", Integer.class);
 
-    public final ListPath<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity> groups = this.<com.score.backend.domain.group.GroupEntity, com.score.backend.domain.group.QGroupEntity>createList("groups", com.score.backend.domain.group.GroupEntity.class, com.score.backend.domain.group.QGroupEntity.class, PathInits.DIRECT2);
-
     public final NumberPath<Integer> height = createNumber("height", Integer.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -91,6 +89,8 @@ public class QUser extends EntityPathBase<User> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+
+    public final ListPath<com.score.backend.domain.group.UserGroup, com.score.backend.domain.group.QUserGroup> userGroups = this.<com.score.backend.domain.group.UserGroup, com.score.backend.domain.group.QUserGroup>createList("userGroups", com.score.backend.domain.group.UserGroup.class, com.score.backend.domain.group.QUserGroup.class, PathInits.DIRECT2);
 
     public final NumberPath<Double> weeklyCumulativeTime = createNumber("weeklyCumulativeTime", Double.class);
 

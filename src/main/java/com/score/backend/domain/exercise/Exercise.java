@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public abstract class Exercise extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exercise_id")
     private Long id;
 
