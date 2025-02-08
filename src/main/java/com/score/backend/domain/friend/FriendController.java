@@ -75,7 +75,7 @@ public class FriendController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "친구 목록 조회 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
-    public ResponseEntity<Page<User>> getAllFriends(
+    public ResponseEntity<Page<FriendsSearchResponse>> getAllFriends(
             @RequestParam("id") @Parameter(required = true, description = "친구 목록을 요청할 유저의 고유 번호") Long id,
             @RequestParam("page") @Parameter(required = true, description = "출력할 친구 리스트의 페이지 번호") int page) {
         return ResponseEntity.ok(friendService.getAllFriends(page, id));

@@ -42,7 +42,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<com.score.backend.domain.exercise.Exercise, com.score.backend.domain.exercise.QExercise> feeds = this.<com.score.backend.domain.exercise.Exercise, com.score.backend.domain.exercise.QExercise>createList("feeds", com.score.backend.domain.exercise.Exercise.class, com.score.backend.domain.exercise.QExercise.class, PathInits.DIRECT2);
 
-    public final ListPath<User, QUser> friends = this.<User, QUser>createList("friends", User.class, QUser.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.friend.Friend, com.score.backend.domain.friend.QFriend> friends = this.<com.score.backend.domain.friend.Friend, com.score.backend.domain.friend.QFriend>createList("friends", com.score.backend.domain.friend.Friend.class, com.score.backend.domain.friend.QFriend.class, PathInits.DIRECT2);
 
     public final EnumPath<Gender> gender = createEnum("gender", Gender.class);
 
@@ -66,8 +66,6 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath loginKey = createString("loginKey");
 
     public final BooleanPath marketing = createBoolean("marketing");
-
-    public final ListPath<User, QUser> mates = this.<User, QUser>createList("mates", User.class, QUser.class, PathInits.DIRECT2);
 
     public final StringPath nickname = createString("nickname");
 

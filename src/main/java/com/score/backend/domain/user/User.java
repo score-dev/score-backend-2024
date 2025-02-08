@@ -2,6 +2,7 @@ package com.score.backend.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
+import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.notification.Notification;
@@ -82,25 +83,10 @@ public class User extends BaseEntity {
     @Builder.Default
     private final List<Exercise> feeds = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_friends",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "friend_id")
-    )
+    @OneToMany(mappedBy = "user")
     @JsonIgnore
     @Builder.Default
-    private final List<User> friends = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_mates",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "mate_id")
-    )
-    @JsonIgnore
-    @Builder.Default
-    private final List<User> mates = new ArrayList<>();
+    private final List<Friend> friends = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -194,18 +180,17 @@ public class User extends BaseEntity {
 
 
     public void addFriend(User user) {
-        this.friends.add(user);
-        user.getFriends().add(this);
+        this.friends.add(new Friend(this, user));
+        user.getFriends().add(new Friend(this, user));
     }
-    public void deleteFriend(User user) {
-        this.friends.remove(user);
-        user.getFriends().remove(this);
+    public void deleteFriend(Friend user, Friend friend) {
+        this.friends.remove(friend);
+        friend.getFriend().getFriends().remove(user);
     }
     public void blockUser(User user) {
         this.blockedUsers.add(user);
         user.getBlockedUsers().add(this);
     }
-
 
     public void setSchoolAndStudent(School school) {
         this.school = school;
