@@ -27,7 +27,7 @@ public class HomeService {
     public HomeResponse getHomeInfo(Long userId) {
         User user = userService.findUserById(userId).get();
         List<UserGroup> userGroups = user.getUserGroups();
-        userGroups.sort(Comparator.comparing(UserGroup::getJoinedAt));
+        userGroups.sort(Comparator.comparing(UserGroup::getJoinedAt).reversed());
         if (userGroups.size() > 3) {
             userGroups = userGroups.subList(0, 3);
         }
