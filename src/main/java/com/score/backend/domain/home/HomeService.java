@@ -14,9 +14,7 @@ import com.score.backend.dtos.home.HomeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +27,10 @@ public class HomeService {
     public HomeResponse getHomeInfo(Long userId) {
         User user = userService.findUserById(userId).get();
         List<UserGroup> userGroups = user.getUserGroups();
+        userGroups.sort(Comparator.comparing(UserGroup::getJoinedAt));
+        if (userGroups.size() > 3) {
+            userGroups = userGroups.subList(0, 3);
+        }
         List<Exercise> usersWeeklyExercises = exerciseService.getWeeklyExercises(userId);
         return new HomeResponse(user.getNickname(), user.getProfileImg(), user.getLevel(), user.getPoint(),
                 cumulateExerciseTimeDayByDay(usersWeeklyExercises), user.getWeeklyCumulativeTime(), user.getWeeklyExerciseCount(), user.getConsecutiveDate(),
