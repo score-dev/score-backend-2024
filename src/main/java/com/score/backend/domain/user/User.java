@@ -2,6 +2,7 @@ package com.score.backend.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.score.backend.config.BaseEntity;
+import com.score.backend.domain.friend.block.BlockedUser;
 import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.group.UserGroup;
@@ -83,20 +84,14 @@ public class User extends BaseEntity {
     @Builder.Default
     private final List<Exercise> feeds = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Builder.Default
     private final List<Friend> friends = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_blocked_users",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
-    )
-    @JsonIgnore
+    @OneToMany(mappedBy = "blocker", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private final List<User> blockedUsers = new ArrayList<>();
+    private final List<BlockedUser> blockedUsers = new ArrayList<>();
 
     @JsonIgnore
     @Builder.Default
@@ -187,9 +182,11 @@ public class User extends BaseEntity {
         this.friends.remove(friend);
         friend.getFriend().getFriends().remove(user);
     }
-    public void blockUser(User user) {
-        this.blockedUsers.add(user);
-        user.getBlockedUsers().add(this);
+    public void blockUser(BlockedUser blocked) {
+        this.blockedUsers.add(blocked);
+    }
+    public void unblockUser(BlockedUser blocked) {
+        this.blockedUsers.remove(blocked);
     }
 
     public void setSchoolAndStudent(School school) {

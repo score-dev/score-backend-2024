@@ -24,7 +24,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final ListPath<User, QUser> blockedUsers = this.<User, QUser>createList("blockedUsers", User.class, QUser.class, PathInits.DIRECT2);
+    public final ListPath<com.score.backend.domain.friend.block.BlockedUser, com.score.backend.domain.friend.block.QBlockedUser> blockedUsers = this.<com.score.backend.domain.friend.block.BlockedUser, com.score.backend.domain.friend.block.QBlockedUser>createList("blockedUsers", com.score.backend.domain.friend.block.BlockedUser.class, com.score.backend.domain.friend.block.QBlockedUser.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> consecutiveDate = createNumber("consecutiveDate", Integer.class);
 
