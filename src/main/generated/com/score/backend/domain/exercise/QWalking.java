@@ -45,9 +45,6 @@ public class QWalking extends EntityPathBase<Walking> {
     public final StringPath exercisePic;
 
     //inherited
-    public final ListPath<ExerciseUser, QExerciseUser> exerciseUsers;
-
-    //inherited
     public final StringPath feeling;
 
     //inherited
@@ -67,6 +64,9 @@ public class QWalking extends EntityPathBase<Walking> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> startedAt;
+
+    //inherited
+    public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> taggedUsers;
 
     //inherited
     public final NumberPath<Integer> temperature;
@@ -102,7 +102,6 @@ public class QWalking extends EntityPathBase<Walking> {
         this.createdBy = _super.createdBy;
         this.emotions = _super.emotions;
         this.exercisePic = _super.exercisePic;
-        this.exerciseUsers = _super.exerciseUsers;
         this.feeling = _super.feeling;
         this.fineDust = _super.fineDust;
         this.id = _super.id;
@@ -110,6 +109,7 @@ public class QWalking extends EntityPathBase<Walking> {
         this.location = _super.location;
         this.reducedKcal = _super.reducedKcal;
         this.startedAt = _super.startedAt;
+        this.taggedUsers = _super.taggedUsers;
         this.temperature = _super.temperature;
         this.updatedAt = _super.updatedAt;
         this.weather = _super.weather;

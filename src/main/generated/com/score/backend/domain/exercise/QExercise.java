@@ -38,8 +38,6 @@ public class QExercise extends EntityPathBase<Exercise> {
 
     public final StringPath exercisePic = createString("exercisePic");
 
-    public final ListPath<ExerciseUser, QExerciseUser> exerciseUsers = this.<ExerciseUser, QExerciseUser>createList("exerciseUsers", ExerciseUser.class, QExerciseUser.class, PathInits.DIRECT2);
-
     public final StringPath feeling = createString("feeling");
 
     public final StringPath fineDust = createString("fineDust");
@@ -54,6 +52,8 @@ public class QExercise extends EntityPathBase<Exercise> {
     public final NumberPath<Integer> reducedKcal = createNumber("reducedKcal", Integer.class);
 
     public final DateTimePath<java.time.LocalDateTime> startedAt = createDateTime("startedAt", java.time.LocalDateTime.class);
+
+    public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> taggedUsers = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createList("taggedUsers", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> temperature = createNumber("temperature", Integer.class);
 
