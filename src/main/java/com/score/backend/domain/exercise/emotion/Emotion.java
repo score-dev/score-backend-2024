@@ -11,7 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Getter
 public class Emotion extends BaseEntity {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "emotion_id")
     private Long id;
 

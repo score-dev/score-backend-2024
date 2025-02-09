@@ -41,7 +41,7 @@ public class FriendService {
 
     @Transactional(readOnly = true)
     public Page<FriendsSearchResponse> getAllFriends(int page, Long userId) {
-        Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("beFriendAt")).descending());
+        Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("createdAt")).descending());
         return FriendsSearchResponse.toDto(friendRepository.findByUserId(userId, pageable));
     }
 
