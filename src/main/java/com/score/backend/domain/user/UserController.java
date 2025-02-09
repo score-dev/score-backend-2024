@@ -65,7 +65,7 @@ public class UserController {
         // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
         School school = schoolService.findOrSave(schoolDto);
         // User 엔티티 생성
-        User user = userDto.toEntity(authService.getUserId(userDto.getProvider(), userDto.getIdToken()));
+        User user = userDto.toEntity();
         // 유저 엔티티에 학교 정보 set
         user.setSchoolAndStudent(school);
         return ResponseEntity.ok(userService.saveUser(user, multipartFile));
