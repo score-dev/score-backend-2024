@@ -23,6 +23,7 @@ public class UserReport {
     @JoinColumn(name = "object_id")
     private User reportObject; // 신고를 당한 유저
 
+    @Column(columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private UserReportReason reason; // 신고 이유
 
