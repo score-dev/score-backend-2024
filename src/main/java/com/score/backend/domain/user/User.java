@@ -39,7 +39,7 @@ public class User extends BaseEntity {
 
     private LocalDateTime schoolUpdatedAt;
 
-    @Column(columnDefinition = "varchar")
+    @Column(columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

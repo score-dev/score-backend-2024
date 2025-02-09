@@ -24,6 +24,7 @@ public class FeedReport {
     @JoinColumn(name = "exercise_id")
     private Exercise reportedFeed; // 신고한 피드
 
+    @Column(columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private FeedReportReason reason; // 신고 이유
 

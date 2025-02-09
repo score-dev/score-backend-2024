@@ -24,7 +24,7 @@ public class Emotion extends BaseEntity {
     @JoinColumn(name = "exercise_id")
     private Exercise feed; // 이 감정 표현이 추가된 피드
 
-    @Column(columnDefinition = "varchar")
+    @Column(columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private EmotionType emotionType; // 어떤 감정 표현인지?
 
