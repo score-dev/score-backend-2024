@@ -24,8 +24,6 @@ public class QFriend extends EntityPathBase<Friend> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final DateTimePath<java.time.LocalDateTime> beFriendAt = createDateTime("beFriendAt", java.time.LocalDateTime.class);
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
