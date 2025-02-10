@@ -1,7 +1,6 @@
 package com.score.backend.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +16,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
-    private final long ACCESS_TOKEN_VALID_MILISECOND = 1000L * 60 * 60;
-    private final long REFRESH_TOKEN_VALID_MILISECOND = 1000L * 60 * 60 * 24 * 14;
+    private final long ACCESS_TOKEN_VALID_MILISECOND = 1000L * 60 * 60; // 1시간
+    private final long REFRESH_TOKEN_VALID_MILISECOND = 1000L * 60 * 60 * 24 * 14; // 2주
 
     @Value("${custom.jwt.secretKey}")
     private String plainSecretKey;
@@ -42,11 +41,6 @@ public class JwtProvider {
         tokens.add(createAccessToken(userKey));
         tokens.add(createRefreshToken(userKey));
         return tokens;
-    }
-
-    // 토큰으로부터 세부 정보(claims) 얻기
-    public Jws<Claims> getClaimsFromJwt(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(token);
     }
 
     // access token 생성

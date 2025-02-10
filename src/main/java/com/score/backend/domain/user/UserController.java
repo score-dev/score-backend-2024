@@ -2,10 +2,7 @@ package com.score.backend.domain.user;
 
 import com.score.backend.domain.rank.group.GroupRankService;
 import com.score.backend.domain.school.School;
-import com.score.backend.dtos.NotificationStatusRequest;
-import com.score.backend.dtos.SchoolDto;
-import com.score.backend.dtos.UserDto;
-import com.score.backend.dtos.UserUpdateDto;
+import com.score.backend.dtos.*;
 import com.score.backend.security.AuthService;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.school.SchoolService;
@@ -58,7 +55,7 @@ public class UserController {
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/score/public/onboarding/fin", method = RequestMethod.POST)
-    public ResponseEntity<Long> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
+    public ResponseEntity<NewUserResponse> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
                                               @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
                                               @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
 
@@ -68,7 +65,7 @@ public class UserController {
         User user = userDto.toEntity();
         // 유저 엔티티에 학교 정보 set
         user.setSchoolAndStudent(school);
-        return ResponseEntity.ok(userService.saveUser(user, multipartFile));
+        return ResponseEntity.ok(new NewUserResponse(userService.saveUser(user, multipartFile), authService.setJwtToken(userDto.getProvider(), userDto.getIdToken())));
     }
 
     // 회원 탈퇴
