@@ -120,9 +120,7 @@ public class User extends BaseEntity {
     @Setter
     private LocalDateTime joinedAt;
 
-    public void addGroup(GroupEntity group) {
-        UserGroup userGroup = new UserGroup();
-        userGroup.setGroup(group);
+    public void addGroup(UserGroup userGroup, GroupEntity group) {
         this.userGroups.add(userGroup);
         userGroup.setMember(this);
         group.getMembers().add(userGroup);
