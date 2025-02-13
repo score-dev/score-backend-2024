@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.repositories.GroupRepository;
+import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.school.SchoolService;
@@ -29,7 +30,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 @Transactional
 public class GroupService {
-
+    private final UserGroupRepository userGroupRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final ExerciseService exerciseService;
@@ -66,7 +67,9 @@ public class GroupService {
                 .admin(admin)
                 .cumulativeTime(0.0)
                 .build();
-
+        UserGroup groupUser = new UserGroup(admin, group);
+        userGroupRepository.save(groupUser);
+        group.getMembers().add(groupUser);
         GroupEntity generatedGroup = groupRepository.save(group);
         admin.getSchool().getGroups().add(generatedGroup);
         return generatedGroup;
@@ -166,10 +169,11 @@ public class GroupService {
         User user = userService.findUserById(userId).orElseThrow(
                 () -> new NoSuchElementException("User not found")
         );
-        if (!group.getMembers().contains(user)) {
-            user.addGroup(group);
-            groupRepository.save(group);
-            userRepository.save(user);
+        if (userGroupRepository.findByUserIdAndGroupId(userId, groupId) == null) {
+            UserGroup userGroup = new UserGroup(user, group);
+            userGroupRepository.save(userGroup);
+            group.getMembers().add(userGroup);
+            user.addGroup(userGroup, group);
             if (!user.getLoginKey().equals("string")) {
                 FcmMessageRequest message = new FcmMessageRequest(userId,  group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
                 notificationService.sendMessage(message);
@@ -189,9 +193,15 @@ public class GroupService {
         }
     }
 
+    // 유저가 가입한 모든 그룹의 목록 조회
     @Transactional(readOnly = true)
     public List<GroupEntity> findAllGroupsByUserId(Long userId) {
-        return groupRepository.findAllGroupsByUserId(userId);
+        List<UserGroup> userGroups = userGroupRepository.findByUserId(userId);
+        List<GroupEntity> groups = new ArrayList<>();
+        for (UserGroup userGroup : userGroups) {
+            groups.add(userGroup.getGroup());
+        }
+        return groups;
     }
 
     public List<User> findAllUsersDidExerciseToday(Long groupId) {
@@ -202,9 +212,7 @@ public class GroupService {
     @Transactional(readOnly = true)
     public boolean isMemberOfGroup(Long groupId, Long userId) {
         GroupEntity group = this.findById(groupId);
-        return group.getMembers().contains(userService.findUserById(userId).orElseThrow(
-                () -> new NoSuchElementException("User Not Found.")
-        ));
+        return group.getMembers().contains(userGroupRepository.findByUserIdAndGroupId(userId, groupId));
     }
 
     // 유저가 가입해 있지 않은 그룹의 정보 반환

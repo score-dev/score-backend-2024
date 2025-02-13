@@ -1,7 +1,7 @@
 package com.score.backend.config;
 
 import com.score.backend.domain.exercise.emotion.EmotionType;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
@@ -11,13 +11,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-    private OctetStreamReadMsgConverter octetStreamReadMsgConverter;
-
-    @Autowired
-    public WebConfig(OctetStreamReadMsgConverter octetStreamReadMsgConverter) {
-        this.octetStreamReadMsgConverter = octetStreamReadMsgConverter;
-    }
+    private final OctetStreamReadMsgConverter octetStreamReadMsgConverter;
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
@@ -32,6 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add((HttpMessageConverter<?>) octetStreamReadMsgConverter);
+        converters.add(octetStreamReadMsgConverter);
     }
 }
