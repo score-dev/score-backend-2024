@@ -65,7 +65,8 @@ public class UserController {
         User user = userDto.toEntity();
         // 유저 엔티티에 학교 정보 set
         user.setSchoolAndStudent(school);
-        return ResponseEntity.ok(new NewUserResponse(userService.saveUser(user, multipartFile), authService.setJwtToken(userDto.getProvider(), userDto.getIdToken())));
+        Long userId = userService.saveUser(user, multipartFile);
+        return ResponseEntity.ok(new NewUserResponse(userId, authService.setJwtToken(userDto.getProvider(), userDto.getIdToken())));
     }
 
     // 회원 탈퇴
