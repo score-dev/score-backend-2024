@@ -62,11 +62,10 @@ public class UserController {
         // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
         School school = schoolService.findOrSave(schoolDto);
         // User 엔티티 생성
-        User user = userDto.toEntity();
+        User user = userDto.toEntity(authService.getUserId(userDto.getProvider(), userDto.getIdToken()));
         // 유저 엔티티에 학교 정보 set
         user.setSchoolAndStudent(school);
-        Long userId = userService.saveUser(user, multipartFile);
-        return ResponseEntity.ok(new NewUserResponse(userId, authService.setJwtToken(userDto.getProvider(), userDto.getIdToken())));
+        return ResponseEntity.ok(new NewUserResponse(userService.saveUser(user, multipartFile), authService.setJwtToken(userDto.getProvider(), userDto.getIdToken())));
     }
 
     // 회원 탈퇴
