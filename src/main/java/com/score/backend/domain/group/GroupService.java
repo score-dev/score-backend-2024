@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
-
 @RequiredArgsConstructor
 @Transactional
 public class GroupService {
