@@ -2,12 +2,14 @@ package com.score.backend.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 
 @Slf4j
 @Getter
 @Schema(description = "유저가 가입해 있지 않은 그룹에 대한 정보를 응답하는 DTO")
+@NoArgsConstructor
 public class GroupInfoResponse {
     // 학교 랭킹 추가 필요
     @Schema(description = "그룹명")

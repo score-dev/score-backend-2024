@@ -168,8 +168,7 @@ public class GroupController {
                 return ResponseEntity.ok(response);
             } else {
                 if (groupService.findById(groupId).isPrivate()) {
-                    GroupInfoResponse response = new GroupInfoResponse(false);
-                    return ResponseEntity.status(409).body(response);
+                    return ResponseEntity.status(409).body(new GroupInfoResponse());
                 } else {
                     GroupInfoResponse response = groupService.getGroupInfoForNonMember(groupId);
                     return ResponseEntity.ok(response);
