@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -60,7 +61,7 @@ public class UserService {
     }
 
     @Transactional
-    public void withdrawUser(Long id) {
+    public void withdrawUser(Long id) throws SQLIntegrityConstraintViolationException {
         User deletingUser = findUserById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         ); // 예외 처리 필요

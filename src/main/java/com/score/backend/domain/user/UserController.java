@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Tag(name = "User", description = "회원 정보 관리를 위한 API입니다.")
 @RestController
@@ -72,9 +73,11 @@ public class UserController {
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 요청 발생시 해당 회원의 모든 정보를 db에서 삭제합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "회원 탈퇴 완료"),
-                    @ApiResponse(responseCode = "404", description = "User Not Found")})
+                    @ApiResponse(responseCode = "404", description = "User Not Found"),
+                    @ApiResponse(responseCode = "400", description = "그룹의 방장인 경우 탈퇴할 수 없음")
+            })
     @RequestMapping(value = "/score/user/withdrawal", method = RequestMethod.DELETE)
-    public ResponseEntity<HttpStatus> withdrawUser(@Parameter(description = "회원 탈퇴를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id,
+    public ResponseEntity<String> withdrawUser(@Parameter(description = "회원 탈퇴를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id,
                                                    @Parameter(description = "회원 탈퇴 사유") @RequestParam(name = "reason") String reason) {
         try {
             groupRankService.handleWithdrawUsersRankingInfo(id);
@@ -83,8 +86,10 @@ public class UserController {
             logger.info("User ID: {}, Reason: {}", id, reason);
         } catch(NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+        } catch (SQLIntegrityConstraintViolationException e) {
+            return ResponseEntity.badRequest().body("그룹의 방장은 탈퇴할 수 없습니다. 고객센터로 문의해주세요.");
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 
     // 회원 정보 수정
