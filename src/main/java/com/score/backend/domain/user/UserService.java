@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final ImageUploadService imageUploadService;
     private final SchoolService schoolService;
+
+    public User findDummyUser() {
+        return userRepository.findByNickname("(알 수 없음)").orElseThrow(() -> new NoSuchElementException(("탈퇴 처리를 위한 더미 유저가 등록되지 않은 상태입니다.")));
+    }
 
     @Transactional
     public Long saveUser(User user, MultipartFile profileImage) {

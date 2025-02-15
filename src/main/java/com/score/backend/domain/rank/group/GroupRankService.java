@@ -22,8 +22,8 @@ public class GroupRankService {
 
     @Transactional
     public void handleWithdrawUsersRankingInfo(Long userId) {
-        User dummyUser = userService.findUserById(0L).get();
+        User dummyUser = userService.findDummyUser();
         List<GroupRanker> deletingUserRanks = groupRankerRepository.findByUserId(userId);
-        deletingUserRanks.forEach(groupRanker -> {groupRanker.setUser(dummyUser);});
+        deletingUserRanks.forEach(groupRanker -> groupRanker.setUser(dummyUser));
     }
 }
