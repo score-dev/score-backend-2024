@@ -5,6 +5,7 @@ import com.score.backend.domain.user.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @Schema(description = "피드 정보 응답을 위한 DTO")
 public class FeedInfoResponse {
     @Schema(description = "피드를 식별할 수 있는 고유 id")

@@ -1,13 +1,12 @@
 package com.score.backend.dtos;
 
-import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.user.User;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 
-@Builder
 @Schema(description = "친구 검색 결과 응답을 위한 DTO")
+@Getter
 public class FriendsSearchResponse {
     @Schema(description = "검색된 유저의 고유 id 값")
     private Long id;
@@ -23,10 +22,10 @@ public class FriendsSearchResponse {
     }
 
     public static Page<FriendsSearchResponse> toDto(Page<User> friendPages) {
-        return friendPages.map(friend -> FriendsSearchResponse.builder()
-                .id(friend.getId())
-                .nickname(friend.getNickname())
-                .profileImgUrl(friend.getProfileImg())
-                .build());
+        return friendPages.map(friend -> new FriendsSearchResponse(
+                friend.getId(),
+                friend.getNickname(),
+                friend.getProfileImg()
+        ));
     }
 }

@@ -2,10 +2,12 @@ package com.score.backend.dtos.schoolrank;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
 @Schema(description = "학교 랭킹 응답을 위한 DTO")
+@Getter
 @AllArgsConstructor
 public class SchoolRankingResponse {
     @Schema(description = "학교명", example = "하남고등학교")
