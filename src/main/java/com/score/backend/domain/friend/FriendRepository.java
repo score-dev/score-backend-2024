@@ -1,5 +1,6 @@
 package com.score.backend.domain.friend;
 
+import com.score.backend.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,7 @@ import java.util.Optional;
 public interface FriendRepository extends JpaRepository<Friend, Long> {
     @Query("select f from Friend f where f.user.id = :userId and f.friend.id = :friendId")
     Optional<Friend> findByUserIdAndFriendId(@Param("userId") Long userId, @Param("friendId") Long friendId);
-    Page<Friend> findByUserId(Long userId, Pageable pageable);
+
+    @Query("select f.friend from Friend f where f.user.id = :userId")
+    Page<User> findByUserId(Long userId, Pageable pageable);
 }
