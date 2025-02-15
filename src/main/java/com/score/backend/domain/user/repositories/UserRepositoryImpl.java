@@ -38,8 +38,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         return queryFactory
                 .select(user)
-                .from(user)
-                .join(user, userGroup.member)
+                .from(userGroup)
+                .join(userGroup.member, user)
                 .join(userGroup.group, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
                 .leftJoin(user.feeds, exercise) // 유저와 운동 기록 left join (운동 기록이 존재하지 않는 유저도 포함되도록)
                 .where(group.groupId.eq(groupId)) // 주어진 특정 그룹에 속한 유저만을 필터링
@@ -67,7 +67,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         return queryFactory
                 .select(user)
-                .from(user)
+                .from(userGroup)
+                .join(userGroup.member, user)
                 .join(userGroup.group, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
                 .leftJoin(user.feeds, exercise) // 유저와 운동 기록 left join (운동 기록이 존재하지 않는 유저도 포함되도록)
                 .where(group.groupId.eq(groupId)) // 주어진 특정 그룹에 속한 유저만을 필터링
