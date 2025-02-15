@@ -1,6 +1,7 @@
 package com.score.backend.dtos;
 
 import com.score.backend.domain.friend.Friend;
+import com.score.backend.domain.user.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
@@ -21,11 +22,11 @@ public class FriendsSearchResponse {
         this.profileImgUrl = profileImgUrl;
     }
 
-    public static Page<FriendsSearchResponse> toDto(Page<Friend> friendPages) {
+    public static Page<FriendsSearchResponse> toDto(Page<User> friendPages) {
         return friendPages.map(friend -> FriendsSearchResponse.builder()
-                .id(friend.getFriend().getId())
-                .nickname(friend.getFriend().getNickname())
-                .profileImgUrl(friend.getFriend().getProfileImg())
+                .id(friend.getId())
+                .nickname(friend.getNickname())
+                .profileImgUrl(friend.getProfileImg())
                 .build());
     }
 }
