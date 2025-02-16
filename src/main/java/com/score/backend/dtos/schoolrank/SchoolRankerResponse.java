@@ -2,8 +2,10 @@ package com.score.backend.dtos.schoolrank;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Schema(description = "학교 랭킹에 있는 각 그룹에 대한 정보를 전달하기 위한 ㅇ썌")
+@Schema(description = "학교 랭킹에 있는 각 그룹에 대한 정보를 전달하기 위한 DTO")
+@Getter
 @AllArgsConstructor
 public class SchoolRankerResponse {
     @Schema(description = "해당 그룹의 고유 ID 값", example = "1")
