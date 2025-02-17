@@ -3,6 +3,8 @@ package com.score.backend.domain.user.repositories;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.QExercise;
+import com.score.backend.domain.friend.Friend;
+import com.score.backend.domain.friend.QFriend;
 import com.score.backend.domain.group.QGroupEntity;
 import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
@@ -16,17 +18,17 @@ import java.util.List;
 public class UserRepositoryImpl implements UserRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     QUser user = QUser.user;
-    QUser friend = new QUser("friend");
+    QFriend friend = new QFriend("friend");
     QExercise exercise = QExercise.exercise;
     QGroupEntity group = QGroupEntity.groupEntity;
     QUserGroup userGroup = QUserGroup.userGroup;
 
     @Override
-    public List<User> findFriendsByNicknameContaining(Long userId, String nickname) {
+    public List<Friend> findFriendsByNicknameContaining(Long userId, String nickname) {
         return queryFactory
                 .selectFrom(friend)
-                .where(user.id.eq(userId)
-                        .and(friend.nickname.containsIgnoreCase(nickname)))
+                .where(friend.user.id.eq(userId)
+                        .and(friend.friend.nickname.containsIgnoreCase(nickname)))
                 .fetch();
     }
 

@@ -1,6 +1,7 @@
 package com.score.backend.domain.exercise;
 
 import com.score.backend.domain.exercise.emotion.EmotionService;
+import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.FriendsSearchResponse;
@@ -50,10 +51,10 @@ public class ExerciseController {
             @Parameter(description = "운동을 기록하고자 하는(함께 운동할 친구를 선택하고자 하는) 유저의 고유 id 값", required = true) @RequestParam Long id,
             @Parameter(description = "유저가 필드에 입력한 내친구의 닉네임", required = true) @RequestParam String nickname) {
 
-        List<User> searched = friendService.getFriendsByNicknameContaining(id, nickname);
+        List<Friend> searched = friendService.getFriendsByNicknameContaining(id, nickname);
         List<FriendsSearchResponse> responses = new ArrayList<>();
-        for (User user : searched) {
-            responses.add(new FriendsSearchResponse(user.getId(), user.getNickname(), user.getProfileImg()));
+        for (Friend friend : searched) {
+            responses.add(new FriendsSearchResponse(friend.getFriend().getId(), friend.getFriend().getNickname(), friend.getFriend().getProfileImg()));
         }
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }

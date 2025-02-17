@@ -50,7 +50,7 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> getFriendsByNicknameContaining(Long userId, String nickname) {
+    public List<Friend> getFriendsByNicknameContaining(Long userId, String nickname) {
         return userRepository.findFriendsByNicknameContaining(userId, nickname);
     }
 }
