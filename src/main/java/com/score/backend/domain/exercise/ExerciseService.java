@@ -5,6 +5,7 @@ import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.emotion.Emotion;
 import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.exercise.repositories.ExerciseRepository;
+import com.score.backend.domain.friend.block.BlockedUser;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +45,7 @@ public class  ExerciseService {
                 () -> new NoSuchElementException("User not found")
         );
 
-        if (user1.getBlockedUsers().contains(user2)) {
+        if (user1.getBlockedUsers().stream().map(BlockedUser::getBlocked).toList().contains(user2)) {
             throw new RuntimeException("차단한 유저에 대한 피드 목록 조회 요청입니다.");
         }
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
