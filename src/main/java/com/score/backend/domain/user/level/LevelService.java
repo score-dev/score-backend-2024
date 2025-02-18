@@ -19,8 +19,8 @@ public class LevelService {
                 () -> new RuntimeException("User not found")
         );
         double currDistance = user.getCumulativeDistance();
-        user.updatePoint((int)(currDistance % 10 + newDistance) / 10 * 100);
-        user.updatePoint((int)(currDistance % 30 + newDistance) / 30 * 300);
+        user.updatePoint((int)(currDistance % 10000 + newDistance) / 10000 * 100);
+        user.updatePoint((int)(currDistance % 30000 + newDistance) / 30000 * 300);
     }
 
     // 연속 운동 일수에 따른 포인트 증가
