@@ -5,6 +5,7 @@ import com.score.backend.domain.user.repositories.UserRepository;
 import com.score.backend.dtos.FriendsSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BlockService {
     private final UserRepository userRepository;
     private final BlockedUserRepository blockedUserRepository;

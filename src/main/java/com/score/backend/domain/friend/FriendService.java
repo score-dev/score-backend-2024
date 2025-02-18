@@ -26,7 +26,9 @@ public class FriendService {
                 () -> new NoSuchElementException("User not found"));
         User user2 = userRepository.findById(userId2).orElseThrow(
                 () -> new NoSuchElementException("User not found"));
-        user1.addFriend(user2);
+        if (friendRepository.findByUserIdAndFriendId(userId1, userId2).isEmpty()) {
+            user1.addFriend(user2);
+        }
     }
 
     public void deleteFriend(Long userId1, Long userId2) {
@@ -37,6 +39,7 @@ public class FriendService {
                 () -> new NoSuchElementException("User not found")
         );
         user1.getUser().deleteFriend(user1, user2);
+        user2.getUser().deleteFriend(user1, user2);
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +50,7 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> getFriendsByNicknameContaining(Long userId, String nickname) {
+    public List<Friend> getFriendsByNicknameContaining(Long userId, String nickname) {
         return userRepository.findFriendsByNicknameContaining(userId, nickname);
     }
 }

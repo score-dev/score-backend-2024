@@ -24,7 +24,7 @@ public class GroupDto {
 
     public static GroupDto fromEntity(GroupEntity group) {
         List<User> recentMembers = group.getMembers().stream()
-                .sorted((u1, u2) -> u2.getMember().getJoinedAt().compareTo(u1.getMember().getJoinedAt()))
+                .sorted((u1, u2) -> u2.getMember().getCreatedAt().compareTo(u1.getMember().getCreatedAt()))
                 .limit(3)
                 .map(UserGroup::getMember)
                 .toList();

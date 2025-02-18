@@ -1,6 +1,7 @@
 package com.score.backend.domain.exercise;
 
 import com.score.backend.domain.exercise.emotion.EmotionService;
+import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.FriendsSearchResponse;
@@ -50,10 +51,10 @@ public class ExerciseController {
             @Parameter(description = "운동을 기록하고자 하는(함께 운동할 친구를 선택하고자 하는) 유저의 고유 id 값", required = true) @RequestParam Long id,
             @Parameter(description = "유저가 필드에 입력한 내친구의 닉네임", required = true) @RequestParam String nickname) {
 
-        List<User> searched = friendService.getFriendsByNicknameContaining(id, nickname);
+        List<Friend> searched = friendService.getFriendsByNicknameContaining(id, nickname);
         List<FriendsSearchResponse> responses = new ArrayList<>();
-        for (User user : searched) {
-            responses.add(new FriendsSearchResponse(user.getId(), user.getNickname(), user.getProfileImg()));
+        for (Friend friend : searched) {
+            responses.add(new FriendsSearchResponse(friend.getFriend().getId(), friend.getFriend().getNickname(), friend.getFriend().getProfileImg()));
         }
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
@@ -83,8 +84,6 @@ public class ExerciseController {
                     exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
                     // 연속 운동 일수 증가에 따른 포인트 증가
                     levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
-                    // 유저의 금주 운동 현황 업데이트, 이번주 운동한 날짜 수도 증가
-                    exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
                 }
                 /////// 오늘 3분 이상 운동한 기록이 이미 존재하는 경우 ///////
                 else {
@@ -100,6 +99,8 @@ public class ExerciseController {
             exerciseService.cumulateExerciseDistance(walkingDto.getAgentId(), walkingDto.getDistance());
             // 개인 누적 운동 시간 업데이트
             exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+            // 유저의 금주 누적 운동 시간 업데이트
+            exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             // 유저가 속한 그룹의 누적 운동 시간 업데이트
             groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         } catch (NoSuchElementException e) {
