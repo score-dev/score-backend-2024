@@ -46,6 +46,12 @@ public class GroupService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public boolean checkEmptySpaceExistence(Long id) {
+        GroupEntity group = findById(id);
+        return group.getMembers().size() < group.getUserLimit();
+    }
+
     public List<GroupEntity> findAll() {
         return groupRepository.findAll();
     }

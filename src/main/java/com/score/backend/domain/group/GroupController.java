@@ -126,13 +126,19 @@ public class GroupController {
     @Operation(summary = "그룹 가입 신청", description = "그룹 가입 신청 요청 발생 시 방장에게 알림을 전송합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "그룹 가입 신청 완료"),
-            @ApiResponse(responseCode = "400", description = "Bad Request")
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "409", description = "정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다."),
     })
     @GetMapping("/join/request")
     public ResponseEntity<String> sendGroupJoinRequest(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) {
         try {
-            groupService.sendGroupJoinRequestNotification(groupId, userId);
-            return  ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
+            if (groupService.checkEmptySpaceExistence(groupId)) {
+                groupService.sendGroupJoinRequestNotification(groupId, userId);
+                return  ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
+            } else {
+                return ResponseEntity.status(409).body("정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.");
+            }
+
         } catch (FirebaseMessagingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
