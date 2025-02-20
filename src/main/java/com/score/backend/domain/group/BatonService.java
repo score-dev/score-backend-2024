@@ -57,12 +57,10 @@ public class BatonService {
             return false;
         }
         notificationService.saveBatonLog(senderId, receiverId);
-        if (!sender.getLoginKey().equals("string")) {
-            FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 찔렀어요!", "오늘치 운동하러 스코어와 떠나 볼까요?");
-            notificationService.sendMessage(message);
-            notificationService.saveNotification(message);
-            notificationService.saveBatonLog(senderId, receiverId);
-        }
+        FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 찔렀어요!", "오늘치 운동하러 스코어와 떠나 볼까요?");
+        notificationService.sendMessage(message);
+        notificationService.saveNotification(message);
+        notificationService.saveBatonLog(senderId, receiverId);
 
         return true;
     }
