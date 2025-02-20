@@ -93,15 +93,15 @@ public class  ExerciseService {
                 );
                 taggedUsers.add(user);
                 // 태그된 유저들에게 알림 전송 및 알림 저장 -> 프론트엔드와의 연동 이후 주석 해제 필요
-//                if (user.isTag() && !user.getLoginKey().equals("string")) {
-//                    FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
-//                    try {
-//                        notificationService.sendMessage(fcmMessageRequest);
-//                    } catch (FirebaseMessagingException e) {
-//                        e.printStackTrace();
-//                    }
-//                    notificationService.saveNotification(fcmMessageRequest);
-//                }
+                if (user.isTag() && !user.getLoginKey().equals("string")) {
+                    FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
+                    try {
+                        notificationService.sendMessage(fcmMessageRequest);
+                    } catch (FirebaseMessagingException e) {
+                        e.printStackTrace();
+                    }
+                    notificationService.saveNotification(fcmMessageRequest);
+                }
             }
         }
         // 피드 작성자, 함께 운동한 친구 설정
