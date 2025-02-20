@@ -31,5 +31,6 @@ public class FeedReportService {
                 .reason(FeedReportReason.valueOf(feedReportDto.getReportReason()))
                 .comment(feedReportDto.getComment())
                 .build();
+        feedReportRepository.save(feedReport);
     }
 }
