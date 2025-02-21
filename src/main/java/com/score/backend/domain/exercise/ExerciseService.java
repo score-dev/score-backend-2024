@@ -76,7 +76,7 @@ public class  ExerciseService {
         return exerciseRepository.findUsersWeeklyExercises(userId, LocalDateTime.now());
     }
 
-    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) {
+    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException{
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기
@@ -93,13 +93,9 @@ public class  ExerciseService {
                 );
                 taggedUsers.add(user);
                 // 태그된 유저들에게 알림 전송 및 알림 저장 -> 프론트엔드와의 연동 이후 주석 해제 필요
-                if (user.isTag() && !user.getLoginKey().equals("string")) {
+                if (user.isTag()) {
                     FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
-                    try {
-                        notificationService.sendMessage(fcmMessageRequest);
-                    } catch (FirebaseMessagingException e) {
-                        e.printStackTrace();
-                    }
+                    notificationService.sendMessage(fcmMessageRequest);
                     notificationService.saveNotification(fcmMessageRequest);
                 }
             }

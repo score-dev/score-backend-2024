@@ -22,10 +22,10 @@ import java.util.NoSuchElementException;
 public class FeedReportController {
     private final FeedReportService feedReportService;
 
-    @Operation(summary = "유저 신고", description = "유저를 신고합니다.")
+    @Operation(summary = "피드 신고", description = "피드를를 신고합니다.")
     @RequestMapping(value = "/score/exercise/report", method = RequestMethod.POST)
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "유저 신고 완료"),
+            value = {@ApiResponse(responseCode = "200", description = "피드 신고 완료"),
                     @ApiResponse(responseCode = "404", description = "User or Feed Not Found")})
     public ResponseEntity<HttpStatus> reportFeed(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody FeedReportDto feedReportDto) {
         try {

@@ -1,5 +1,6 @@
 package com.score.backend.domain.exercise;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.user.User;
@@ -105,6 +106,8 @@ public class ExerciseController {
             groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (FirebaseMessagingException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
