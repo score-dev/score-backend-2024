@@ -49,6 +49,20 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "유저 정보 응답", description = "유저의 정보를 응답하기 위한 api입니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "유저 정보 응답 완료"),
+                    @ApiResponse(responseCode = "404", description = "user not found")}
+    )
+    @GetMapping("/score/user/info")
+    public ResponseEntity<UserInfoResponse> getUserInfo(@Parameter(description = "정보를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id) {
+        try {
+            return ResponseEntity.ok(UserInfoResponse.of(userService.findUserById(id).get()));
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // 온보딩에서 회원 정보 입력 완료시
     @Operation(summary = "신규 회원 정보 저장", description = "온보딩에서 회원 정보가 입력이 완료될 경우 수행되는 요청입니다. 해당 정보를 db에 저장하고 로그인을 진행합니다.")
     @ApiResponses(
