@@ -37,7 +37,7 @@ public class AuthService {
         } catch (ParseException e) {
             throw new RuntimeException("Failed to extract user info", e);
         }
-        return "";
+        throw new RuntimeException("id 토큰 검증에 실패하였습니다.");
     }
 
     @Transactional
