@@ -53,7 +53,7 @@ public class RankingController {
             @Parameter(description = "조회하고자 하는 그룹의 고유 id 값", required = true) @RequestParam Long groupId,
             @Parameter(description = "랭킹을 조회하고자 하는 주차 월요일에 해당하는 날짜. 주어지지 않을 경우 가장 최근 주차의 랭킹으로 응답.") @RequestParam(value = "localDate", required = false) @DateTimeFormat(iso = DATE) LocalDate localDate) {
 
-        if (localDate != null) {
+        if (localDate == null) {
             localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
         }
         GroupEntity group = groupService.findById(groupId);
@@ -80,7 +80,7 @@ public class RankingController {
     public ResponseEntity<SchoolRankingResponse> getSchoolRanking(
             @Parameter(description = "조회를 요청한 유저의 고유 Id 값", required = true) @RequestParam Long userId,
             @Parameter(description = "랭킹을 조회하고자 하는 주차 월요일에 해당하는 날짜. 주어지지 않을 경우 가장 최근 주차의 랭킹으로 응답.") @RequestParam(value = "localDate", required = false) @DateTimeFormat(iso = DATE) LocalDate localDate) {
-        if (localDate != null) {
+        if (localDate == null) {
             localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
         }
         try {
