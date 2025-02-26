@@ -149,7 +149,7 @@ public class GroupService {
 
     // 방장에게 그룹 가입 신청 알림 보내기
     public void sendGroupJoinRequestNotification(Long groupId, Long userId) throws FirebaseMessagingException {
-        User requester = userService.findUserById(userId).get();
+        User requester = userService.findUserById(userId);
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
         FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + "에 가입을 신청했어요!", "알림 페이지에서 가입을 승인 혹은 거절할 수 있어요.");
@@ -170,9 +170,7 @@ public class GroupService {
     // 그룹에 새로운 멤버 추가
     public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException, BadRequestException {
         GroupEntity group = findById(groupId);
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new NoSuchElementException("그룹에 추가하려는 유저 정보가 존재하지 않습니다.")
-        );
+        User user = userService.findUserById(userId);
         if (userGroupRepository.findByUserIdAndGroupId(userId, groupId) == null) {
             UserGroup userGroup = new UserGroup(user, group);
             userGroupRepository.save(userGroup);

@@ -19,7 +19,7 @@ public class SchoolService {
     @Transactional(readOnly = true)
     public School findById(Long id) {
         return schoolRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("School not found")
+                () -> new NoSuchElementException("학교 정보가 존재하지 않습니다.")
         );
     }
 

@@ -20,9 +20,7 @@ public class FeedReportService {
 
     @Transactional
     public void createReport(FeedReportDto feedReportDto) {
-        User agent = userService.findUserById(feedReportDto.getAgentId()).orElseThrow(
-                () -> new NoSuchElementException("신고를 요청한 유저 정보를 찾을 수 없습니다.")
-        );
+        User agent = userService.findUserById(feedReportDto.getAgentId());
         Exercise feed = exerciseService.findFeedByExerciseId(feedReportDto.getFeedId());
 
         FeedReport feedReport = FeedReport.builder()

@@ -18,11 +18,8 @@ public class UserReportService {
     private final UserReportRepository userReportRepository;
 
     public void createReport(UserReportDto userReportDto) {
-        User agent = userService.findUserById(userReportDto.getAgentId()).orElseThrow(
-                () -> new NoSuchElementException("요청을 보낸 유저 정보를 찾을 수 없습니다."));
-        User object = userService.findUserById(userReportDto.getAgentId()).orElseThrow(
-                () -> new NoSuchElementException("신고하려는 유저 정보를 찾을 수 없습니다."));
-
+        User agent = userService.findUserById(userReportDto.getAgentId());
+        User object = userService.findUserById(userReportDto.getAgentId());
         UserReport userReport = UserReport.builder()
                 .reportAgent(agent)
                 .reportObject(object)

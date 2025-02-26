@@ -84,7 +84,7 @@ public class RankingController {
             localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
         }
         try {
-            School school = userService.findUserById(userId).get().getSchool();
+            School school = userService.findUserById(userId).getSchool();
             List<SchoolRankerResponse> allRankers = schoolRankService.findAllSchoolRankingByUserId(userId, localDate);
             List<SchoolRankerResponse> myGroupRankers = schoolRankService.findMyGroupRankingByUserId(userId, localDate);
             return ResponseEntity.ok(new SchoolRankingResponse(school.getSchoolName(), school.getId(), allRankers, myGroupRankers));

@@ -20,9 +20,7 @@ public class EmotionService {
 
     // 피드에 새로운 감정 표현 추가
     public void addEmotion(Long agentId, Long feedId, EmotionType emotionType) {
-        User agent = userService.findUserById(agentId).orElseThrow(
-                () -> new RuntimeException("Agent Not Found")
-        );
+        User agent = userService.findUserById(agentId);
         Exercise feed = exerciseService.findFeedByExerciseId(feedId);
         Emotion emotion = new Emotion();
         emotion.setEmotion(agent, feed, emotionType);

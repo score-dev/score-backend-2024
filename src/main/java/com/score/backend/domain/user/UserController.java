@@ -56,11 +56,7 @@ public class UserController {
     )
     @GetMapping("/score/user/info")
     public ResponseEntity<UserInfoResponse> getUserInfo(@Parameter(description = "정보를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id) {
-        try {
-            return ResponseEntity.ok(UserInfoResponse.of(userService.findUserById(id).get()));
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.ok(UserInfoResponse.of(userService.findUserById(id)));
     }
 
     // 온보딩에서 회원 정보 입력 완료시
@@ -92,17 +88,11 @@ public class UserController {
             })
     @RequestMapping(value = "/score/user/withdrawal", method = RequestMethod.DELETE)
     public ResponseEntity<String> withdrawUser(@Parameter(description = "회원 탈퇴를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id,
-                                                   @Parameter(description = "회원 탈퇴 사유") @RequestParam(name = "reason") String reason) {
-        try {
-            groupRankService.handleWithdrawUsersRankingInfo(id);
-            userService.withdrawUser(id);
-            Logger logger = LoggerFactory.getLogger("withdrawal-logger");
-            logger.info("User ID: {}, Reason: {}", id, reason);
-        } catch(NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
-        } catch (SQLIntegrityConstraintViolationException e) {
-            return ResponseEntity.badRequest().body("그룹의 방장은 탈퇴할 수 없습니다. 고객센터로 문의해주세요.");
-        }
+                                                   @Parameter(description = "회원 탈퇴 사유") @RequestParam(name = "reason") String reason) throws SQLIntegrityConstraintViolationException {
+        groupRankService.handleWithdrawUsersRankingInfo(id);
+        userService.withdrawUser(id);
+        Logger logger = LoggerFactory.getLogger("withdrawal-logger");
+        logger.info("User ID: {}, Reason: {}", id, reason);
         return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 
@@ -117,12 +107,7 @@ public class UserController {
     public ResponseEntity<String> updateUserInfo(@Parameter(description = "회원 정보 수정을 요청한 유저의 고유 id 값") @PathVariable(name = "id") Long userId,
                                                  @Parameter(description = "수정된 회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userUpdateDto") UserUpdateDto userUpdateDto,
                                                  @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
-        if (userService.findUserById(userId).isEmpty()) {
-            return ResponseEntity.status(409).body("User Not Found");
-        }
-        User user = userService.findUserById(userId).get();
-
-
+        User user = userService.findUserById(userId);
         if (userUpdateDto.getSchool() != null && !user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())
                 && ChronoUnit.DAYS.between(LocalDateTime.now(), user.getSchoolUpdatedAt()) < 30) {
             return ResponseEntity.status(409).body("마지막 학교 정보 수정 후 30일이 경과하지 않았습니다.");

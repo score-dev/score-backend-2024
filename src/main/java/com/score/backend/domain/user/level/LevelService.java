@@ -15,9 +15,7 @@ public class LevelService {
 
     // 누적 운동 거리에 따른 포인트 증가
     public void increasePointsByWalkingDistance(Long userId, double newDistance) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+        User user = userService.findUserById(userId);
         double currDistance = user.getCumulativeDistance();
         user.updatePoint((int)(currDistance % 10000 + newDistance) / 10000 * 100);
         user.updatePoint((int)(currDistance % 30000 + newDistance) / 30000 * 300);
@@ -25,9 +23,7 @@ public class LevelService {
 
     // 연속 운동 일수에 따른 포인트 증가
     public void increasePointsByConsecutiveDate(Long userId) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+        User user = userService.findUserById(userId);
         int currConsecutiveDate = user.getConsecutiveDate();
         if (currConsecutiveDate > 15) {
             currConsecutiveDate = currConsecutiveDate % 15;
@@ -42,9 +38,7 @@ public class LevelService {
 
     // 10분 이상 운동했을 경우 포인트 증가
     public void increasePointsForTodaysFirstExercise(Long userId) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+        User user = userService.findUserById(userId);
         user.updatePoint(100);
     }
 }

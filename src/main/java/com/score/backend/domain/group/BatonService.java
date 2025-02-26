@@ -51,9 +51,7 @@ public class BatonService {
 
     // 바통 찌르기
     public boolean turnOverBaton(Long senderId, Long receiverId) throws FirebaseMessagingException {
-        User sender = userService.findUserById(senderId).orElseThrow(
-                () -> new NoSuchElementException("요청을 보낸 유저를 찾을 수 없습니다.")
-        );
+        User sender = userService.findUserById(senderId);
         if (!notificationService.canSendNotification(senderId, receiverId)) {
             return false;
         }
