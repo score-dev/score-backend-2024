@@ -8,6 +8,7 @@ import com.score.backend.dtos.BatonStatusDto;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.domain.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,9 +51,7 @@ public class BatonService {
 
     // 바통 찌르기
     public boolean turnOverBaton(Long senderId, Long receiverId) throws FirebaseMessagingException {
-        User sender = userService.findUserById(senderId).orElseThrow(
-                () -> new NoSuchElementException("User Not Found.")
-        );
+        User sender = userService.findUserById(senderId);
         if (!notificationService.canSendNotification(senderId, receiverId)) {
             return false;
         }

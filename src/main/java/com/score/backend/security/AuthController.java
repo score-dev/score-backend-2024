@@ -35,7 +35,7 @@ public class AuthController {
         String userKey = authService.getUserId(provider, idToken);
         Long id = userService.isPresentUser(userKey);
         if (id >= 0) {
-            userService.findUserById(id).ifPresent(
+            userService.findOptionalUserById(id).ifPresent(
                     user -> user.setRefreshToken(userKey)
             );
         }
@@ -52,7 +52,7 @@ public class AuthController {
     public ResponseEntity<String> refreshToken(@RequestParam @Parameter(required = true, description = "유저의 고유 Id 값") Long userId,
                                                @RequestParam @Parameter(description = "JWT Refresh Token") String refreshToken) {
         try {
-            User user = userService.findUserById(userId).get();
+            User user = userService.findUserById(userId);
             if (!refreshToken.equals(user.getRefreshToken())) {
                 throw new BadJwtException("request body의 Refresh Token이 서버에 저장된 Refresh Token과 일치하지 않습니다.");
             }

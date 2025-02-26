@@ -24,12 +24,8 @@ public class UserReportController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "유저 신고 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
-    public ResponseEntity<HttpStatus> reportUser(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody UserReportDto userReportDto) {
-        try {
-            userReportService.createReport(userReportDto);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<String> reportUser(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody UserReportDto userReportDto) {
+        userReportService.createReport(userReportDto);
+        return ResponseEntity.ok("유저 신고가 완료되었습니다.");
     }
 }

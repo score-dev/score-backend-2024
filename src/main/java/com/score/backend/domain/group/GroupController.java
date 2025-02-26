@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,12 +42,8 @@ public class GroupController {
     public ResponseEntity<Long> createGroup(
             @Parameter(description = "생성될 그룹 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "groupCreateDto") GroupCreateDto groupCreateDto,
             @Parameter(description = "그룹 프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
-        try {
-            GroupEntity gr = groupService.createGroup(groupCreateDto, multipartFile);
-            return ResponseEntity.ok(gr.getGroupId());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        GroupEntity gr = groupService.createGroup(groupCreateDto, multipartFile);
+        return ResponseEntity.ok(gr.getGroupId());
     }
 
     @Operation(summary = "내(모든) 그룹 목록 조회", description = "내(모든) 그룹의 목록을 조회하는 API입니다.")
@@ -127,36 +123,31 @@ public class GroupController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "그룹 가입 신청 완료"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
-            @ApiResponse(responseCode = "409", description = "정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다."),
+            @ApiResponse(responseCode = "409", description = "정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.")
     })
     @GetMapping("/join/request")
-    public ResponseEntity<String> sendGroupJoinRequest(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) {
-        try {
-            if (groupService.checkEmptySpaceExistence(groupId)) {
-                groupService.sendGroupJoinRequestNotification(groupId, userId);
-                return  ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
-            } else {
-                return ResponseEntity.status(409).body("정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.");
-            }
-
-        } catch (FirebaseMessagingException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> sendGroupJoinRequest(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) throws FirebaseMessagingException {
+        if (groupService.checkEmptySpaceExistence(groupId)) {
+            groupService.sendGroupJoinRequestNotification(groupId, userId);
+            return  ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
+        } else {
+            return ResponseEntity.status(409).body("정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.");
         }
     }
 
     @Operation(summary = "그룹 가입", description = "그룹장이 그룹 가입 신청 승인 시 해당 유저를 그룹에 가입시킵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "그룹 가입이 완료되었습니다."),
-            @ApiResponse(responseCode = "400", description = "Bad Request")
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "409", description = "정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.")
     })
     @PutMapping("/join/accepted")
-    public ResponseEntity<String> joinGroup(@RequestParam("groupId") Long groupId, @Parameter(required = true, description = "가입 처리할 유저의 id 값") @RequestParam("userId") Long userId) {
-        try {
+    public ResponseEntity<String> joinGroup(@RequestParam("groupId") Long groupId, @Parameter(required = true, description = "가입 처리할 유저의 id 값") @RequestParam("userId") Long userId) throws FirebaseMessagingException, BadRequestException {
+        if (groupService.checkEmptySpaceExistence(groupId)) {
             groupService.addNewMember(groupId, userId);
             return ResponseEntity.ok("그룹 가입이 완료되었습니다.");
-        } catch (IllegalArgumentException | FirebaseMessagingException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         }
+        return ResponseEntity.status(409).body("정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.");
     }
 
     @Operation(summary = "그룹 정보 조회", description = "그룹 정보를 조회합니다.")
@@ -168,20 +159,16 @@ public class GroupController {
     )
     @RequestMapping(value = "/info", method = GET)
     public ResponseEntity<GroupInfoResponse> getGroupInfo(@RequestParam("userId") Long userId, @RequestParam("groupId") Long groupId) {
-        try {
-            if (groupService.isMemberOfGroup(groupId, userId)) {
-                GroupInfoResponse response = groupService.getGroupInfoForMember(groupId);
-                return ResponseEntity.ok(response);
+        if (groupService.isMemberOfGroup(groupId, userId)) {
+            GroupInfoResponse response = groupService.getGroupInfoForMember(groupId);
+            return ResponseEntity.ok(response);
+        } else {
+            if (groupService.findById(groupId).isPrivate()) {
+                return ResponseEntity.status(409).body(new GroupInfoResponse());
             } else {
-                if (groupService.findById(groupId).isPrivate()) {
-                    return ResponseEntity.status(409).body(new GroupInfoResponse());
-                } else {
-                    GroupInfoResponse response = groupService.getGroupInfoForNonMember(groupId);
-                    return ResponseEntity.ok(response);
-                }
+                GroupInfoResponse response = groupService.getGroupInfoForNonMember(groupId);
+                return ResponseEntity.ok(response);
             }
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
         }
     }
 
@@ -210,12 +197,8 @@ public class GroupController {
     @GetMapping(value = "/mates/list")
     public ResponseEntity<List<UserResponseDto>> getAllGroupMates (
             @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId) {
-        try {
-            List<UserResponseDto> dtoList = groupService.findAllUsers(groupId);
-            return ResponseEntity.ok(dtoList);
-        } catch (NoSuchElementException e1) {
-            return ResponseEntity.notFound().build();
-        }
+        List<UserResponseDto> dtoList = groupService.findAllUsers(groupId);
+        return ResponseEntity.ok(dtoList);
     }
 
     @Operation(summary = "오늘 운동을 쉰 메이트의 목록 조회", description = "그룹 내에서 오늘 운동을 쉰 메이트의 목록을 조회합니다.")
@@ -227,31 +210,21 @@ public class GroupController {
     public ResponseEntity<List<BatonStatusDto>> getNotExercisedMatesList(
             @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId,
             @RequestParam("userId") @Parameter(required = true, description = "조회를 요청한 유저의 id. 바통 찌르기를 이미 했는지 여부 조회 위해 필요.") Long userId) {
-        try {
-            List<BatonStatusDto> dtoList = batonService.getBatonStatuses(userId, groupId);
-            return ResponseEntity.ok(dtoList);
-        } catch (NoSuchElementException e1) {
-            return ResponseEntity.notFound().build();
-        }
+        List<BatonStatusDto> dtoList = batonService.getBatonStatuses(userId, groupId);
+        return ResponseEntity.ok(dtoList);
     }
 
     @Operation(summary = "바통 찌르기", description = "오늘 운동하지 않은 유저에게 바통 찌르기 알림을 보냅니다.")
     @ApiResponses(
-            value = {@ApiResponse(responseCode = "200", description = "바통 찌르기가 완료되었습니다."),
+            value = {@ApiResponse(responseCode = "200", description = "Response Body가 True이면 바통 찌르기 완료. False이면 오늘 이미 바통을 찌른 유저."),
                     @ApiResponse(responseCode = "400", description = "FirebaseMessagingException"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             })
     @PostMapping(value = "/mates/baton")
     public ResponseEntity<Boolean> turnOverBaton(
             @RequestParam("senderId") @Parameter(required = true, description = "바통을 찌른 유저의 id") Long senderId,
-            @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) {
-        try {
-            Boolean wasTurned = batonService.turnOverBaton(senderId, receiverId);
-            return ResponseEntity.ok(wasTurned);
-        } catch (NoSuchElementException e1) {
-            return ResponseEntity.notFound().build();
-        } catch (FirebaseMessagingException e2) {
-            return ResponseEntity.badRequest().build();
-        }
+            @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) throws FirebaseMessagingException {
+        Boolean wasTurned = batonService.turnOverBaton(senderId, receiverId);
+        return ResponseEntity.ok(wasTurned);
     }
 }

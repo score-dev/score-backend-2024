@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.coyote.BadRequestException;
 
 @Entity
 @Getter
@@ -23,7 +24,10 @@ public class BlockedUser extends BaseEntity {
     @JoinColumn(name = "blocked_id", nullable = false)
     private User blocked;
 
-    public BlockedUser(User blocker, User blocked) {
+    public BlockedUser(User blocker, User blocked) throws BadRequestException {
+        if (blocker.getId().equals(blocked.getId())) {
+            throw new BadRequestException("자기 자신을 차단할 수 없습니다.");
+        }
         this.blocker = blocker;
         this.blocked = blocked;
     }

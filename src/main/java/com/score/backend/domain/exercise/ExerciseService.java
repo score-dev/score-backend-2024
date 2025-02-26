@@ -2,8 +2,6 @@ package com.score.backend.domain.exercise;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.config.ImageUploadService;
-import com.score.backend.domain.exercise.emotion.Emotion;
-import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.exercise.repositories.ExerciseRepository;
 import com.score.backend.domain.friend.block.BlockedUser;
 import com.score.backend.domain.notification.NotificationService;
@@ -23,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,13 +34,8 @@ public class  ExerciseService {
     // user1이 user2의 피드 목록을 조회 (둘이 같을 경우 자기가 자기 피드를 조회)
     @Transactional(readOnly = true)
     public Page<FeedInfoResponse> getUsersAllExercises(int page, Long id1, Long id2) {
-        User user1 = userService.findUserById(id1).orElseThrow(
-                () -> new NoSuchElementException("User not found")
-        );
-
-        User user2 = userService.findUserById(id2).orElseThrow(
-                () -> new NoSuchElementException("User not found")
-        );
+        User user1 = userService.findUserById(id1);
+        User user2 = userService.findUserById(id2);
 
         if (user1.getBlockedUsers().stream().map(BlockedUser::getBlocked).toList().contains(user2)) {
             throw new RuntimeException("차단한 유저에 대한 피드 목록 조회 요청입니다.");
@@ -76,21 +68,17 @@ public class  ExerciseService {
         return exerciseRepository.findUsersWeeklyExercises(userId, LocalDateTime.now());
     }
 
-    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException{
+    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기
-        User agent = userService.findUserById(walkingDto.getAgentId()).orElseThrow(
-                () -> new RuntimeException("Agent not found")
-        );
+        User agent = userService.findUserById(walkingDto.getAgentId());
 
         // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
         List<User> taggedUsers = new ArrayList<>();
         if (walkingDto.getOthersId() != null) {
             for (Long id : walkingDto.getOthersId()) {
-                User user = userService.findUserById(id).orElseThrow(
-                        () -> new RuntimeException("User not found")
-                );
+                User user = userService.findUserById(id);
                 taggedUsers.add(user);
                 // 태그된 유저들에게 알림 전송 및 알림 저장 -> 프론트엔드와의 연동 이후 주석 해제 필요
                 if (user.isTag()) {
@@ -112,49 +100,39 @@ public class  ExerciseService {
     }
 
     @Transactional(readOnly = true)
-    public Exercise findFeedByExerciseId(Long exerciseId) {
+    public Exercise findFeedByExerciseId(Long exerciseId) throws RuntimeException {
         return exerciseRepository.findById(exerciseId).orElseThrow(
-                () -> new NoSuchElementException("Feed Not Found")
+                () -> new NoSuchElementException("피드 정보를 찾을 수 없습니다.")
         );
     }
 
     // 유저의 운동 시간 누적
-    public void cumulateExerciseDuration(Long userId, LocalDateTime start, LocalDateTime end) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+    public void cumulateExerciseDuration(Long userId, LocalDateTime start, LocalDateTime end) throws RuntimeException {
+        User user = userService.findUserById(userId);
         user.updateCumulativeTime(calculateExerciseDuration(start, end));
     }
 
     // 유저의 운동 거리 누적
-    public void cumulateExerciseDistance(Long userId, double distance) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+    public void cumulateExerciseDistance(Long userId, double distance) throws RuntimeException {
+        User user = userService.findUserById(userId);
         user.updateCumulativeDistance(distance);
     }
 
     // 유저의 연속 운동 일수 1 증가
     public void increaseConsecutiveDate(Long userId) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+        User user = userService.findUserById(userId);
         user.updateConsecutiveDate(true);
     }
 
     // 유저의 마지막 운동 시간 및 날짜 설정
     public void updateLastExerciseDateTime(Long userId, LocalDateTime lastExerciseDateTime) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+        User user = userService.findUserById(userId);
         user.updateLastExerciseDateTime(lastExerciseDateTime);
     }
 
     // 유저의 금주 운동 횟수, 운동 시간 업데이트
     public void updateWeeklyExerciseStatus(Long userId, boolean needToIncrease, LocalDateTime start, LocalDateTime end) {
-        User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
+        User user = userService.findUserById(userId);
         user.updateWeeklyExerciseStatus(needToIncrease, calculateExerciseDuration(start, end));
     }
 
@@ -162,6 +140,9 @@ public class  ExerciseService {
     @Transactional(readOnly = true)
     public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) {
         Duration duration = Duration.between(start, end);
+        if (duration.getSeconds() < 0) {
+            throw new IllegalArgumentException("운동 종료 시간이 운동 시작 시간보다 이전입니다.");
+        }
         return duration.getSeconds();
     }
 

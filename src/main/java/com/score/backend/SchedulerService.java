@@ -97,15 +97,13 @@ public class SchedulerService {
             List<UserGroup> winningGroupMembers = sr.getSchoolRankers().get(0).getGroup().getMembers();
             for (UserGroup winningGroupMember : winningGroupMembers) {
                 winningGroupMember.getMember().updatePoint(200);
-                if (!winningGroupMember.getMember().getLoginKey().equals("string")) {
-                    FcmMessageRequest message = new FcmMessageRequest(
-                            winningGroupMember.getId(),
-                            sr.getSchoolRankers().get(0).getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 1위를 달성했어요!",
-                            "축하합니다\uD83C\uDF89 " + winningGroupMember.getMember().getNickname() +  "님이 속한 그룹이 이번주 1위예요! 1등이 된 기념으로 스코어에서 그룹 메이트 모두에게 200pt를 쏩니다\uD83E\uDD73"
-                    );
-                    notificationService.sendMessage(message);
-                    notificationService.saveNotification(message);
-                }
+                FcmMessageRequest message = new FcmMessageRequest(
+                        winningGroupMember.getId(),
+                        sr.getSchoolRankers().get(0).getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 1위를 달성했어요!",
+                        "축하합니다\uD83C\uDF89 " + winningGroupMember.getMember().getNickname() +  "님이 속한 그룹이 이번주 1위예요! 1등이 된 기념으로 스코어에서 그룹 메이트 모두에게 200pt를 쏩니다\uD83E\uDD73"
+                );
+                notificationService.sendMessage(message);
+                notificationService.saveNotification(message);
             }
         }
 

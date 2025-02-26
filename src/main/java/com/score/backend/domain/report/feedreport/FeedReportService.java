@@ -20,9 +20,7 @@ public class FeedReportService {
 
     @Transactional
     public void createReport(FeedReportDto feedReportDto) {
-        User agent = userService.findUserById(feedReportDto.getAgentId()).orElseThrow(
-                () -> new NoSuchElementException("Agent not found")
-        );
+        User agent = userService.findUserById(feedReportDto.getAgentId());
         Exercise feed = exerciseService.findFeedByExerciseId(feedReportDto.getFeedId());
 
         FeedReport feedReport = FeedReport.builder()

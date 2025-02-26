@@ -27,12 +27,8 @@ public class FeedReportController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "피드 신고 완료"),
                     @ApiResponse(responseCode = "404", description = "User or Feed Not Found")})
-    public ResponseEntity<HttpStatus> reportFeed(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody FeedReportDto feedReportDto) {
-        try {
-            feedReportService.createReport(feedReportDto);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<String> reportFeed(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody FeedReportDto feedReportDto) {
+        feedReportService.createReport(feedReportDto);
+        return ResponseEntity.ok("피드 신고가 완료되었습니다.");
     }
 }

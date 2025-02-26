@@ -25,7 +25,7 @@ public class HomeService {
     private final BatonService batonService;
 
     public HomeResponse getHomeInfo(Long userId) {
-        User user = userService.findUserById(userId).get();
+        User user = userService.findUserById(userId);
         List<UserGroup> userGroups = user.getUserGroups();
         userGroups.sort(Comparator.comparing(UserGroup::getJoinedAt).reversed());
         if (userGroups.size() > 3) {
