@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.NoSuchElementException;
+import java.text.ParseException;
 
 @RestController
 @Tag(name = "Auth", description = "회원 인증을 처리하는 API입니다.")
@@ -31,7 +31,7 @@ public class AuthController {
     )
     @RequestMapping(value = "/oauth", method = RequestMethod.POST)
     public ResponseEntity<Long> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
-                                                 @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) {
+                                                 @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) throws ParseException {
         String userKey = authService.getUserId(provider, idToken);
         Long id = userService.isPresentUser(userKey);
         if (id >= 0) {
@@ -51,19 +51,13 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<String> refreshToken(@RequestParam @Parameter(required = true, description = "유저의 고유 Id 값") Long userId,
                                                @RequestParam @Parameter(description = "JWT Refresh Token") String refreshToken) {
-        try {
-            User user = userService.findUserById(userId);
-            if (!refreshToken.equals(user.getRefreshToken())) {
-                throw new BadJwtException("request body의 Refresh Token이 서버에 저장된 Refresh Token과 일치하지 않습니다.");
-            }
-            if (jwtProvider.validateToken(refreshToken)) {
-                return ResponseEntity.ok(jwtProvider.createAccessToken(user.getLoginKey()));
-            }
-            return ResponseEntity.status(401).body("refresh token이 만료되어 재로그인이 필요하거나 서명에 오류가 있습니다.");
-        } catch (NoSuchElementException e1) {
-            return ResponseEntity.status(404).body("user not found");
-        } catch (JwtException e2) {
-            return ResponseEntity.badRequest().body(e2.getMessage());
+        User user = userService.findUserById(userId);
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            throw new BadJwtException("request body의 Refresh Token이 서버에 저장된 Refresh Token과 일치하지 않습니다.");
         }
+        if (jwtProvider.validateToken(refreshToken)) {
+            return ResponseEntity.ok(jwtProvider.createAccessToken(user.getLoginKey()));
+        }
+        throw new JwtException("refresh token이 만료되어 재로그인이 필요하거나 서명에 오류가 있습니다.");
     }
 }
