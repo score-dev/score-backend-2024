@@ -25,7 +25,9 @@ public class HomeService {
     private final BatonService batonService;
 
     public HomeResponse getHomeInfo(Long userId) {
-        User user = userService.findUserById(userId).get();
+        User user = userService.findUserById(userId).orElseThrow(
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
+        );
         List<UserGroup> userGroups = user.getUserGroups();
         userGroups.sort(Comparator.comparing(UserGroup::getJoinedAt).reversed());
         if (userGroups.size() > 3) {
