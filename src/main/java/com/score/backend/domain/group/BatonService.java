@@ -8,13 +8,11 @@ import com.score.backend.dtos.BatonStatusDto;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.domain.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @Transactional
