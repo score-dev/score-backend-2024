@@ -123,12 +123,7 @@ public class UserController {
             })
     @RequestMapping(value = "/score/user/setting/notification", method = RequestMethod.PUT)
     public ResponseEntity<String> updateUserNotificationStatus(NotificationStatusRequest request) {
-        try {
-            notificationService.changeNotificationReceivingStatus(request);
-            return ResponseEntity.ok("알림 수신 여부 수정이 완료되었습니다.");
-        } catch(NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
-        }
-
+        notificationService.changeNotificationReceivingStatus(request);
+        return ResponseEntity.ok("알림 수신 여부 수정이 완료되었습니다.");
     }
 }
