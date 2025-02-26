@@ -24,7 +24,12 @@ public class BlockService {
                 () -> new NoSuchElementException("요청한 유저를 찾을 수 없습니다."));
         User blocked = userRepository.findById(blockedId).orElseThrow(
                 () -> new NoSuchElementException("차단하려는 유저를 찾을 수 없습니다."));
-        blocker.blockUser(new BlockedUser(blocker, blocked));
+        if (blockedUserRepository.findByBlockerIdAndBlockedId(blockerId, blockedId).isPresent()) {
+            throw new BadRequestException("이미 차단되어 있는 유저입니다.");
+        }
+        BlockedUser blockedUser = new BlockedUser(blocker, blocked);
+        blocker.blockUser(blockedUser);
+        blockedUserRepository.save(blockedUser);
     }
 
     public List<FriendsSearchResponse> findBlockedFriends(Long blockerId) {

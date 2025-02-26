@@ -29,6 +29,8 @@ public class FriendService {
                 () -> new NoSuchElementException("친구로 추가하려는 유저의 정보를 찾을 수 없습니다."));
         if (friendRepository.findByUserIdAndFriendId(userId1, userId2).isEmpty()) {
             user1.addFriend(user2);
+        } else {
+            throw new BadRequestException("두 유저는 이미 친구로 등록되어 있습니다.");
         }
     }
 

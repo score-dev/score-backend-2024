@@ -14,6 +14,7 @@ import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class GroupService {
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id){
         return groupRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Group not found")
+                () -> new NoSuchElementException("해당 그룹 정보가 존재하지 않습니다.")
         );
     }
 
@@ -59,7 +60,7 @@ public class GroupService {
     public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) {
 
         User admin = userRepository.findById(groupCreateDto.getAdminId())
-                .orElseThrow(() -> new IllegalArgumentException("그룹장을 못 찾습니다."));
+                .orElseThrow(() -> new NoSuchElementException("방장에 대한 정보가 존재하지 않습니다."));
 
         GroupEntity group = GroupEntity.builder()
                 .groupName(groupCreateDto.getGroupName())
@@ -167,10 +168,10 @@ public class GroupService {
     }
 
     // 그룹에 새로운 멤버 추가
-    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException {
+    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException, BadRequestException {
         GroupEntity group = findById(groupId);
         User user = userService.findUserById(userId).orElseThrow(
-                () -> new NoSuchElementException("User not found")
+                () -> new NoSuchElementException("그룹에 추가하려는 유저 정보가 존재하지 않습니다.")
         );
         if (userGroupRepository.findByUserIdAndGroupId(userId, groupId) == null) {
             UserGroup userGroup = new UserGroup(user, group);
@@ -180,7 +181,9 @@ public class GroupService {
             FcmMessageRequest message = new FcmMessageRequest(userId,  group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
             notificationService.sendMessage(message);
             notificationService.saveNotification(message);
+            return;
         }
+        throw new BadRequestException("해당 그룹에 이미 가입되어 있는 유저입니다.");
     }
 
     // 유저가 속한 모든 그룹의 누적 운동 시간 증가
