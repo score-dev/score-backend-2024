@@ -44,7 +44,7 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public boolean canSendNotification(Long senderId, Long receiverId) {
         String key = generateRedisKey(senderId, receiverId);
-        return Boolean.FALSE.equals(redisTemplate.hasKey(key));
+        return !redisTemplate.hasKey(key);
     }
 
     // 바통 찌르기 알림 전송 발생 시 Redis에 전송 기록 저장
@@ -65,7 +65,7 @@ public class NotificationService {
 
     public void getToken(Long userId, String token) {
         User user = userService.findUserById(userId).orElseThrow(
-                () -> new NoSuchElementException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         );
         user.setFcmToken(token);
     }
@@ -78,14 +78,14 @@ public class NotificationService {
                         .setBody(request.getBody())
                         .build())
                 .setToken(userService.findUserById(request.getUserId()).orElseThrow(
-                        () -> new NoSuchElementException("User not found")
+                        () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
                 ).getFcmToken())  // 대상 디바이스의 등록 토큰
                 .build());
     }
 
     public void saveNotification(FcmMessageRequest request) {
         notificationRepository.save(new com.score.backend.domain.notification.Notification(userService.findUserById(request.getUserId()).orElseThrow(
-                () -> new NoSuchElementException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         ), request.getTitle(), request.getBody()));
     }
 
@@ -95,7 +95,7 @@ public class NotificationService {
 
     public void changeNotificationReceivingStatus(NotificationStatusRequest request) {
         User user = userService.findUserById(request.getUserId()).orElseThrow(
-                () -> new NoSuchElementException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         );
 
         user.setNotificationReceivingStatus(request);
