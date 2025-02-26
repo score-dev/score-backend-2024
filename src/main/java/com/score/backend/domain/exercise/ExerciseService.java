@@ -2,8 +2,6 @@ package com.score.backend.domain.exercise;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.config.ImageUploadService;
-import com.score.backend.domain.exercise.emotion.Emotion;
-import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.exercise.repositories.ExerciseRepository;
 import com.score.backend.domain.friend.block.BlockedUser;
 import com.score.backend.domain.notification.NotificationService;
@@ -23,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,11 +35,11 @@ public class  ExerciseService {
     @Transactional(readOnly = true)
     public Page<FeedInfoResponse> getUsersAllExercises(int page, Long id1, Long id2) {
         User user1 = userService.findUserById(id1).orElseThrow(
-                () -> new NoSuchElementException("User not found")
+                () -> new NoSuchElementException("피드 목록 조회를 요청한 유저의 정보를 찾을 수 없습니다.")
         );
 
         User user2 = userService.findUserById(id2).orElseThrow(
-                () -> new NoSuchElementException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         );
 
         if (user1.getBlockedUsers().stream().map(BlockedUser::getBlocked).toList().contains(user2)) {
@@ -76,12 +73,12 @@ public class  ExerciseService {
         return exerciseRepository.findUsersWeeklyExercises(userId, LocalDateTime.now());
     }
 
-    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException{
+    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException, RuntimeException {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기
         User agent = userService.findUserById(walkingDto.getAgentId()).orElseThrow(
-                () -> new RuntimeException("Agent not found")
+                () -> new NoSuchElementException("피드를 등록하려는 유저를 찾을 수 없습니다.")
         );
 
         // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
@@ -89,7 +86,7 @@ public class  ExerciseService {
         if (walkingDto.getOthersId() != null) {
             for (Long id : walkingDto.getOthersId()) {
                 User user = userService.findUserById(id).orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        () -> new NoSuchElementException("피드에 태그하려는 유저 정보를 찾을 수 없습니다.")
                 );
                 taggedUsers.add(user);
                 // 태그된 유저들에게 알림 전송 및 알림 저장 -> 프론트엔드와의 연동 이후 주석 해제 필요
@@ -112,56 +109,59 @@ public class  ExerciseService {
     }
 
     @Transactional(readOnly = true)
-    public Exercise findFeedByExerciseId(Long exerciseId) {
+    public Exercise findFeedByExerciseId(Long exerciseId) throws RuntimeException {
         return exerciseRepository.findById(exerciseId).orElseThrow(
-                () -> new NoSuchElementException("Feed Not Found")
+                () -> new NoSuchElementException("피드 정보를 찾을 수 없습니다.")
         );
     }
 
     // 유저의 운동 시간 누적
-    public void cumulateExerciseDuration(Long userId, LocalDateTime start, LocalDateTime end) {
+    public void cumulateExerciseDuration(Long userId, LocalDateTime start, LocalDateTime end) throws RuntimeException {
         User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         );
         user.updateCumulativeTime(calculateExerciseDuration(start, end));
     }
 
     // 유저의 운동 거리 누적
-    public void cumulateExerciseDistance(Long userId, double distance) {
+    public void cumulateExerciseDistance(Long userId, double distance) throws RuntimeException {
         User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         );
         user.updateCumulativeDistance(distance);
     }
 
     // 유저의 연속 운동 일수 1 증가
-    public void increaseConsecutiveDate(Long userId) {
+    public void increaseConsecutiveDate(Long userId) throws RuntimeException {
         User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         );
         user.updateConsecutiveDate(true);
     }
 
     // 유저의 마지막 운동 시간 및 날짜 설정
-    public void updateLastExerciseDateTime(Long userId, LocalDateTime lastExerciseDateTime) {
+    public void updateLastExerciseDateTime(Long userId, LocalDateTime lastExerciseDateTime) throws RuntimeException {
         User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new NoSuchElementException("유저 정보를 찾을 수 없습니다.")
         );
         user.updateLastExerciseDateTime(lastExerciseDateTime);
     }
 
     // 유저의 금주 운동 횟수, 운동 시간 업데이트
-    public void updateWeeklyExerciseStatus(Long userId, boolean needToIncrease, LocalDateTime start, LocalDateTime end) {
+    public void updateWeeklyExerciseStatus(Long userId, boolean needToIncrease, LocalDateTime start, LocalDateTime end) throws RuntimeException {
         User user = userService.findUserById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new RuntimeException("유저 정보를 찾을 수 없습니다.")
         );
         user.updateWeeklyExerciseStatus(needToIncrease, calculateExerciseDuration(start, end));
     }
 
     // 운동한 시간 계산
     @Transactional(readOnly = true)
-    public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) {
+    public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) throws RuntimeException {
         Duration duration = Duration.between(start, end);
+        if (duration.getSeconds() < 0) {
+            throw new IllegalArgumentException("운동 종료 시간이 운동 시작 시간보다 이전입니다.");
+        }
         return duration.getSeconds();
     }
 

@@ -1,9 +1,11 @@
 package com.score.backend.domain.rank.school;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.group.QGroupEntity;
 import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
+import com.score.backend.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -33,18 +35,18 @@ public class SchoolRankerRepositoryImpl implements SchoolRankerRepositoryCustom 
                 ).fetchOne();
     }
 
+    @Override
     public List<SchoolRanker> findSchoolRankersByUserIdAndStartDate(Long userId, LocalDate startDate) {
-
         return queryFactory
                 .selectFrom(schoolRanker)
                 .join(schoolRanker.belongsTo, schoolRanking)
-                .join(schoolRanking.school.groups, groupEntity)
+                .join(schoolRanker.group, groupEntity)
+                .join(groupEntity.members, userGroup)
                 .join(userGroup.member, user)
                 .where(
                         schoolRanking.startDate.eq(startDate),
                         user.id.eq(userId)
                 )
                 .fetch();
-
     }
 }

@@ -3,11 +3,14 @@ package com.score.backend.domain.rank.school;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.rank.Ranker;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DiscriminatorValue("S")
 public class SchoolRanker extends Ranker {
     @ManyToOne

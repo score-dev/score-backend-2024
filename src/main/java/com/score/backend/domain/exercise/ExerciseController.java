@@ -1,9 +1,7 @@
 package com.score.backend.domain.exercise;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.friend.Friend;
-import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.FriendsSearchResponse;
 import com.score.backend.dtos.WalkingDto;
@@ -20,10 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -45,7 +40,7 @@ public class ExerciseController {
     @Operation(summary = "함께 운동한 친구 검색", description = "함께 운동한 친구를 선택하기 위해 닉네임으로 검색합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "검색 완료."),
-                    @ApiResponse(responseCode = "404", description = "User Not Found")}
+                    @ApiResponse(responseCode = "404", description = "검색 결과가 존재하지 않습니다.")}
     )
     @RequestMapping(value = "/score/exercise/friends", method = GET)
     public ResponseEntity<List<FriendsSearchResponse>> searchFriendsByNickname(
@@ -53,6 +48,9 @@ public class ExerciseController {
             @Parameter(description = "유저가 필드에 입력한 내친구의 닉네임", required = true) @RequestParam String nickname) {
 
         List<Friend> searched = friendService.getFriendsByNicknameContaining(id, nickname);
+        if (searched.isEmpty()) {
+            throw new NoSuchElementException("검색 결과가 존재하지 않습니다.");
+        }
         List<FriendsSearchResponse> responses = new ArrayList<>();
         for (Friend friend : searched) {
             responses.add(new FriendsSearchResponse(friend.getFriend().getId(), friend.getFriend().getNickname(), friend.getFriend().getProfileImg()));
@@ -66,7 +64,7 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "404", description = "User Not Found")}
     )
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
-    public ResponseEntity<HttpStatus> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
+    public ResponseEntity<String> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
                                                     @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
         try {
             // 피드 저장
@@ -105,11 +103,11 @@ public class ExerciseController {
             // 유저가 속한 그룹의 누적 운동 시간 업데이트
             groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (FirebaseMessagingException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new NoSuchElementException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }
 
     @Operation(summary = "피드 조회", description = "요청한 피드에 대한 세부 정보를 조회하여 응답합니다.")
@@ -119,14 +117,9 @@ public class ExerciseController {
     )
     @RequestMapping(value = "/score/exercise/read", method = GET)
     public ResponseEntity<FeedInfoResponse> readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
-        try {
-            Exercise feed = exerciseService.findFeedByExerciseId(feedId);
-            return ResponseEntity.ok(new FeedInfoResponse(feed));
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Exercise feed = exerciseService.findFeedByExerciseId(feedId);
+        return ResponseEntity.ok(new FeedInfoResponse(feed));
     }
-
 
     @Operation(summary = "피드 삭제", description = "피드를 삭제합니다.")
     @ApiResponses(
@@ -134,15 +127,11 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
     @RequestMapping(value = "/score/exercise/delete", method = DELETE)
-    public ResponseEntity<HttpStatusCode> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long feedId) {
-        try {
-            Exercise feed = exerciseService.findFeedByExerciseId(feedId);
-            exerciseService.deleteFeed(feed);
-            emotionService.deleteAllEmotions(feed);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<String> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long feedId) {
+        Exercise feed = exerciseService.findFeedByExerciseId(feedId);
+        exerciseService.deleteFeed(feed);
+        emotionService.deleteAllEmotions(feed);
+        return ResponseEntity.ok("피드 삭제가 완료되었습니다.");
     }
 
     @Operation(summary = "유저의 피드 목록 조회", description = "유저의 전체 피드 목록을 페이지 단위로 제공합니다.")
@@ -155,13 +144,6 @@ public class ExerciseController {
     public ResponseEntity<Page<FeedInfoResponse>> getAllUsersFeeds(@RequestParam("id1") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long id1,
                                                                    @RequestParam("id2") @Parameter(required = true, description = "id1 유저가 피드를 조회하고자 하는 유저의 고유 번호") Long id2,
                                                                    @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
-        try {
-            return ResponseEntity.ok(exerciseService.getUsersAllExercises(page, id1, id2));
-        } catch (NoSuchElementException e1) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
-        } catch (RuntimeException e2) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(409));
-        }
-
+        return ResponseEntity.ok(exerciseService.getUsersAllExercises(page, id1, id2));
     }
 }
