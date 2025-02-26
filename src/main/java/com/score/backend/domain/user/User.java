@@ -12,6 +12,7 @@ import com.score.backend.dtos.NotificationStatusRequest;
 import com.score.backend.domain.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.coyote.BadRequestException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -172,7 +173,7 @@ public class User extends BaseEntity {
     }
 
 
-    public void addFriend(User user) {
+    public void addFriend(User user) throws BadRequestException {
         this.friends.add(new Friend(this, user));
         user.getFriends().add(new Friend(user, this));
     }
