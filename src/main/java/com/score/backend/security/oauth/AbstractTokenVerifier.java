@@ -23,14 +23,14 @@ public abstract class AbstractTokenVerifier implements TokenVerifier {
         try {
             // JWK 키셋 로드
             URL jwkUrl = new URL(getJwkUrl());
-            log.debug("Verifying JWK URL: {}", jwkUrl);
+            log.info("Verifying JWK URL: {}", jwkUrl);
             JWKSet jwkSet = JWKSet.load(jwkUrl);
 
             // JWT 파싱
             SignedJWT signedJWT = SignedJWT.parse(idToken);
-            log.debug("Verifying signed JWT: {}", signedJWT);
+            log.info("Verifying signed JWT: {}", signedJWT);
             JWK jwk = jwkSet.getKeyByKeyId(signedJWT.getHeader().getKeyID());
-            log.debug("Verifying JWK: {}", jwk);
+            log.info("Verifying JWK: {}", jwk);
 
             if (jwk == null) {
                 throw new JwtException("No matching JWK found.");
@@ -38,14 +38,14 @@ public abstract class AbstractTokenVerifier implements TokenVerifier {
 
             // 서명 검증
             RSASSAVerifier verifier = new RSASSAVerifier(jwk.toRSAKey());
-            log.debug("Verifying verified JWK: {}", verifier);
+            log.info("Verifying verified JWK: {}", verifier);
             if (!signedJWT.verify(verifier)) {
                 throw new JwtException("Signature verification failed.");
             }
 
             // Claims 검증
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-            log.debug("Verifying claims: {}", claims);
+            log.info("Verifying claims: {}", claims);
             if (!claims.getIssuer().equals(getIssuer())) {
                 throw new JwtException("Invalid issuer.");
             }

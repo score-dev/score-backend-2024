@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -29,11 +28,12 @@ public class AuthService {
     }
 
     public String getUserId(String provider, String idToken) throws ParseException {
+        log.info("getUserId: provider: {}, idToken: {}", provider, idToken);
         if (verifyToken(provider, idToken)) {
             SignedJWT signedJWT = SignedJWT.parse(idToken);
-            log.debug("signed JWT: {}", signedJWT.getJWTClaimsSet().toString());
+            log.info("signed JWT: {}", signedJWT.getJWTClaimsSet().toString());
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-            log.debug("sub : {}", claims.getSubject());
+            log.info("sub : {}", claims.getSubject());
             return claims.getSubject();
         }
         throw new JwtException("id 토큰 검증에 실패하였습니다.");
