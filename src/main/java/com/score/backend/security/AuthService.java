@@ -31,8 +31,9 @@ public class AuthService {
     public String getUserId(String provider, String idToken) throws ParseException {
         if (verifyToken(provider, idToken)) {
             SignedJWT signedJWT = SignedJWT.parse(idToken);
+            log.debug("signed JWT: {}", signedJWT.getJWTClaimsSet().toString());
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-            log.info(claims.getSubject());
+            log.debug("sub : {}", claims.getSubject());
             return claims.getSubject();
         }
         throw new JwtException("id 토큰 검증에 실패하였습니다.");
