@@ -50,9 +50,9 @@ public abstract class AbstractTokenVerifier implements TokenVerifier {
                 throw new JwtException("Invalid issuer.");
             }
 
-            if (!claims.getAudience().contains(getClientId())) {
-                throw new JwtException("Invalid audience.");
-            }
+//            if (!claims.getAudience().contains(getClientId())) {
+//                throw new JwtException("Invalid audience.");
+//            }
 
             if (claims.getExpirationTime().before(new Date())) {
                 throw new JwtException("Token expired.");
