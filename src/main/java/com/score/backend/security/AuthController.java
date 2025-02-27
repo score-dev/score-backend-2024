@@ -9,12 +9,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
+@Slf4j
 @RestController
 @Tag(name = "Auth", description = "회원 인증을 처리하는 API입니다.")
 @RequestMapping("/score/auth")
@@ -32,6 +34,7 @@ public class AuthController {
     @RequestMapping(value = "/oauth", method = RequestMethod.POST)
     public ResponseEntity<Long> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
                                                  @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) throws ParseException {
+        log.info("소셜 로그인 인증");
         String userKey = authService.getUserId(provider, idToken);
         Long id = userService.isPresentUser(userKey);
         if (id >= 0) {
