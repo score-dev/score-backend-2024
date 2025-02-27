@@ -5,10 +5,13 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import io.jsonwebtoken.JwtException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
 import java.util.Date;
 
+@Slf4j
 public abstract class AbstractTokenVerifier implements TokenVerifier {
 
     protected abstract String getJwkUrl();
@@ -20,34 +23,39 @@ public abstract class AbstractTokenVerifier implements TokenVerifier {
         try {
             // JWK 키셋 로드
             URL jwkUrl = new URL(getJwkUrl());
+            log.debug("Verifying JWK URL: {}", jwkUrl);
             JWKSet jwkSet = JWKSet.load(jwkUrl);
 
             // JWT 파싱
             SignedJWT signedJWT = SignedJWT.parse(idToken);
+            log.debug("Verifying signed JWT: {}", signedJWT);
             JWK jwk = jwkSet.getKeyByKeyId(signedJWT.getHeader().getKeyID());
+            log.debug("Verifying JWK: {}", jwk);
 
             if (jwk == null) {
-                throw new RuntimeException("No matching JWK found.");
+                throw new JwtException("No matching JWK found.");
             }
 
             // 서명 검증
             RSASSAVerifier verifier = new RSASSAVerifier(jwk.toRSAKey());
+            log.debug("Verifying verified JWK: {}", verifier);
             if (!signedJWT.verify(verifier)) {
-                throw new RuntimeException("Signature verification failed.");
+                throw new JwtException("Signature verification failed.");
             }
 
             // Claims 검증
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            log.debug("Verifying claims: {}", claims);
             if (!claims.getIssuer().equals(getIssuer())) {
-                throw new RuntimeException("Invalid issuer.");
+                throw new JwtException("Invalid issuer.");
             }
 
             if (!claims.getAudience().contains(getClientId())) {
-                throw new RuntimeException("Invalid audience.");
+                throw new JwtException("Invalid audience.");
             }
 
             if (claims.getExpirationTime().before(new Date())) {
-                throw new RuntimeException("Token expired.");
+                throw new JwtException("Token expired.");
             }
             return true;
         } catch (Exception e) {
