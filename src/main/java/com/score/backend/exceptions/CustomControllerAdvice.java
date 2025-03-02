@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.*;
 @ControllerAdvice
 public class CustomControllerAdvice {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({RuntimeException.class, SQLException.class, FirebaseAuthException.class, IOException.class})
+    @ExceptionHandler({Exception.class, RuntimeException.class, SQLException.class, FirebaseAuthException.class, IOException.class})
     public ResponseEntity<ErrorResponse> handleServerErrors(Exception ex) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponse(INTERNAL_SERVER_ERROR.value(), ex.toString(), ex.getMessage()));
     }
