@@ -7,7 +7,6 @@ import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.rank.RankingService;
-import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.user.User;
@@ -39,7 +38,6 @@ public class GroupService {
     private final RankingService rankingService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
-    private final SchoolService schoolService;
 
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id){
@@ -167,11 +165,14 @@ public class GroupService {
         GroupEntity group = findById(groupId);
         User user = userService.findUserById(userId);
         if (userGroupRepository.findByUserIdAndGroupId(userId, groupId) == null) {
+            if (!group.getBelongingSchool().getId().equals(user.getSchool().getId())) {
+                throw new ScoreCustomException(ExceptionType.USERS_SCHOOL_GROUP_UNMATCHED);
+            }
             UserGroup userGroup = new UserGroup(user, group);
             userGroupRepository.save(userGroup);
             group.getMembers().add(userGroup);
             user.addGroup(userGroup, group);
-            FcmMessageRequest message = new FcmMessageRequest(userId,  group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
+            FcmMessageRequest message = new FcmMessageRequest(userId, group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
             notificationService.sendMessage(message);
             notificationService.saveNotification(message);
             return;
