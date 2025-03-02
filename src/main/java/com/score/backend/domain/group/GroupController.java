@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -43,7 +44,7 @@ public class GroupController {
     @PostMapping("/create")
     public ResponseEntity<Long> createGroup(
             @Parameter(description = "생성될 그룹 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "groupCreateDto") GroupCreateDto groupCreateDto,
-            @Parameter(description = "그룹 프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
+            @Parameter(description = "그룹 프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws IOException {
         GroupEntity gr = groupService.createGroup(groupCreateDto, multipartFile);
         return ResponseEntity.ok(gr.getGroupId());
     }

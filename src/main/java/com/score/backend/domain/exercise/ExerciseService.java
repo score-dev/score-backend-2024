@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class  ExerciseService {
         return exerciseRepository.findUsersWeeklyExercises(userId, LocalDateTime.now());
     }
 
-    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException {
+    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException, IOException {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기

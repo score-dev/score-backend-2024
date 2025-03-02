@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
-    public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) {
+    public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) throws IOException {
 
         User admin = userRepository.findById(groupCreateDto.getAdminId())
                 .orElseThrow(() -> new NotFoundException(ExceptionType.USER_NOT_FOUND));

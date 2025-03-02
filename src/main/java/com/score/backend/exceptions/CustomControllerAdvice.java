@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 
@@ -18,7 +19,7 @@ import static org.springframework.http.HttpStatus.*;
 @ControllerAdvice
 public class CustomControllerAdvice {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({RuntimeException.class, SQLException.class, FirebaseAuthException.class})
+    @ExceptionHandler({RuntimeException.class, SQLException.class, FirebaseAuthException.class, IOException.class})
     public ResponseEntity<ErrorResponse> handleServerErrors(Exception ex) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponse(INTERNAL_SERVER_ERROR.value(), ex.toString(), ex.getMessage()));
     }
