@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.NoSuchElementException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -21,7 +20,7 @@ public class CustomControllerAdvice {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler({RuntimeException.class, SQLException.class, FirebaseAuthException.class})
     public ResponseEntity<ErrorResponse> handleServerErrors(Exception ex) {
-        return ResponseEntity.internalServerError().body(new ErrorResponse(INTERNAL_SERVER_ERROR.value(), ex.toString(), ex.getMessage()));
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponse(INTERNAL_SERVER_ERROR.value(), ex.toString(), ex.getMessage()));
     }
 
     @ResponseStatus(NOT_FOUND)
