@@ -125,9 +125,8 @@ public class GroupController {
         if (groupService.checkEmptySpaceExistence(groupId)) {
             groupService.sendGroupJoinRequestNotification(groupId, userId);
             return ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
-        } else {
-            throw new ScoreCustomException(ExceptionType.FULL_GROUP);
         }
+        throw new ScoreCustomException(ExceptionType.FULL_GROUP);
     }
 
     @Operation(summary = "그룹 가입", description = "그룹장이 그룹 가입 신청 승인 시 해당 유저를 그룹에 가입시킵니다.")
@@ -142,7 +141,7 @@ public class GroupController {
             groupService.addNewMember(groupId, userId);
             return ResponseEntity.ok("그룹 가입이 완료되었습니다.");
         }
-        return ResponseEntity.status(409).body("정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.");
+        throw new ScoreCustomException(ExceptionType.FULL_GROUP);
     }
 
     @Operation(summary = "그룹 정보 조회", description = "그룹 정보를 조회합니다.")

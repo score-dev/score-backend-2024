@@ -9,6 +9,8 @@ import com.score.backend.domain.school.School;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.schoolrank.SchoolRankerResponse;
 import com.score.backend.dtos.schoolrank.SchoolRankingResponse;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.ScoreCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -59,7 +61,7 @@ public class RankingController {
         LocalDate createdDate = group.getCreatedAt().toLocalDate();
 
         if (!createdDate.isBefore(localDate)) {
-            return ResponseEntity.status(409).build();
+            throw new ScoreCustomException(ExceptionType.GROUP_RANKING_NOT_EXIST);
         }
         return ResponseEntity.ok(groupRankService.findRankingByGroupIdAndDate(groupId, localDate));
     }

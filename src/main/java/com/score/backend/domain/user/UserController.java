@@ -117,7 +117,7 @@ public class UserController {
         User user = userService.findUserById(userId);
         if (userUpdateDto.getSchool() != null && !user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())
                 && ChronoUnit.DAYS.between(LocalDateTime.now(), user.getSchoolUpdatedAt()) < 30) {
-            return ResponseEntity.status(409).body("마지막 학교 정보 수정 후 30일이 경과하지 않았습니다.");
+            throw new ScoreCustomException(ExceptionType.TOO_FREQUENT_SCHOOL_CHANGING);
         }
         userService.updateUser(userId, userUpdateDto, multipartFile);
         return ResponseEntity.ok("회원 정보 수정이 완료되었습니다.");
