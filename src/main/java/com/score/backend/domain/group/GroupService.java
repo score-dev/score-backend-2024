@@ -17,7 +17,6 @@ import com.score.backend.exceptions.NotFoundException;
 import com.score.backend.exceptions.ScoreCustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,7 +163,7 @@ public class GroupService {
     }
 
     // 그룹에 새로운 멤버 추가
-    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException, BadRequestException {
+    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException {
         GroupEntity group = findById(groupId);
         User user = userService.findUserById(userId);
         if (userGroupRepository.findByUserIdAndGroupId(userId, groupId) == null) {
