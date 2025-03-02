@@ -4,6 +4,8 @@ import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.exercise.Exercise;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +43,7 @@ public class EmotionService {
     @Transactional(readOnly = true)
     public List<Emotion> findAll(Long feedId) {
         return emotionRepository.findAllEmotionsByFeedId(feedId).orElseThrow(
-                () -> new RuntimeException("Feed Not Found")
+                () -> new NotFoundException(ExceptionType.FEED_NOT_FOUND)
         );
     }
 

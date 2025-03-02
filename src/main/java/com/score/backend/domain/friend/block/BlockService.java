@@ -1,31 +1,31 @@
 package com.score.backend.domain.friend.block;
 
 import com.score.backend.domain.user.User;
+import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.user.repositories.UserRepository;
 import com.score.backend.dtos.FriendsSearchResponse;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.ScoreCustomException;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class BlockService {
     private final UserRepository userRepository;
+    private final UserService userService;
     private final BlockedUserRepository blockedUserRepository;
 
-    public void blockFriend(Long blockerId, Long blockedId) throws BadRequestException {
-        User blocker = userRepository.findById(blockerId).orElseThrow(
-                () -> new NoSuchElementException("요청한 유저를 찾을 수 없습니다."));
-        User blocked = userRepository.findById(blockedId).orElseThrow(
-                () -> new NoSuchElementException("차단하려는 유저를 찾을 수 없습니다."));
+    public void blockFriend(Long blockerId, Long blockedId) {
+        User blocker = userService.findUserById(blockerId);
+        User blocked = userService.findUserById(blockedId);
         if (blockedUserRepository.findByBlockerIdAndBlockedId(blockerId, blockedId).isPresent()) {
-            throw new BadRequestException("이미 차단되어 있는 유저입니다.");
+            throw new ScoreCustomException(ExceptionType.ALREADY_BLOCKED);
         }
         BlockedUser blockedUser = new BlockedUser(blocker, blocked);
         blocker.blockUser(blockedUser);
@@ -43,9 +43,7 @@ public class BlockService {
     }
 
     public void unblockFriend(Long blockerId, Long blockedId) {
-        User blocker = userRepository.findById(blockerId).orElseThrow(
-                () -> new NoSuchElementException("요청한 유저를 찾을 수 없습니다.")
-        );
+        User blocker = userService.findUserById(blockerId);
         blocker.unblockUser(blockedUserRepository.findByBlockedId(blockedId));
     }
 }

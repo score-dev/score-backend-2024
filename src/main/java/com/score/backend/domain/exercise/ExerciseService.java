@@ -10,6 +10,9 @@ import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.WalkingDto;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
+import com.score.backend.exceptions.ScoreCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -20,7 +23,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +40,7 @@ public class  ExerciseService {
         User user2 = userService.findUserById(id2);
 
         if (user1.getBlockedUsers().stream().map(BlockedUser::getBlocked).toList().contains(user2)) {
-            throw new RuntimeException("차단한 유저에 대한 피드 목록 조회 요청입니다.");
+            throw new ScoreCustomException(ExceptionType.ACCESS_TO_BLOCKED_USER);
         }
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
         return new FeedInfoResponse().toDtoListForMates(exerciseRepository.findExercisePageByUserId(id1, pageable));
@@ -102,7 +104,7 @@ public class  ExerciseService {
     @Transactional(readOnly = true)
     public Exercise findFeedByExerciseId(Long exerciseId) throws RuntimeException {
         return exerciseRepository.findById(exerciseId).orElseThrow(
-                () -> new NoSuchElementException("피드 정보를 찾을 수 없습니다.")
+                () -> new NotFoundException(ExceptionType.FEED_NOT_FOUND)
         );
     }
 
@@ -141,7 +143,7 @@ public class  ExerciseService {
     public double calculateExerciseDuration(LocalDateTime start, LocalDateTime end) {
         Duration duration = Duration.between(start, end);
         if (duration.getSeconds() < 0) {
-            throw new IllegalArgumentException("운동 종료 시간이 운동 시작 시간보다 이전입니다.");
+            throw new ScoreCustomException(ExceptionType.EXERCISE_TIME_ERROR);
         }
         return duration.getSeconds();
     }

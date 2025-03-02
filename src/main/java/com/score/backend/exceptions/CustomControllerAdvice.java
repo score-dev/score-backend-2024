@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.NoSuchElementException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -23,7 +24,7 @@ public class CustomControllerAdvice {
     }
 
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler({NotFoundException.class, NoSuchElementException.class})
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NotFoundException ex) {
         return ResponseEntity.status(NOT_FOUND).body(new ErrorResponse(NOT_FOUND.value(), ex.toString(), ex.getType().getMessage()));
     }

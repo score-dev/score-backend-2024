@@ -26,5 +26,4 @@ public class UserReportService {
                 .build();
         userReportRepository.save(userReport);
     }
-
 }

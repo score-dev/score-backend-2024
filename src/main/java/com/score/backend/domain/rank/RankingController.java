@@ -6,7 +6,6 @@ import com.score.backend.domain.rank.group.GroupRankService;
 import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.rank.school.SchoolRankService;
 import com.score.backend.domain.school.School;
-import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.schoolrank.SchoolRankerResponse;
 import com.score.backend.dtos.schoolrank.SchoolRankingResponse;
@@ -27,7 +26,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
@@ -38,7 +36,6 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 public class RankingController {
     private final GroupService groupService;
     private final UserService userService;
-    private final SchoolService schoolService;
     private final GroupRankService groupRankService;
     private final SchoolRankService schoolRankService;
 
@@ -64,11 +61,7 @@ public class RankingController {
         if (!createdDate.isBefore(localDate)) {
             return ResponseEntity.status(409).build();
         }
-        try {
-            return ResponseEntity.ok(groupRankService.findRankingByGroupIdAndDate(groupId, localDate));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(groupRankService.findRankingByGroupIdAndDate(groupId, localDate));
     }
 
     @Operation(summary = "학교 랭킹 조회", description = "학교 내 그룹 랭킹을 조회합니다.")
@@ -83,14 +76,9 @@ public class RankingController {
         if (localDate == null) {
             localDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
         }
-        try {
-            School school = userService.findUserById(userId).getSchool();
-            List<SchoolRankerResponse> allRankers = schoolRankService.findAllSchoolRankingByUserId(userId, localDate);
-            List<SchoolRankerResponse> myGroupRankers = schoolRankService.findMyGroupRankingByUserId(userId, localDate);
-            return ResponseEntity.ok(new SchoolRankingResponse(school.getSchoolName(), school.getId(), allRankers, myGroupRankers));
-
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+        School school = userService.findUserById(userId).getSchool();
+        List<SchoolRankerResponse> allRankers = schoolRankService.findAllSchoolRankingByUserId(userId, localDate);
+        List<SchoolRankerResponse> myGroupRankers = schoolRankService.findMyGroupRankingByUserId(userId, localDate);
+        return ResponseEntity.ok(new SchoolRankingResponse(school.getSchoolName(), school.getId(), allRankers, myGroupRankers));
     }
 }

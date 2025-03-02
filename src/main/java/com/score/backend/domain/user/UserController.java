@@ -3,6 +3,8 @@ package com.score.backend.domain.user;
 import com.score.backend.domain.rank.group.GroupRankService;
 import com.score.backend.domain.school.School;
 import com.score.backend.dtos.*;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.ScoreCustomException;
 import com.score.backend.security.AuthService;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.school.SchoolService;
@@ -88,11 +90,15 @@ public class UserController {
             })
     @RequestMapping(value = "/score/user/withdrawal", method = RequestMethod.DELETE)
     public ResponseEntity<String> withdrawUser(@Parameter(description = "회원 탈퇴를 요청한 유저의 고유 id 값") @RequestParam(name = "id") Long id,
-                                                   @Parameter(description = "회원 탈퇴 사유") @RequestParam(name = "reason") String reason) throws SQLIntegrityConstraintViolationException {
-        groupRankService.handleWithdrawUsersRankingInfo(id);
-        userService.withdrawUser(id);
-        Logger logger = LoggerFactory.getLogger("withdrawal-logger");
-        logger.info("User ID: {}, Reason: {}", id, reason);
+                                                   @Parameter(description = "회원 탈퇴 사유") @RequestParam(name = "reason") String reason) {
+        try {
+            groupRankService.handleWithdrawUsersRankingInfo(id);
+            userService.withdrawUser(id);
+            Logger logger = LoggerFactory.getLogger("withdrawal-logger");
+            logger.info("User ID: {}, Reason: {}", id, reason);
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new ScoreCustomException(ExceptionType.GROUP_ADMIN_WITHDRAWAL);
+        }
         return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 

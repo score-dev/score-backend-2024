@@ -5,6 +5,8 @@ import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.school.School;
 import com.score.backend.dtos.GroupDto;
 import com.score.backend.domain.school.SchoolService;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -68,7 +70,7 @@ public class GroupSearchService {
         // 학교 코드로 학교 조회
         School school = schoolService.findSchoolByCode(schoolCode);
         if (school == null) {
-            throw new IllegalArgumentException("해당 학교를 찾을 수 없습니다.");
+            throw new NotFoundException(ExceptionType.SCHOOL_NOT_FOUND);
         }
 
         // 최신순 그룹 조회

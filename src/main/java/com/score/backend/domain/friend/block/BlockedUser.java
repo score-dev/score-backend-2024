@@ -2,11 +2,12 @@ package com.score.backend.domain.friend.block;
 
 import com.score.backend.config.BaseEntity;
 import com.score.backend.domain.user.User;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.ScoreCustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.coyote.BadRequestException;
 
 @Entity
 @Getter
@@ -24,9 +25,9 @@ public class BlockedUser extends BaseEntity {
     @JoinColumn(name = "blocked_id", nullable = false)
     private User blocked;
 
-    public BlockedUser(User blocker, User blocked) throws BadRequestException {
+    public BlockedUser(User blocker, User blocked) {
         if (blocker.getId().equals(blocked.getId())) {
-            throw new BadRequestException("자기 자신을 차단할 수 없습니다.");
+            throw new ScoreCustomException(ExceptionType.SELF_BLOCK);
         }
         this.blocker = blocker;
         this.blocked = blocked;

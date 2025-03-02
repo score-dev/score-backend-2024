@@ -9,6 +9,8 @@ import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FcmNotificationResponse;
 import com.score.backend.dtos.NotificationStatusRequest;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,8 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public com.score.backend.domain.notification.Notification findById(Long id) {
-        return notificationRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        return notificationRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(ExceptionType.NOTIFICATION_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -69,7 +71,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public String sendMessage(FcmMessageRequest request)  throws FirebaseMessagingException {
+    public String sendMessage(FcmMessageRequest request) throws FirebaseMessagingException {
         return FirebaseMessaging.getInstance().send(Message.builder()
                 .setNotification(Notification.builder()
                         .setTitle(request.getTitle())

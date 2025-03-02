@@ -8,7 +8,6 @@ import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.rank.group.GroupRankingRepository;
 import com.score.backend.domain.rank.school.*;
 import com.score.backend.domain.school.School;
-import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class RankingService {
-    private final SchoolService schoolService;
     private final SchoolRankService schoolRankService;
     private final GroupRankerRepository groupRankerRepository;
     private final GroupRankingRepository groupRankingRepository;

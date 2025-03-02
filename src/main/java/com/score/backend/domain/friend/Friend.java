@@ -2,11 +2,12 @@ package com.score.backend.domain.friend;
 
 import com.score.backend.config.BaseEntity;
 import com.score.backend.domain.user.User;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.ScoreCustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.coyote.BadRequestException;
 
 @Entity
 @Getter
@@ -24,9 +25,9 @@ public class Friend extends BaseEntity {
     @JoinColumn(name = "friend_id", nullable = false)
     private User friend;
 
-    public Friend(User user, User friend) throws BadRequestException {
+    public Friend(User user, User friend) {
         if (user.getId() == friend.getId()) {
-            throw new BadRequestException("자기 자신을 친구로 추가할 수 없습니다.");
+            throw new ScoreCustomException(ExceptionType.SELF_FRIEND);
         }
         this.user = user;
         this.friend = friend;

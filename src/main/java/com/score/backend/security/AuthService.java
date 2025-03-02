@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -42,9 +41,7 @@ public class AuthService {
     @Transactional
     public List<String> setJwtToken(String provider, String idToken) throws ParseException {
         String userId = getUserId(provider, idToken);
-        User user = userService.findUserByLoginKey(userId).orElseThrow(
-                () -> new NoSuchElementException("일치하는 유저 정보가 존재하지 않습니다.")
-        );
+        User user = userService.findUserByLoginKey(userId);
         List<String> tokens = jwtProvider.getNewToken(userId);
         user.setRefreshToken(tokens.get(1));
 

@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ExceptionType {
+    DUMMY_USER_NOT_FOUND("탈퇴 회원의 랭킹 정보 저장을 위한 더미 유저가 등록되어 있지 않습니다."),
     USER_NOT_FOUND("유저 정보가 존재하지 않습니다."),
     SCHOOL_NOT_FOUND("학교 정보가 존재하지 않습니다."),
     GROUP_NOT_FOUND("그룹 정보가 존재하지 않습니다."),

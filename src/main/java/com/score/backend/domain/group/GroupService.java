@@ -12,6 +12,9 @@ import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.repositories.UserRepository;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
+import com.score.backend.exceptions.ScoreCustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -23,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -43,7 +45,7 @@ public class GroupService {
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id){
         return groupRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("해당 그룹 정보가 존재하지 않습니다.")
+                () -> new NotFoundException(ExceptionType.GROUP_NOT_FOUND)
         );
     }
 
@@ -60,7 +62,7 @@ public class GroupService {
     public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) {
 
         User admin = userRepository.findById(groupCreateDto.getAdminId())
-                .orElseThrow(() -> new NoSuchElementException("방장에 대한 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(ExceptionType.USER_NOT_FOUND));
 
         GroupEntity group = GroupEntity.builder()
                 .groupName(groupCreateDto.getGroupName())
@@ -100,11 +102,8 @@ public class GroupService {
 //    }
 
     public void leaveGroup(Long groupId, Long userId) {
-        GroupEntity group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
-
+        GroupEntity group = findById(groupId);
+        User user = userService.findUserById(userId);
         if (!group.getMembers().contains(user)) {
             throw new IllegalArgumentException("그룹에 속해 있지 않습니다.");
         }
@@ -116,11 +115,8 @@ public class GroupService {
     }
 
     public void removeMember(Long groupId, Long userId) {
-        GroupEntity group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
-
+        GroupEntity group = findById(groupId);
+        User user = userService.findUserById(userId);
         Long adminId = group.getAdmin().getId(); //그룹의 adminId 가져오기
 
         if (!group.getAdmin().getId().equals(adminId)) {
@@ -181,7 +177,7 @@ public class GroupService {
             notificationService.saveNotification(message);
             return;
         }
-        throw new BadRequestException("해당 그룹에 이미 가입되어 있는 유저입니다.");
+        throw new ScoreCustomException(ExceptionType.ALREADY_JOINED_GROUP);
     }
 
     // 유저가 속한 모든 그룹의 누적 운동 시간 증가
@@ -213,14 +209,14 @@ public class GroupService {
     // 해당 유저가 그룹의 멤버인지 여부 확인
     @Transactional(readOnly = true)
     public boolean isMemberOfGroup(Long groupId, Long userId) {
-        GroupEntity group = this.findById(groupId);
+        GroupEntity group = findById(groupId);
         return group.getMembers().contains(userGroupRepository.findByUserIdAndGroupId(userId, groupId));
     }
 
     // 유저가 가입해 있지 않은 그룹의 정보 반환
     @Transactional(readOnly = true)
     public GroupInfoResponse getGroupInfoForNonMember(Long groupId) {
-        GroupEntity group = this.findById(groupId);
+        GroupEntity group = findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercisePics(0, groupId);
         return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), rankingService.getRatioOfParticipate(group), feeds);
     }
@@ -228,7 +224,7 @@ public class GroupService {
     // 유저가 가입해 있는 그룹의 정보 반환
     @Transactional(readOnly = true)
     public GroupInfoResponse getGroupInfoForMember(Long groupId) {
-        GroupEntity group = this.findById(groupId);
+        GroupEntity group = findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
         return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), findAllUsersDidExerciseToday(groupId).size(), feeds);
     }

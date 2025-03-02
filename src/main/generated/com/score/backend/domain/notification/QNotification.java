@@ -28,7 +28,8 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final StringPath body = createString("body");
 
-    public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     //inherited
     public final StringPath createdBy = _super.createdBy;
