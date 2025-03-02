@@ -3,7 +3,6 @@ package com.score.backend.exceptions;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.score.backend.dtos.ErrorResponse;
 import io.jsonwebtoken.JwtException;
-import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.NoSuchElementException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -25,15 +23,15 @@ public class CustomControllerAdvice {
     }
 
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex) {
-        return ResponseEntity.status(NOT_FOUND).body(new ErrorResponse(NOT_FOUND.value(), ex.toString(), ex.getMessage()));
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoSuchElementException(NotFoundException ex) {
+        return ResponseEntity.status(NOT_FOUND).body(new ErrorResponse(NOT_FOUND.value(), ex.toString(), ex.getType().getMessage()));
     }
 
-    @ResponseStatus(CONFLICT)
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex) {
-        return ResponseEntity.status(CONFLICT).body(new ErrorResponse(CONFLICT.value(), ex.toString(), ex.getMessage()));
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(ScoreCustomException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(ScoreCustomException ex) {
+        return ResponseEntity.status(BAD_REQUEST).body(new ErrorResponse(BAD_REQUEST.value(), ex.toString(), ex.getType().getMessage()));
     }
 
     @ResponseStatus(UNAUTHORIZED)
