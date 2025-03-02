@@ -2,12 +2,13 @@ package com.score.backend.domain.school;
 
 import com.score.backend.domain.school.repositories.SchoolRepository;
 import com.score.backend.dtos.SchoolDto;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +18,9 @@ public class SchoolService {
     private final SchoolRepository schoolRepository;
 
     @Transactional(readOnly = true)
-    public School findById(Long id) {
+    public School findSchoolById(Long id) {
         return schoolRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("학교 정보가 존재하지 않습니다.")
-        );
+                () -> new NotFoundException(ExceptionType.SCHOOL_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

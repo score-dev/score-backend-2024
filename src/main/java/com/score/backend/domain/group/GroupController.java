@@ -3,6 +3,8 @@ package com.score.backend.domain.group;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.exercise.ExerciseService;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.ScoreCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -68,12 +70,8 @@ public class GroupController {
     })
     @PostMapping("/{groupId}/leave")
     public ResponseEntity<String> leaveGroup(@PathVariable Long groupId, @RequestParam Long userId) {
-        try {
-            groupService.leaveGroup(groupId, userId);
-            return ResponseEntity.ok("그룹 탈퇴가 완료되었습니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        groupService.leaveGroup(groupId, userId);
+        return ResponseEntity.ok("그룹 탈퇴가 완료되었습니다.");
     }
 
 //    @Operation(summary = "그룹 정보 수정", description = "그룹 정보를 수정하는 API입니다.")
@@ -100,12 +98,8 @@ public class GroupController {
     })
     @DeleteMapping("/{groupId}/removeMember")
     public ResponseEntity<String> removeMemberFromGroup(@PathVariable Long groupId, @RequestParam Long userId) {
-        try {
-            groupService.removeMember(groupId, userId);
-            return ResponseEntity.ok("멤버 강퇴가 완료되었습니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        groupService.removeMember(groupId, userId);
+        return ResponseEntity.ok("멤버 강퇴가 완료되었습니다.");
     }
 
     @Operation(summary = "비공개 그룹 비밀번호 일치 여부 확인", description = "비공개 그룹에 가입하고자 할 때 유저가 입력한 비밀번호가 일치하는지 여부를 확인합니다.")
@@ -129,9 +123,9 @@ public class GroupController {
     public ResponseEntity<String> sendGroupJoinRequest(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) throws FirebaseMessagingException {
         if (groupService.checkEmptySpaceExistence(groupId)) {
             groupService.sendGroupJoinRequestNotification(groupId, userId);
-            return  ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
+            return ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
         } else {
-            return ResponseEntity.status(409).body("정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.");
+            throw new ScoreCustomException(ExceptionType.FULL_GROUP);
         }
     }
 

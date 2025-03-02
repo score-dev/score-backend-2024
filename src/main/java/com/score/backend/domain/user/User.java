@@ -173,7 +173,7 @@ public class User extends BaseEntity {
     }
 
 
-    public void addFriend(User user) throws BadRequestException {
+    public void addFriend(User user) {
         this.friends.add(new Friend(this, user));
         user.getFriends().add(new Friend(user, this));
     }

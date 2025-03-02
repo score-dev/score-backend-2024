@@ -34,7 +34,6 @@ public class AuthController {
     @RequestMapping(value = "/oauth", method = RequestMethod.POST)
     public ResponseEntity<Long> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
                                                  @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) throws ParseException {
-        log.info("소셜 로그인 인증");
         String userKey = authService.getUserId(provider, idToken);
         Long id = userService.isPresentUser(userKey);
         if (id >= 0) {
