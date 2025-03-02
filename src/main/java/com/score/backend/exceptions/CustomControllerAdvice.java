@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -24,7 +25,7 @@ public class CustomControllerAdvice {
     }
 
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler({NotFoundException.class, NoSuchElementException.class})
+    @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NotFoundException ex) {
         return ResponseEntity.status(NOT_FOUND).body(new ErrorResponse(NOT_FOUND.value(), ex.toString(), ex.getType().getMessage()));
     }
@@ -33,6 +34,12 @@ public class CustomControllerAdvice {
     @ExceptionHandler(ScoreCustomException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(ScoreCustomException ex) {
         return ResponseEntity.status(BAD_REQUEST).body(new ErrorResponse(BAD_REQUEST.value(), ex.toString(), ex.getType().getMessage()));
+    }
+
+    @ResponseStatus(PAYLOAD_TOO_LARGE)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.status(PAYLOAD_TOO_LARGE).body(new ErrorResponse(PAYLOAD_TOO_LARGE.value(), ex.toString(), ExceptionType.EXCEEDED_FILE_SIZE.getMessage()));
     }
 
     @ResponseStatus(UNAUTHORIZED)
