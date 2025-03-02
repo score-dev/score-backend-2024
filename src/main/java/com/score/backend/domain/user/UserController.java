@@ -21,6 +21,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -70,7 +71,7 @@ public class UserController {
     @RequestMapping(value = "/score/public/onboarding/fin", method = RequestMethod.POST)
     public ResponseEntity<NewUserResponse> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
                                               @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
-                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws ParseException {
+                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws ParseException, IOException {
 
         // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
         School school = schoolService.findOrSave(schoolDto);
@@ -112,11 +113,11 @@ public class UserController {
     @RequestMapping(value = "/score/user/update/{id}", method = RequestMethod.PUT)
     public ResponseEntity<String> updateUserInfo(@Parameter(description = "회원 정보 수정을 요청한 유저의 고유 id 값") @PathVariable(name = "id") Long userId,
                                                  @Parameter(description = "수정된 회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userUpdateDto") UserUpdateDto userUpdateDto,
-                                                 @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
+                                                 @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws IOException {
         User user = userService.findUserById(userId);
         if (userUpdateDto.getSchool() != null && !user.getSchool().getSchoolCode().equals(userUpdateDto.getSchool().getSchoolCode())
                 && ChronoUnit.DAYS.between(LocalDateTime.now(), user.getSchoolUpdatedAt()) < 30) {
-            return ResponseEntity.status(409).body("마지막 학교 정보 수정 후 30일이 경과하지 않았습니다.");
+            throw new ScoreCustomException(ExceptionType.TOO_FREQUENT_SCHOOL_CHANGING);
         }
         userService.updateUser(userId, userUpdateDto, multipartFile);
         return ResponseEntity.ok("회원 정보 수정이 완료되었습니다.");

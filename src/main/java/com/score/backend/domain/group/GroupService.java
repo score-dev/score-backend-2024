@@ -7,7 +7,6 @@ import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.rank.RankingService;
-import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.user.User;
@@ -17,12 +16,12 @@ import com.score.backend.exceptions.NotFoundException;
 import com.score.backend.exceptions.ScoreCustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,6 @@ public class GroupService {
     private final RankingService rankingService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
-    private final SchoolService schoolService;
 
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id){
@@ -59,7 +57,7 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
-    public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) {
+    public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) throws IOException {
 
         User admin = userRepository.findById(groupCreateDto.getAdminId())
                 .orElseThrow(() -> new NotFoundException(ExceptionType.USER_NOT_FOUND));
@@ -164,15 +162,18 @@ public class GroupService {
     }
 
     // 그룹에 새로운 멤버 추가
-    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException, BadRequestException {
+    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException {
         GroupEntity group = findById(groupId);
         User user = userService.findUserById(userId);
         if (userGroupRepository.findByUserIdAndGroupId(userId, groupId) == null) {
+            if (!group.getBelongingSchool().getId().equals(user.getSchool().getId())) {
+                throw new ScoreCustomException(ExceptionType.USERS_SCHOOL_GROUP_UNMATCHED);
+            }
             UserGroup userGroup = new UserGroup(user, group);
             userGroupRepository.save(userGroup);
             group.getMembers().add(userGroup);
             user.addGroup(userGroup, group);
-            FcmMessageRequest message = new FcmMessageRequest(userId,  group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
+            FcmMessageRequest message = new FcmMessageRequest(userId, group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
             notificationService.sendMessage(message);
             notificationService.saveNotification(message);
             return;

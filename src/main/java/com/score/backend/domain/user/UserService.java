@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalTime;
 import java.util.List;
@@ -30,14 +31,14 @@ public class UserService {
     }
 
     @Transactional
-    public Long saveUser(User user, MultipartFile profileImage) {
+    public Long saveUser(User user, MultipartFile profileImage) throws IOException {
         // db에 기본 프로필 이미지 저장된 후 프로필 사진 미설정시 기본 프로필 이미지 설정되도록 하는 기능 구현 필요
         user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
         return userRepository.save(user).getId();
     }
 
     @Transactional
-    public void updateUser(Long userId, UserUpdateDto userUpdateDto, MultipartFile profileImage) {
+    public void updateUser(Long userId, UserUpdateDto userUpdateDto, MultipartFile profileImage) throws IOException {
         User user = this.findUserById(userId);
         user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
         if (userUpdateDto.getNickname() != null) {

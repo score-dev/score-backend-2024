@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class  ExerciseService {
         return exerciseRepository.findUsersWeeklyExercises(userId, LocalDateTime.now());
     }
 
-    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException {
+    public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException, IOException {
         // 새로운 피드 엔티티 생성
         Exercise feed = walkingDto.toEntity();
         // 운동한 유저(피드 작성자) db에서 찾기
@@ -102,20 +103,20 @@ public class  ExerciseService {
     }
 
     @Transactional(readOnly = true)
-    public Exercise findFeedByExerciseId(Long exerciseId) throws RuntimeException {
+    public Exercise findFeedByExerciseId(Long exerciseId) {
         return exerciseRepository.findById(exerciseId).orElseThrow(
                 () -> new NotFoundException(ExceptionType.FEED_NOT_FOUND)
         );
     }
 
     // 유저의 운동 시간 누적
-    public void cumulateExerciseDuration(Long userId, LocalDateTime start, LocalDateTime end) throws RuntimeException {
+    public void cumulateExerciseDuration(Long userId, LocalDateTime start, LocalDateTime end) {
         User user = userService.findUserById(userId);
         user.updateCumulativeTime(calculateExerciseDuration(start, end));
     }
 
     // 유저의 운동 거리 누적
-    public void cumulateExerciseDistance(Long userId, double distance) throws RuntimeException {
+    public void cumulateExerciseDistance(Long userId, double distance) {
         User user = userService.findUserById(userId);
         user.updateCumulativeDistance(distance);
     }
