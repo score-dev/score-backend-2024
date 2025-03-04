@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -26,9 +27,9 @@ public abstract class Exercise extends BaseEntity {
     @ManyToOne @JoinColumn(name="user_id")
     private User agent; // 피드를 업로드한 유저
 
-    @OneToMany
+    @OneToMany(mappedBy = "exercise")
     @JsonIgnore
-    private List<User> taggedUsers = new ArrayList<>(); // 함께 운동한 유저
+    private List<TaggedUser> taggedUsers = new ArrayList<>(); // 함께 운동한 유저
 
     private LocalDateTime startedAt;
 
@@ -57,13 +58,9 @@ public abstract class Exercise extends BaseEntity {
         agent.getFeeds().add(this);
     }
 
-    public void setAgentAndExerciseUser(User agent, List<User> taggedUsers) {
+    public void setAgentAndExerciseUser(User agent, Set<TaggedUser> taggedUsers) {
         this.setAgent(agent);
-        for (User user : taggedUsers) {
-            if (!user.equals(agent) && !this.taggedUsers.contains(user)) {
-                this.taggedUsers.add(user);
-            }
-        }
+        this.taggedUsers.addAll(taggedUsers);
     }
 
     public void setExercisePicUrl(String exercisePicUrl) {

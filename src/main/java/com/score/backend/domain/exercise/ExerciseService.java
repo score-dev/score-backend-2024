@@ -3,6 +3,7 @@ package com.score.backend.domain.exercise;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.repositories.ExerciseRepository;
+import com.score.backend.domain.exercise.repositories.TaggedUserRepository;
 import com.score.backend.domain.friend.block.BlockedUser;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
@@ -23,13 +24,16 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class  ExerciseService {
     private final ExerciseRepository exerciseRepository;
+    private final TaggedUserRepository taggedUserRepository;
     private final UserService userService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
@@ -78,11 +82,16 @@ public class  ExerciseService {
         User agent = userService.findUserById(walkingDto.getAgentId());
 
         // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
-        List<User> taggedUsers = new ArrayList<>();
+        Set<TaggedUser> taggedUsers = new HashSet<>();
         if (walkingDto.getOthersId() != null) {
             for (Long id : walkingDto.getOthersId()) {
+                if (id.equals(agent.getId())) {
+                    continue;
+                }
                 User user = userService.findUserById(id);
-                taggedUsers.add(user);
+                TaggedUser taggedUser = new TaggedUser(feed, user);
+                taggedUserRepository.save(taggedUser);
+                taggedUsers.add(taggedUser);
                 // 태그된 유저들에게 알림 전송 및 알림 저장
                 if (user.isTag()) {
                     FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");

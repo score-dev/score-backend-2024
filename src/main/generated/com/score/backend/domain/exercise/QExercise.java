@@ -53,7 +53,7 @@ public class QExercise extends EntityPathBase<Exercise> {
 
     public final DateTimePath<java.time.LocalDateTime> startedAt = createDateTime("startedAt", java.time.LocalDateTime.class);
 
-    public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> taggedUsers = this.<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser>createList("taggedUsers", com.score.backend.domain.user.User.class, com.score.backend.domain.user.QUser.class, PathInits.DIRECT2);
+    public final ListPath<TaggedUser, QTaggedUser> taggedUsers = this.<TaggedUser, QTaggedUser>createList("taggedUsers", TaggedUser.class, QTaggedUser.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> temperature = createNumber("temperature", Integer.class);
 

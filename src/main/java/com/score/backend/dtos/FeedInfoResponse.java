@@ -1,6 +1,7 @@
 package com.score.backend.dtos;
 
 import com.score.backend.domain.exercise.Exercise;
+import com.score.backend.domain.exercise.TaggedUser;
 import com.score.backend.domain.user.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -58,10 +59,8 @@ public class FeedInfoResponse {
         this.temperature = exercise.getTemperature();
         this.fineDust = exercise.getFineDust();
         this.feeling = exercise.getFeeling();
-        this.taggedNicknames = exercise.getTaggedUsers().stream().map(User::getNickname)
-                .collect(Collectors.toList());
-        this.taggedProfileImgUrls = exercise.getTaggedUsers().stream().map(User::getProfileImg)
-                .collect(Collectors.toList());
+        this.taggedNicknames = exercise.getTaggedUsers().stream().map(TaggedUser::getUser).map(User::getNickname).collect(Collectors.toList());
+        this.taggedProfileImgUrls = exercise.getTaggedUsers().stream().map(TaggedUser::getUser).map(User::getProfileImg).collect(Collectors.toList());
     }
 
     public Page<FeedInfoResponse> toDtoListForMates(Page<Exercise> exercises) {
@@ -77,8 +76,8 @@ public class FeedInfoResponse {
                 .temperature(m.getTemperature())
                 .fineDust(m.getFineDust())
                 .feeling(m.getFeeling())
-                .taggedNicknames(m.getTaggedUsers().stream().map(User::getNickname).toList())
-                .taggedProfileImgUrls(m.getTaggedUsers().stream().map(User::getProfileImg).toList())
+                .taggedNicknames(m.getTaggedUsers().stream().map(TaggedUser::getUser).map(User::getNickname).toList())
+                .taggedProfileImgUrls(m.getTaggedUsers().stream().map(TaggedUser::getUser).map(User::getProfileImg).toList())
                 .build());
     }
 
