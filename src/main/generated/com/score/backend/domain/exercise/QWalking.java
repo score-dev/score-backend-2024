@@ -66,7 +66,7 @@ public class QWalking extends EntityPathBase<Walking> {
     public final DateTimePath<java.time.LocalDateTime> startedAt;
 
     //inherited
-    public final ListPath<com.score.backend.domain.user.User, com.score.backend.domain.user.QUser> taggedUsers;
+    public final ListPath<TaggedUser, QTaggedUser> taggedUsers;
 
     //inherited
     public final NumberPath<Integer> temperature;
