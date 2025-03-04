@@ -59,7 +59,11 @@ public abstract class Exercise extends BaseEntity {
 
     public void setAgentAndExerciseUser(User agent, List<User> taggedUsers) {
         this.setAgent(agent);
-        this.taggedUsers.addAll(taggedUsers);
+        for (User user : taggedUsers) {
+            if (!user.equals(agent) && !this.taggedUsers.contains(user)) {
+                this.taggedUsers.add(user);
+            }
+        }
     }
 
     public void setExercisePicUrl(String exercisePicUrl) {

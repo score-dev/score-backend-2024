@@ -5,9 +5,9 @@ import com.score.backend.dtos.ErrorResponse;
 import io.jsonwebtoken.JwtException;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.text.ParseException;
 
 import static org.springframework.http.HttpStatus.*;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class CustomControllerAdvice {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class, RuntimeException.class, SQLException.class, FirebaseAuthException.class, IOException.class})
