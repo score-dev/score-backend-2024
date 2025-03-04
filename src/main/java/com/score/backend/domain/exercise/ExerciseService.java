@@ -83,7 +83,7 @@ public class  ExerciseService {
             for (Long id : walkingDto.getOthersId()) {
                 User user = userService.findUserById(id);
                 taggedUsers.add(user);
-                // 태그된 유저들에게 알림 전송 및 알림 저장 -> 프론트엔드와의 연동 이후 주석 해제 필요
+                // 태그된 유저들에게 알림 전송 및 알림 저장
                 if (user.isTag()) {
                     FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
                     notificationService.sendMessage(fcmMessageRequest);

@@ -1,5 +1,6 @@
 package com.score.backend.domain.exercise;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.friend.Friend;
 import com.score.backend.dtos.FeedInfoResponse;
@@ -21,6 +22,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -65,48 +67,42 @@ public class ExerciseController {
     )
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
     public ResponseEntity<String> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
-                                                    @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) {
-        try {
-            // 피드 저장
-            exerciseService.saveFeed(walkingDto, multipartFile);
+                                                    @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws IOException, FirebaseMessagingException {
+        // 피드 저장
+        exerciseService.saveFeed(walkingDto, multipartFile);
 
-            ///// 3분 이상 운동한 경우 /////
-            if (exerciseService.isValidateExercise(walkingDto.getStartedAt(), walkingDto.getCompletedAt())) {
-                // 피드 업로드에 따른 포인트 증가
-                levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
-                // 마지막 운동 날짜 업데이트
-                exerciseService.updateLastExerciseDateTime(walkingDto.getAgentId(), walkingDto.getCompletedAt());
+        ///// 3분 이상 운동한 경우 /////
+        if (exerciseService.isValidateExercise(walkingDto.getStartedAt(), walkingDto.getCompletedAt())) {
+            // 피드 업로드에 따른 포인트 증가
+            levelService.increasePointsForTodaysFirstExercise(walkingDto.getAgentId());
+            // 마지막 운동 날짜 업데이트
+            exerciseService.updateLastExerciseDateTime(walkingDto.getAgentId(), walkingDto.getCompletedAt());
 
-                /////// 오늘 처음으로 3분 이상 운동한 경우 ///////
-                if (exerciseService.isTodaysFirstValidateExercise(walkingDto.getAgentId())) {
-                    // 유저의 연속 운동 일수 증가
-                    exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
-                    // 연속 운동 일수 증가에 따른 포인트 증가
-                    levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
-                }
-                /////// 오늘 3분 이상 운동한 기록이 이미 존재하는 경우 ///////
-                else {
-                    // 유저의 금주 운동 현황 업데이트하지만 이번주 운동한 날짜 수는 더 이상 증가하지 않음
-                    exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), false, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-                }
+            /////// 오늘 처음으로 3분 이상 운동한 경우 ///////
+            if (exerciseService.isTodaysFirstValidateExercise(walkingDto.getAgentId())) {
+                // 유저의 연속 운동 일수 증가
+                exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
+                // 연속 운동 일수 증가에 따른 포인트 증가
+                levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
             }
-
-            ///// 3분 이상 운동 여부와 상관 없이 실행 /////
-            // 누적 운동 거리에 따른 포인트 증가
-            levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
-            // 누적 운동 거리 업데이트
-            exerciseService.cumulateExerciseDistance(walkingDto.getAgentId(), walkingDto.getDistance());
-            // 개인 누적 운동 시간 업데이트
-            exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-            // 유저의 금주 누적 운동 시간 업데이트
-            exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-            // 유저가 속한 그룹의 누적 운동 시간 업데이트
-            groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-        } catch (NoSuchElementException e) {
-            throw new NoSuchElementException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            /////// 오늘 3분 이상 운동한 기록이 이미 존재하는 경우 ///////
+            else {
+                // 유저의 금주 운동 현황 업데이트하지만 이번주 운동한 날짜 수는 더 이상 증가하지 않음
+                exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), false, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+            }
         }
+
+        ///// 3분 이상 운동 여부와 상관 없이 실행 /////
+        // 누적 운동 거리에 따른 포인트 증가
+        levelService.increasePointsByWalkingDistance(walkingDto.getAgentId(), walkingDto.getDistance());
+        // 누적 운동 거리 업데이트
+        exerciseService.cumulateExerciseDistance(walkingDto.getAgentId(), walkingDto.getDistance());
+        // 개인 누적 운동 시간 업데이트
+        exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+        // 유저의 금주 누적 운동 시간 업데이트
+        exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+        // 유저가 속한 그룹의 누적 운동 시간 업데이트
+        groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }
 
