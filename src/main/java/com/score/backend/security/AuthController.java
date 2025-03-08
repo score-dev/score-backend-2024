@@ -2,6 +2,7 @@ package com.score.backend.security;
 
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
+import com.score.backend.dtos.JwtTokenResponse;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -32,16 +34,14 @@ public class AuthController {
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
     @RequestMapping(value = "/oauth", method = RequestMethod.POST)
-    public ResponseEntity<Long> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
-                                                 @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) throws ParseException {
+    public ResponseEntity<JwtTokenResponse> authorizeUser(@RequestParam @Parameter(required = true, description = "provider명 (google, kakao, apple)") String provider,
+                                                          @RequestBody @Parameter(required = true, description = "provider가 발급한 id 토큰 값") String idToken) throws ParseException {
         String userKey = authService.getUserId(provider, idToken);
         Long id = userService.isPresentUser(userKey);
         if (id >= 0) {
-            userService.findOptionalUserById(id).ifPresent(
-                    user -> user.setRefreshToken(userKey)
-            );
+            return ResponseEntity.ok(new JwtTokenResponse(id, authService.setJwtToken(provider, idToken)));
         }
-        return ResponseEntity.ok(id);
+        return ResponseEntity.ok(new JwtTokenResponse(id, List.of("New User", "New User")));
     }
 
     @Operation(summary = "access token (재)발급 요청", description = "access token (재)발급 요청 시 refresh token을 검증한 후 발급을 진행합니다.")
