@@ -84,6 +84,8 @@ public class ExerciseController {
                 exerciseService.increaseConsecutiveDate(walkingDto.getAgentId());
                 // 연속 운동 일수 증가에 따른 포인트 증가
                 levelService.increasePointsByConsecutiveDate(walkingDto.getAgentId());
+                // 유저의 금주 운동 현황 업데이트(유저의 금주 누적 운동 시간 업데이트+이번주 운동한 날짜 수 증가)
+                exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             }
             /////// 오늘 3분 이상 운동한 기록이 이미 존재하는 경우 ///////
             else {
@@ -99,8 +101,6 @@ public class ExerciseController {
         exerciseService.cumulateExerciseDistance(walkingDto.getAgentId(), walkingDto.getDistance());
         // 개인 누적 운동 시간 업데이트
         exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
-        // 유저의 금주 누적 운동 시간 업데이트
-        exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         // 유저가 속한 그룹의 누적 운동 시간 업데이트
         groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
