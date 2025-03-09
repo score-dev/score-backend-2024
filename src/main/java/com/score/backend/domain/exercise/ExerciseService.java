@@ -169,7 +169,7 @@ public class  ExerciseService {
             return true;
         }
         for (Exercise exercise : todaysAllExercises) {
-            if (!isValidateExercise(exercise.getStartedAt(), exercise.getCompletedAt())) {
+            if (isValidateExercise(exercise.getStartedAt(), exercise.getCompletedAt())) {
                 return false;
             }
         }
