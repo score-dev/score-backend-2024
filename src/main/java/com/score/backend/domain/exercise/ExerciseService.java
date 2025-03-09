@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -170,7 +169,7 @@ public class  ExerciseService {
             return true;
         }
         for (Exercise exercise : todaysAllExercises) {
-            if (!isValidateExercise(exercise.getStartedAt(), exercise.getCompletedAt())) {
+            if (isValidateExercise(exercise.getStartedAt(), exercise.getCompletedAt())) {
                 return false;
             }
         }
