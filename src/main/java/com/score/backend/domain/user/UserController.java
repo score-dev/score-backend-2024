@@ -62,6 +62,16 @@ public class UserController {
         return ResponseEntity.ok(UserInfoResponse.of(userService.findUserById(id)));
     }
 
+    @Operation(summary = "유저의 알림 수신 여부 설정 현황", description = "유저가 각 알림 항목별 설정 현황을 응답하기 위한 api입니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "유저의 알림 설정 현황 정보 응답 완료"),
+                    @ApiResponse(responseCode = "404", description = "user not found")}
+    )
+    @GetMapping(value = "/score/user/info/notification")
+    public ResponseEntity<NotificationStatusResponse> getNotificationStatus(@Parameter(description = "유저의 고유 id 값") @RequestParam(name = "id") Long userId) {
+        return ResponseEntity.ok(NotificationStatusResponse.of(userService.findUserById(userId)));
+    }
+
     // 온보딩에서 회원 정보 입력 완료시
     @Operation(summary = "신규 회원 정보 저장", description = "온보딩에서 회원 정보가 입력이 완료될 경우 수행되는 요청입니다. 해당 정보를 db에 저장하고 로그인을 진행합니다.")
     @ApiResponses(
