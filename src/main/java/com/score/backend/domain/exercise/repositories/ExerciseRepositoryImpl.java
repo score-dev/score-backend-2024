@@ -59,7 +59,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     public Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable) {
         JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
-                .where();
+                .where(e.agent.id.eq(userId));
         List<Exercise> exercises = where
                 .orderBy(e.completedAt.desc())
                 .offset(pageable.getOffset())
