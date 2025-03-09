@@ -12,7 +12,6 @@ import com.score.backend.dtos.NotificationStatusRequest;
 import com.score.backend.domain.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.coyote.BadRequestException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
