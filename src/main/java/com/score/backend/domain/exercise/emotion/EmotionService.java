@@ -4,12 +4,14 @@ import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.exercise.Exercise;
+import com.score.backend.dtos.EmotionStatusResponse;
 import com.score.backend.exceptions.ExceptionType;
 import com.score.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,11 +42,20 @@ public class EmotionService {
     }
 
     // 피드에 남겨져 있는 모든 감정 표현 조회 (emotionType 상관 없이 모두 조회)
-    @Transactional(readOnly = true)
-    public List<Emotion> findAll(Long feedId) {
+    private List<Emotion> findAll(Long feedId) {
         return emotionRepository.findAllEmotionsByFeedId(feedId).orElseThrow(
                 () -> new NotFoundException(ExceptionType.FEED_NOT_FOUND)
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmotionStatusResponse> makeEmotionListDto(Long feedId) {
+        List<Emotion> emotions = findAll(feedId);
+        List<EmotionStatusResponse> dto = new ArrayList<>();
+        for (Emotion emotion : emotions) {
+            dto.add(EmotionStatusResponse.of(emotion.getAgent(), emotion));
+        }
+        return dto;
     }
 
     // feedId의 피드에 남겨져 있는 emotionType 타입의 감정 표현 목록 조회

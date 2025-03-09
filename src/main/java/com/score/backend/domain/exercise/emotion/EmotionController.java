@@ -1,5 +1,6 @@
 package com.score.backend.domain.exercise.emotion;
 
+import com.score.backend.dtos.EmotionStatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,7 +19,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class EmotionController {
-
     private final EmotionService emotionService;
 
     @Operation(summary = "감정 표현 추가 혹은 제거", description = "피드에 요청한 감정 표현을 한 적이 있는 유저라면 그 감정 표현을 삭제하고, 요청한 감정 표현을 한 적이 없는 유저라면 그 감정 표현을 추가합니다.")
@@ -48,10 +48,9 @@ public class EmotionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "감정 표현 조회 완료"),
             @ApiResponse(responseCode = "404", description = "Agent Or Feed Not Found")})
-    public ResponseEntity<List<Emotion>> showAllEmotions(
+    public ResponseEntity<List<EmotionStatusResponse>> showAllEmotions(
             @Parameter(required = true, description = "감정 표현 목록을 확인할 피드 게시물의 고유 id 값") @RequestParam("feedId") Long feedId) {
-        List<Emotion> emotions = emotionService.findAll(feedId);
-        return ResponseEntity.ok(emotions);
+        return ResponseEntity.ok(emotionService.makeEmotionListDto(feedId));
     }
 
     @Operation(summary = "특정 타입의 감정 표현 목록 조회", description = "해당 피드에 추가되어 있는 특정 타입의 감정 표현의 리스트를 응답합니다.")
