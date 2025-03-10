@@ -10,6 +10,7 @@ public enum ExceptionType {
     GROUP_NOT_FOUND("그룹 정보가 존재하지 않습니다."),
     FEED_NOT_FOUND("피드 정보가 존재하지 않습니다."),
     NOTIFICATION_NOT_FOUND("알림 정보가 존재하지 않습니다."),
+    USER_GROUP_NOT_FOUND("해당 그룹에 속해있지 않던 유저입니다."),
 
     ALREADY_JOINED_GROUP("이미 가입되어 있는 그룹입니다."),
     ALREADY_FRIEND("이미 친구로 등록되어 있습니다."),
@@ -27,6 +28,7 @@ public enum ExceptionType {
     DUPLICATE_NICKNAME("이미 사용 중인 닉네임입니다."),
     TOO_FREQUENT_SCHOOL_CHANGING("마지막으로 학교 정보를 변경한 후 30일이 경과하지 않아 학교 정보를 수정할 수 없습니다."),
     GROUP_ADMIN_WITHDRAWAL("그룹의 방장은 서비스를 탈퇴할 수 없습니다. 고객센터로 문의해주세요."),
+    ADMIN_GROUP_LEAVING("그룹의 방장은 그룹에서 탈퇴할 수 없습니다."),
     USERS_SCHOOL_GROUP_UNMATCHED("가입하려는 그룹의 소속 학교가 유저의 학교 정보와 일치하지 않습니다."),
     FULL_GROUP("정원이 가득 차 가입할 수 없는 그룹입니다."),
     SELF_FRIEND("자기 자신을 친구로 추가할 수 없습니다."),

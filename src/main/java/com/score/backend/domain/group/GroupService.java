@@ -41,7 +41,7 @@ public class GroupService {
     private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
-    public GroupEntity findById(Long id){
+    public GroupEntity findById(Long id) {
         return groupRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(ExceptionType.GROUP_NOT_FOUND)
         );
@@ -100,16 +100,19 @@ public class GroupService {
 //    }
 
     public void leaveGroup(Long groupId, Long userId) {
+        UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
+        if (userGroup == null) {
+            throw new NotFoundException(ExceptionType.USER_GROUP_NOT_FOUND);
+        }
         GroupEntity group = findById(groupId);
         User user = userService.findUserById(userId);
-        if (!group.getMembers().contains(user)) {
-            throw new IllegalArgumentException("그룹에 속해 있지 않습니다.");
+        if (group.getAdmin().equals(user)) {
+            throw new ScoreCustomException(ExceptionType.ADMIN_GROUP_LEAVING);
         }
 
-        group.getMembers().remove(user); // 그룹의 멤버 목록에서 사용자 제거
-        //user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
-        groupRepository.save(group);
-        userRepository.save(user);
+        group.getMembers().remove(userGroup);
+        user.getUserGroups().remove(userGroup);
+        userGroupRepository.delete(userGroup);
     }
 
     public void removeMember(Long groupId, Long userId) {
