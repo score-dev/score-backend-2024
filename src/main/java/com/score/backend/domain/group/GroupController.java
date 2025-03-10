@@ -63,14 +63,14 @@ public class GroupController {
         return ResponseEntity.ok(groupDtos);
     }
 
-    // 현재 존재하지 않는 기능.
     @Operation(summary = "그룹 탈퇴", description = "사용자가 그룹을 탈퇴하는 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "그룹 탈퇴가 완료되었습니다."),
-            @ApiResponse(responseCode = "400", description = "Bad Request")
+            @ApiResponse(responseCode = "400", description = "방장은 그룹에서 탈퇴할 수 없습니다."),
+            @ApiResponse(responseCode = "404", description = "해당 그룹에 속해 있지 않던 유저이거나, 유저 혹은 그룹 정보가 존재하지 않습니다.")
     })
-    @PostMapping("/{groupId}/leave")
-    public ResponseEntity<String> leaveGroup(@PathVariable Long groupId, @RequestParam Long userId) {
+    @PutMapping("/leave/{groupId}/{userId}")
+    public ResponseEntity<String> leaveGroup(@PathVariable Long groupId, @PathVariable Long userId) {
         groupService.leaveGroup(groupId, userId);
         return ResponseEntity.ok("그룹 탈퇴가 완료되었습니다.");
     }
