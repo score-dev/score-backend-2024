@@ -19,7 +19,7 @@ public class UserReportService {
 
     public void createReport(UserReportDto userReportDto) {
         User agent = userService.findUserById(userReportDto.getAgentId());
-        User object = userService.findUserById(userReportDto.getAgentId());
+        User object = userService.findUserById(userReportDto.getObjectId());
         if (agent.equals(object)) {
             throw new ScoreCustomException(ExceptionType.SELF_REPORT);
         }
