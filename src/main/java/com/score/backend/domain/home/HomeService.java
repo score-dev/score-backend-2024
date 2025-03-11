@@ -34,13 +34,14 @@ public class HomeService {
         List<Exercise> usersWeeklyExercises = exerciseService.getWeeklyExercises(userId);
         return new HomeResponse(user.getNickname(), user.getProfileImg(), user.getLevel(), user.getPoint(),
                 cumulateExerciseTimeDayByDay(usersWeeklyExercises), user.getWeeklyCumulativeTime(), user.getWeeklyExerciseCount(), user.getConsecutiveDate(),
-                userGroups.size(), getGroupInfos(userGroups.stream().map(UserGroup::getGroup).toList()));
+                userGroups.size(), getGroupInfos(user, userGroups.stream().map(UserGroup::getGroup).toList()));
     }
 
-    private List<HomeGroupInfoResponse> getGroupInfos(List<GroupEntity> joinedGroups) {
+    private List<HomeGroupInfoResponse> getGroupInfos(User user, List<GroupEntity> joinedGroups) {
         List<HomeGroupInfoResponse> groupInfos = new ArrayList<>();
         for (GroupEntity group : joinedGroups) {
             List<User> allUsersDidExerciseToday = groupService.findAllUsersDidExerciseToday(group.getGroupId());
+            allUsersDidExerciseToday.remove(user); // 자기 자신은 목록에서 제외
             HomeGroupInfoResponse hgir = new HomeGroupInfoResponse(group.getGroupId(), group.getGroupName(), group.getMembers().size(),
                     getGroupExercisedMatesProfileUrl(allUsersDidExerciseToday), getHomeNotExercisedUserResponse(group.getGroupId()));
             groupInfos.add(hgir);
