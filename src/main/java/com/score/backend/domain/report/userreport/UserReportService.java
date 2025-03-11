@@ -4,6 +4,8 @@ import com.score.backend.domain.report.userreport.repositories.UserReportReposit
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.UserReportDto;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.ScoreCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,9 @@ public class UserReportService {
     public void createReport(UserReportDto userReportDto) {
         User agent = userService.findUserById(userReportDto.getAgentId());
         User object = userService.findUserById(userReportDto.getAgentId());
+        if (agent.equals(object)) {
+            throw new ScoreCustomException(ExceptionType.SELF_REPORT);
+        }
         UserReport userReport = UserReport.builder()
                 .reportAgent(agent)
                 .reportObject(object)
