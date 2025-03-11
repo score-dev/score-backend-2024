@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -40,13 +42,27 @@ public class HomeService {
     private List<HomeGroupInfoResponse> getGroupInfos(User user, List<GroupEntity> joinedGroups) {
         List<HomeGroupInfoResponse> groupInfos = new ArrayList<>();
         for (GroupEntity group : joinedGroups) {
-            List<User> allUsersDidExerciseToday = groupService.findAllUsersDidExerciseToday(group.getGroupId());
-            allUsersDidExerciseToday.remove(user); // 자기 자신은 목록에서 제외
             HomeGroupInfoResponse hgir = new HomeGroupInfoResponse(group.getGroupId(), group.getGroupName(), group.getMembers().size(),
-                    getGroupExercisedMatesProfileUrl(allUsersDidExerciseToday), getHomeNotExercisedUserResponse(group.getGroupId()));
+                    getGroupExercisedMatesProfileUrl(getRandomThreeUnexercisedUsers(user, groupService.findAllUsersDidExerciseToday(group.getGroupId()))),
+                    getHomeNotExercisedUserResponse(group.getGroupId()));
             groupInfos.add(hgir);
         }
         return groupInfos;
+    }
+
+    // 오늘 3분 이상 운동하지 않은 그룹 메이트 중 자기 자신을 제외한 랜덤 3명을 선택
+    private List<User> getRandomThreeUnexercisedUsers(User agent, List<User> unexercisedUsers) {
+        unexercisedUsers.remove(agent); // 자기 자신은 목록에서 제외
+        if (unexercisedUsers.size() <= 3) {
+            return unexercisedUsers;
+        }
+
+        Random random = new Random();
+        return IntStream.generate(() -> random.nextInt(unexercisedUsers.size()))
+                .distinct()
+                .limit(3)
+                .mapToObj(unexercisedUsers::get)
+                .collect(Collectors.toList());
     }
 
     private List<String> getGroupExercisedMatesProfileUrl(List<User> allUsersDidExerciseToday) {
