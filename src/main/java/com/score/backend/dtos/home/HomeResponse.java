@@ -8,6 +8,8 @@ import java.util.List;
 @Schema(description = "홈 화면 정보 전달을 위한 DTO")
 @Getter
 public class HomeResponse {
+    @Schema(description = " 5회 이상 신고를 받은 유저인지 여부")
+    private boolean isOverReportedUser;
     @Schema(description = "유저의 닉네임")
     private String nickname;
     @Schema(description = "유저의 프로필 이미지 url")
@@ -29,8 +31,9 @@ public class HomeResponse {
     @Schema(description = "유저가 가입한 각 그룹에 대한 정보를 전달하는 DTO")
     private List<HomeGroupInfoResponse> groupsInfo;
 
-    public HomeResponse(String nickname, String profileImgUrl, int level, int point,
+    public HomeResponse(boolean isOverReportedUser, String nickname, String profileImgUrl, int level, int point,
                         List<Double> weeklyExerciseTimeByDay, double weeklyTotalExerciseTime, int weeklyExerciseCount, int consecutiveDate, int numOfGroups, List<HomeGroupInfoResponse> groupsInfo) {
+        this.isOverReportedUser = isOverReportedUser;
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
         this.level = level;

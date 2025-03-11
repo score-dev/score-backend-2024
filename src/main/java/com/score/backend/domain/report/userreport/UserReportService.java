@@ -31,4 +31,8 @@ public class UserReportService {
                 .build();
         userReportRepository.save(userReport);
     }
+
+    public int getUserReportCount(Long userId) {
+        return userReportRepository.findDistinctReportCounts(userId);
+    }
 }

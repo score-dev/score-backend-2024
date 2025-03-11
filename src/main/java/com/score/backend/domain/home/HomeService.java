@@ -6,6 +6,7 @@ import com.score.backend.domain.group.BatonService;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.group.UserGroup;
+import com.score.backend.domain.report.userreport.UserReportService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.home.HomeGroupInfoResponse;
@@ -21,6 +22,7 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class HomeService {
+    private final UserReportService userReportService;
     private final UserService userService;
     private final ExerciseService  exerciseService;
     private final GroupService groupService;
@@ -34,7 +36,8 @@ public class HomeService {
             userGroups = userGroups.subList(0, 3);
         }
         List<Exercise> usersWeeklyExercises = exerciseService.getWeeklyExercises(userId);
-        return new HomeResponse(user.getNickname(), user.getProfileImg(), user.getLevel(), user.getPoint(),
+        return new HomeResponse(userReportService.getUserReportCount(userId) >= 5,
+                user.getNickname(), user.getProfileImg(), user.getLevel(), user.getPoint(),
                 cumulateExerciseTimeDayByDay(usersWeeklyExercises), user.getWeeklyCumulativeTime(), user.getWeeklyExerciseCount(), user.getConsecutiveDate(),
                 userGroups.size(), getGroupInfos(user, userGroups.stream().map(UserGroup::getGroup).toList()));
     }
