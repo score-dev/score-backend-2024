@@ -7,6 +7,7 @@ import com.score.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public abstract class Exercise extends BaseEntity {
 
     private String exercisePic;
 
-    @OneToMany(mappedBy = "feed")
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Emotion> emotions = new ArrayList<>(); // 피드에 추가된 감정 표현 리스트
 
