@@ -39,30 +39,15 @@ public class HomeService {
                 userGroups.size(), getGroupInfos(user, userGroups.stream().map(UserGroup::getGroup).toList()));
     }
 
-    private List<HomeGroupInfoResponse> getGroupInfos(User user, List<GroupEntity> joinedGroups) {
+    private List<HomeGroupInfoResponse> getGroupInfos(User agent, List<GroupEntity> joinedGroups) {
         List<HomeGroupInfoResponse> groupInfos = new ArrayList<>();
         for (GroupEntity group : joinedGroups) {
             HomeGroupInfoResponse hgir = new HomeGroupInfoResponse(group.getGroupId(), group.getGroupName(), group.getMembers().size(),
-                    getGroupExercisedMatesProfileUrl(getRandomThreeUnexercisedUsers(user, groupService.findAllUsersDidExerciseToday(group.getGroupId()))),
-                    getHomeNotExercisedUserResponse(group.getGroupId()));
+                    getGroupExercisedMatesProfileUrl(groupService.findAllUsersDidExerciseToday(group.getGroupId())),
+                    getHomeNotExercisedUserResponse(agent, group.getGroupId()));
             groupInfos.add(hgir);
         }
         return groupInfos;
-    }
-
-    // 오늘 3분 이상 운동하지 않은 그룹 메이트 중 자기 자신을 제외한 랜덤 3명을 선택
-    private List<User> getRandomThreeUnexercisedUsers(User agent, List<User> unexercisedUsers) {
-        unexercisedUsers.remove(agent); // 자기 자신은 목록에서 제외
-        if (unexercisedUsers.size() <= 3) {
-            return unexercisedUsers;
-        }
-
-        Random random = new Random();
-        return IntStream.generate(() -> random.nextInt(unexercisedUsers.size()))
-                .distinct()
-                .limit(3)
-                .mapToObj(unexercisedUsers::get)
-                .collect(Collectors.toList());
     }
 
     private List<String> getGroupExercisedMatesProfileUrl(List<User> allUsersDidExerciseToday) {
@@ -82,12 +67,27 @@ public class HomeService {
         return Arrays.asList(exerciseTimes);
     }
 
-    private List<HomeNotExercisedUserResponse> getHomeNotExercisedUserResponse(Long groupId) {
+    private List<HomeNotExercisedUserResponse> getHomeNotExercisedUserResponse(User agent, Long groupId) {
         List<HomeNotExercisedUserResponse> hneur = new ArrayList<>();
-        List<User> allMembersWhoDidNotExerciseToday = batonService.findAllMembersWhoDidNotExerciseToday(groupId);
-        for (User user : allMembersWhoDidNotExerciseToday) {
-            hneur.add(new HomeNotExercisedUserResponse(user.getId(), user.getNickname(), user.getProfileImg()));
+        List<User> randomMembersWhoDidNotExerciseToday = getRandomThreeUnexercisedUsers(agent, batonService.findAllMembersWhoDidNotExerciseToday(groupId));
+        for (User user : randomMembersWhoDidNotExerciseToday) {
+            hneur.add(new HomeNotExercisedUserResponse(user.getId(), user.getNickname(), user.getProfileImg(), batonService.canTurnOverBaton(agent.getId(), user.getId())));
         }
         return hneur;
+    }
+
+    // 오늘 3분 이상 운동하지 않은 그룹 메이트 중 자기 자신을 제외한 랜덤 3명을 선택
+    private List<User> getRandomThreeUnexercisedUsers(User agent, List<User> unexercisedUsers) {
+        unexercisedUsers.remove(agent); // 자기 자신은 목록에서 제외
+        if (unexercisedUsers.size() <= 3) {
+            return unexercisedUsers;
+        }
+
+        Random random = new Random();
+        return IntStream.generate(() -> random.nextInt(unexercisedUsers.size()))
+                .distinct()
+                .limit(3)
+                .mapToObj(unexercisedUsers::get)
+                .collect(Collectors.toList());
     }
 }
