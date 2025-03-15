@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ExerciseRepositoryCustom {
-    List<Exercise> findUsersExerciseToday(Long userId, LocalDate today);
     List<Exercise> findUsersWeeklyExercises(Long userId, LocalDate today);
     List<Exercise> findByUserId(Long userId);
     int countUsersValidateExerciseToday(Long userId, LocalDate today);

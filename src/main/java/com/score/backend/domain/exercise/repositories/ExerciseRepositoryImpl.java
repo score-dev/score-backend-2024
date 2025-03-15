@@ -1,6 +1,7 @@
 package com.score.backend.domain.exercise.repositories;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.Exercise;
@@ -27,19 +28,11 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     QUserGroup ug = new QUserGroup("ug");
 
     @Override
-    public List<Exercise> findUsersExerciseToday(Long userId, LocalDate today) {
-        return queryFactory
-                .selectFrom(e)
-                .where(userIdEq(userId), e.completedAt.between(today.atStartOfDay(), today.atTime(23, 59, 59)))
-                .fetch();
-    }
-
-    @Override
     public List<Exercise> findUsersWeeklyExercises(Long userId, LocalDate today) {
         LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         return queryFactory
                 .selectFrom(e)
-                .where(userIdEq(userId), e.completedAt.between(monday.atStartOfDay(), today.atTime(23, 59, 59)))
+                .where(userIdEq(userId), e.completedAt.between(monday.atStartOfDay(), today.plusDays(1).atStartOfDay()))
                 .fetch();
     }
 
@@ -47,9 +40,15 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     public int countUsersValidateExerciseToday(Long userId, LocalDate today) {
         return Math.toIntExact(
                 queryFactory
-                        .select(e.count()).from(e)
-                        .where(userIdEq(userId), e.completedAt.between(today.atStartOfDay(), today.atTime(23, 59, 59)),
-                                e.completedAt.second().subtract(e.startedAt.second()).goe(180))
+                        .select(e.count())
+                        .from(e)
+                        .where(
+                                userIdEq(userId),
+                                e.completedAt.between(today.atStartOfDay(), today.plusDays(1).atStartOfDay()),
+                                Expressions.numberTemplate(
+                                        Long.class, "TIMESTAMPDIFF(SECOND, {0}, {1})", e.startedAt, e.completedAt
+                                ).goe(180)
+                        )
                         .fetchFirst()
         );
     }
