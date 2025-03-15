@@ -3,10 +3,12 @@ package com.score.backend.domain.exercise.repositories;
 import com.score.backend.domain.exercise.Exercise;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface ExerciseRepositoryCustom {
     List<Exercise> findUsersWeeklyExercises(Long userId, LocalDate today);
     List<Exercise> findByUserId(Long userId);

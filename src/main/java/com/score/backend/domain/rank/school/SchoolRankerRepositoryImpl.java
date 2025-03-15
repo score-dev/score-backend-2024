@@ -1,11 +1,9 @@
 package com.score.backend.domain.rank.school;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.group.QGroupEntity;
 import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
-import com.score.backend.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
