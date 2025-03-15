@@ -165,6 +165,6 @@ public class  ExerciseService {
 
     // 오늘 처음으로 3분 이상 운동했는지 여부 확인
     public boolean isTodaysFirstValidateExercise(Long userId) {
-        return exerciseRepository.countUsersValidateExerciseToday(userId, LocalDate.now()) > 0;
+        return exerciseRepository.countUsersValidateExerciseToday(userId, LocalDate.now()) == 0;
     }
 }
