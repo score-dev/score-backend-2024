@@ -1,6 +1,7 @@
 package com.score.backend.domain.exercise.repositories;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.Exercise;
@@ -12,12 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
+@Repository
 @RequiredArgsConstructor
 public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     private final JPAQueryFactory queryFactory;
@@ -27,19 +30,11 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     QUserGroup ug = new QUserGroup("ug");
 
     @Override
-    public List<Exercise> findUsersExerciseToday(Long userId, LocalDate today) {
-        return queryFactory
-                .selectFrom(e)
-                .where(userIdEq(userId), e.completedAt.between(today.atStartOfDay(), today.atTime(23, 59, 59)))
-                .fetch();
-    }
-
-    @Override
     public List<Exercise> findUsersWeeklyExercises(Long userId, LocalDate today) {
         LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         return queryFactory
                 .selectFrom(e)
-                .where(userIdEq(userId), e.completedAt.between(monday.atStartOfDay(), today.atTime(23, 59, 59)))
+                .where(userIdEq(userId), e.completedAt.between(monday.atStartOfDay(), today.plusDays(1).atStartOfDay()))
                 .fetch();
     }
 
@@ -47,9 +42,15 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     public int countUsersValidateExerciseToday(Long userId, LocalDate today) {
         return Math.toIntExact(
                 queryFactory
-                        .select(e.count()).from(e)
-                        .where(userIdEq(userId), e.completedAt.between(today.atStartOfDay(), today.atTime(23, 59, 59)),
-                                e.completedAt.second().subtract(e.startedAt.second()).goe(180))
+                        .select(e.count())
+                        .from(e)
+                        .where(
+                                userIdEq(userId),
+                                e.completedAt.between(today.atStartOfDay(), today.plusDays(1).atStartOfDay()),
+                                Expressions.numberTemplate(
+                                        Long.class, "TIMESTAMPDIFF(SECOND, {0}, {1})", e.startedAt, e.completedAt
+                                ).goe(180)
+                        )
                         .fetchFirst()
         );
     }

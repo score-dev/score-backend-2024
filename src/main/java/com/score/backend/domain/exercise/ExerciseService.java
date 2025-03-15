@@ -64,12 +64,6 @@ public class  ExerciseService {
         return new FeedInfoResponse().toDtoListForNonMates(exerciseRepository.findExercisePageByGroupId(groupId, pageable));
     }
 
-    // 유저의 당일 운동 기록 전체 조회
-    @Transactional(readOnly = true)
-    public List<Exercise> getTodaysAllExercises(Long userId) {
-        return exerciseRepository.findUsersExerciseToday(userId, LocalDate.now());
-    }
-
     @Transactional(readOnly = true)
     public List<Exercise> getWeeklyExercises(Long userId) {
         return exerciseRepository.findUsersWeeklyExercises(userId, LocalDate.now());
@@ -159,11 +153,13 @@ public class  ExerciseService {
     }
 
     // 3분 이상 운동했는지 여부 확인
+    @Transactional(readOnly = true)
     public boolean isValidateExercise(LocalDateTime start, LocalDateTime end) {
         return calculateExerciseDuration(start, end) >= 180;
     }
 
     // 오늘 처음으로 3분 이상 운동했는지 여부 확인
+    @Transactional(readOnly = true)
     public boolean isTodaysFirstValidateExercise(Long userId) {
         return exerciseRepository.countUsersValidateExerciseToday(userId, LocalDate.now()) == 0;
     }
