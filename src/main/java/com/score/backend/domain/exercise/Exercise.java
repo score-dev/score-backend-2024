@@ -7,7 +7,6 @@ import com.score.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public abstract class Exercise extends BaseEntity {
     @ManyToOne @JoinColumn(name="user_id")
     private User agent; // 피드를 업로드한 유저
 
-    @OneToMany(mappedBy = "exercise")
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<TaggedUser> taggedUsers = new ArrayList<>(); // 함께 운동한 유저
 
@@ -50,7 +49,7 @@ public abstract class Exercise extends BaseEntity {
 
     private String exercisePic;
 
-    @OneToMany(mappedBy = "feed", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Emotion> emotions = new ArrayList<>(); // 피드에 추가된 감정 표현 리스트
 

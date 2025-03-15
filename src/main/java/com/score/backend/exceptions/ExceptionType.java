@@ -33,6 +33,8 @@ public enum ExceptionType {
     FULL_GROUP("정원이 가득 차 가입할 수 없는 그룹입니다."),
     SELF_FRIEND("자기 자신을 친구로 추가할 수 없습니다."),
     SELF_BLOCK("자기 자신을 차단할 수 없습니다."),
+    SELF_REPORT("자기 자신을 신고할 수 없습니다."),
+
     ACCESS_TO_BLOCKED_USER("차단한 유저에 대한 피드 조회 요청입니다."),
     EXERCISE_TIME_ERROR("운동 시작 혹은 종료 시간에 문제가 있습니다."),
     GROUP_RANKING_NOT_EXIST("집계 시작 이전 시점에 대한 랭킹 조회 요청입니다. 그룹 생성 일자의 다음 주 월요일부터 랭킹 집계가 시작됩니다.");

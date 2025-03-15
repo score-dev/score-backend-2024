@@ -20,6 +20,7 @@ public class UserReportController {
     @RequestMapping(value = "/score/user/report", method = RequestMethod.POST)
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "유저 신고 완료"),
+                    @ApiResponse(responseCode = "400", description = "자기 자신은 신고할 수 없습니다."),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
     public ResponseEntity<String> reportUser(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody UserReportDto userReportDto) {
         userReportService.createReport(userReportDto);
