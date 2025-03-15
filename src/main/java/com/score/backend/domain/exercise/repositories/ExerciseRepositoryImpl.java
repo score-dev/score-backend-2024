@@ -1,7 +1,6 @@
 package com.score.backend.domain.exercise.repositories;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.Exercise;
@@ -16,9 +15,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
@@ -31,20 +27,31 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     QUserGroup ug = new QUserGroup("ug");
 
     @Override
-    public List<Exercise> findUsersExerciseToday(Long userId, LocalDateTime today) {
+    public List<Exercise> findUsersExerciseToday(Long userId, LocalDate today) {
         return queryFactory
                 .selectFrom(e)
-                .where(userIdEq(userId), completeDateEq(today.truncatedTo(ChronoUnit.DAYS)))
+                .where(userIdEq(userId), e.completedAt.between(today.atStartOfDay(), today.atTime(23, 59, 59)))
                 .fetch();
     }
 
     @Override
-    public List<Exercise> findUsersWeeklyExercises(Long userId, LocalDateTime today) {
-        LocalDate monday = LocalDate.from(today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+    public List<Exercise> findUsersWeeklyExercises(Long userId, LocalDate today) {
+        LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         return queryFactory
                 .selectFrom(e)
-                .where(userIdEq(userId), e.completedAt.between(monday.atStartOfDay(), today))
+                .where(userIdEq(userId), e.completedAt.between(monday.atStartOfDay(), today.atTime(23, 59, 59)))
                 .fetch();
+    }
+
+    @Override
+    public int countUsersValidateExerciseToday(Long userId, LocalDate today) {
+        return Math.toIntExact(
+                queryFactory
+                        .select(e.count()).from(e)
+                        .where(userIdEq(userId), e.completedAt.between(today.atStartOfDay(), today.atTime(23, 59, 59)),
+                                e.completedAt.second().subtract(e.startedAt.second()).goe(180))
+                        .fetchFirst()
+        );
     }
 
     @Override
@@ -108,11 +115,5 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
 
     private BooleanExpression userIdEq(Long userIdCond) {
         return userIdCond != null ? e.agent.id.eq(userIdCond) : null;
-    }
-
-    private BooleanExpression completeDateEq(LocalDateTime dateCond) {
-        String formattedTime = dateCond.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        return Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", e.completedAt)
-                .eq(formattedTime);
     }
 }

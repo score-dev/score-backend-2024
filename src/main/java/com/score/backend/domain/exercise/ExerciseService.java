@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -66,12 +67,12 @@ public class  ExerciseService {
     // 유저의 당일 운동 기록 전체 조회
     @Transactional(readOnly = true)
     public List<Exercise> getTodaysAllExercises(Long userId) {
-        return exerciseRepository.findUsersExerciseToday(userId, LocalDateTime.now());
+        return exerciseRepository.findUsersExerciseToday(userId, LocalDate.now());
     }
 
     @Transactional(readOnly = true)
     public List<Exercise> getWeeklyExercises(Long userId) {
-        return exerciseRepository.findUsersWeeklyExercises(userId, LocalDateTime.now());
+        return exerciseRepository.findUsersWeeklyExercises(userId, LocalDate.now());
     }
 
     public void saveFeed(WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException, IOException {
@@ -164,15 +165,6 @@ public class  ExerciseService {
 
     // 오늘 처음으로 3분 이상 운동했는지 여부 확인
     public boolean isTodaysFirstValidateExercise(Long userId) {
-        List<Exercise> todaysAllExercises = getTodaysAllExercises(userId);
-        if (todaysAllExercises.isEmpty()) {
-            return true;
-        }
-        for (Exercise exercise : todaysAllExercises) {
-            if (isValidateExercise(exercise.getStartedAt(), exercise.getCompletedAt())) {
-                return false;
-            }
-        }
-        return true;
+        return exerciseRepository.countUsersValidateExerciseToday(userId, LocalDate.now()) > 0;
     }
 }
