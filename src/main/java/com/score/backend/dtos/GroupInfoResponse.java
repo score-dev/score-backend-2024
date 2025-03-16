@@ -1,15 +1,15 @@
 package com.score.backend.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 
-@Slf4j
 @Getter
 @Schema(description = "유저가 가입해 있지 않은 그룹에 대한 정보를 응답하는 DTO")
 @NoArgsConstructor
+@AllArgsConstructor
 public class GroupInfoResponse {
     // 학교 랭킹 추가 필요
     @Schema(description = "그룹명")
@@ -30,32 +30,4 @@ public class GroupInfoResponse {
     private int numOfExercisedToday;
     @Schema(description = "최근 피드 목록(가입해 있는 그룹에 대한 요청인 경우 모든 피드 정보 응답, 가입하지 않은 그룹에 대한 요청인 경우 피드 이미지만 응답.)")
     private Page<FeedInfoResponse> feeds;
-
-    // 가입해 있는 그룹에 대한 정보
-    public GroupInfoResponse(String groupName, boolean isPrivate, int numOfTotalMembers, int numOfExercisedToday, Page<FeedInfoResponse> feeds) {
-        log.info("가입해 있는 그룹에 대한 정보를 담고 있는 dto를 생성합니다.");
-        this.groupName = groupName;
-        this.isPrivate = isPrivate;
-        this.numOfTotalMembers = numOfTotalMembers;
-        this.numOfExercisedToday = numOfExercisedToday;
-        this.feeds = feeds;
-    }
-
-    // 가입해있지 않은 공개 그룹에 대한 정보
-    public GroupInfoResponse(String groupName, String groupImg, boolean isPrivate, int numOfTotalMembers, int userLimit, double cumulativeTime, double averageParticipateRatio, Page<FeedInfoResponse> feeds) {
-        log.info("가입해 있지 않은 그룹에 대한 정보를 담고 있는 dto를 생성합니다.");
-        this.groupName = groupName;
-        this.groupImg = groupImg;
-        this.isPrivate = isPrivate;
-        this.numOfTotalMembers = numOfTotalMembers;
-        this.userLimit = userLimit;
-        this.cumulativeTime = cumulativeTime;
-        this.averageParticipateRatio = averageParticipateRatio;
-        this.feeds = feeds;
-    }
-
-    // 가입해 있지 않은 비공개 그룹에 대한 정보
-    public GroupInfoResponse(boolean isPrivate) {
-        this.isPrivate = isPrivate;
-    }
 }
