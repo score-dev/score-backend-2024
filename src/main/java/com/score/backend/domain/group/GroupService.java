@@ -222,7 +222,7 @@ public class GroupService {
     public GroupInfoResponse getGroupInfoForNonMember(Long groupId) {
         GroupEntity group = findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercisePics(0, groupId);
-        return new GroupInfoResponse(group.getGroupName(), group.getGroupImg(), group.isPrivate(), group.getMembers().size(),group.getUserLimit(), group.getCumulativeTime(), rankingService.getRatioOfParticipate(group), feeds);
+        return new GroupInfoResponse(group.getGroupName(), group.getUserLimit(), group.getCumulativeTime(), rankingService.getRatioOfParticipate(group), group.getGroupImg(), group.isPrivate(), group.getMembers().size(), findAllUsersDidExerciseToday(groupId).size(), feeds);
     }
 
     // 유저가 가입해 있는 그룹의 정보 반환
@@ -230,6 +230,6 @@ public class GroupService {
     public GroupInfoResponse getGroupInfoForMember(Long groupId) {
         GroupEntity group = findById(groupId);
         Page<FeedInfoResponse> feeds = exerciseService.getGroupsAllExercises(0, groupId);
-        return new GroupInfoResponse(group.getGroupName(), group.isPrivate(), group.getMembers().size(), findAllUsersDidExerciseToday(groupId).size(), feeds);
+        return new GroupInfoResponse(group.getGroupName(), group.getUserLimit(), group.getCumulativeTime(), rankingService.getRatioOfParticipate(group), group.getGroupImg(), group.isPrivate(), group.getMembers().size(), findAllUsersDidExerciseToday(groupId).size(), feeds);
     }
 }

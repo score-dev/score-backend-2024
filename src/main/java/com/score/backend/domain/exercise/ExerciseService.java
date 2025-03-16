@@ -48,7 +48,7 @@ public class  ExerciseService {
             throw new ScoreCustomException(ExceptionType.ACCESS_TO_BLOCKED_USER);
         }
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
-        return new FeedInfoResponse().toDtoListForMates(exerciseRepository.findExercisePageByUserId(id1, pageable));
+        return new FeedInfoResponse().toDtoListForMates(exerciseRepository.findExercisePageByUserId(id2, pageable));
     }
 
     // 그룹 전체 피드 조회
