@@ -47,18 +47,20 @@ public class HomeService {
         for (GroupEntity group : joinedGroups) {
             HomeGroupInfoResponse hgir = new HomeGroupInfoResponse(group.getGroupId(), group.getGroupName(), group.getMembers().size(),
                     getGroupExercisedMatesProfileUrl(groupService.findAllUsersDidExerciseToday(group.getGroupId())),
+                    getWholeGroupMatesProfileUrl(groupService.findAllUsers(group.getGroupId())),
                     getHomeNotExercisedUserResponse(agent, group.getGroupId()));
             groupInfos.add(hgir);
         }
         return groupInfos;
     }
 
+    private List<String> getWholeGroupMatesProfileUrl(List<UserGroup> mates) {
+        return mates.stream().map(UserGroup::getMember).map(User::getProfileImg).collect(Collectors.toList());
+    }
+
     private List<String> getGroupExercisedMatesProfileUrl(List<User> allUsersDidExerciseToday) {
-        List<String> groupExercisedMatesProfileUrl = new ArrayList<>();
-        allUsersDidExerciseToday.forEach(u -> {
-            groupExercisedMatesProfileUrl.add(u.getProfileImg());
-        });
-        return groupExercisedMatesProfileUrl;
+        allUsersDidExerciseToday.sort(Comparator.comparing(User::getLastExerciseDateTime));
+        return allUsersDidExerciseToday.stream().map(User::getProfileImg).toList();
     }
 
     private List<Double> cumulateExerciseTimeDayByDay(List<Exercise> usersWeeklyExercises) {

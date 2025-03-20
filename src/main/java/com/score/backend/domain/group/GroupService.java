@@ -155,10 +155,14 @@ public class GroupService {
     }
 
     // 그룹 내 메이트 목록 전체 조회
-    public List<UserResponseDto> findAllUsers(Long groupId) {
-        List<UserGroup> members = findById(groupId).getMembers();
+    public List<UserGroup> findAllUsers(Long groupId) {
+        return findById(groupId).getMembers();
+    }
+
+    public List<UserResponseDto> convertToUserResponseDto(Long groupId) {
+        List<UserGroup> userGroups = findAllUsers(groupId);
         List<UserResponseDto> dtos = new ArrayList<>();
-        for (UserGroup userGroup : members) {
+        for (UserGroup userGroup : userGroups) {
             dtos.add(new UserResponseDto(userGroup.getMember().getId(), userGroup.getMember().getNickname(), userGroup.getMember().getProfileImg()));
         }
         return dtos;

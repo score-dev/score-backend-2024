@@ -191,7 +191,7 @@ public class GroupController {
     @GetMapping(value = "/mates/list")
     public ResponseEntity<List<UserResponseDto>> getAllGroupMates (
             @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId) {
-        List<UserResponseDto> dtoList = groupService.findAllUsers(groupId);
+        List<UserResponseDto> dtoList = groupService.convertToUserResponseDto(groupId);
         return ResponseEntity.ok(dtoList);
     }
 
