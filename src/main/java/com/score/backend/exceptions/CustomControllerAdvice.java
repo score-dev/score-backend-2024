@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 public class CustomControllerAdvice {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({Exception.class, RuntimeException.class, SQLException.class, IOException.class})
+    @ExceptionHandler({Exception.class, RuntimeException.class, SQLException.class, FirebaseAuthException.class, IOException.class})
     public ResponseEntity<ErrorResponse> handleServerErrors(Exception ex) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponse(INTERNAL_SERVER_ERROR.value(), ex.toString(), ex.getMessage()));
     }
@@ -28,12 +28,6 @@ public class CustomControllerAdvice {
     @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NotFoundException ex) {
         return ResponseEntity.status(NOT_FOUND).body(new ErrorResponse(NOT_FOUND.value(), ex.toString(), ex.getType().getMessage()));
-    }
-
-    @ResponseStatus(CONFLICT)
-    @ExceptionHandler(FirebaseAuthException.class)
-    public ResponseEntity<ErrorResponse> handleFirebaseAuthException(FirebaseAuthException ex) {
-        return ResponseEntity.status(CONFLICT).body(new ErrorResponse(CONFLICT.value(), ex.toString(), ex.getMessage()));
     }
 
     @ResponseStatus(BAD_REQUEST)
