@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.TimeZone;
+
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableJpaAuditing
 @EnableScheduling
@@ -24,7 +26,7 @@ public class BackendApplication {
 
 	@PostConstruct
 	public void setUp() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 		objectMapper.registerModule(new JavaTimeModule());
 	}
-
 }
