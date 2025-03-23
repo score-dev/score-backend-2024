@@ -45,14 +45,18 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public String sendMessage(FcmMessageRequest request) throws FirebaseMessagingException {
-        return FirebaseMessaging.getInstance().send(Message.builder()
-                .setNotification(Notification.builder()
-                        .setTitle(request.getTitle())
-                        .setBody(request.getBody())
-                        .build())
-                .setToken(userService.findUserById(request.getUserId())
-                        .getFcmToken())  // 대상 디바이스의 등록 토큰
-                .build());
+        try {
+            return FirebaseMessaging.getInstance().send(Message.builder()
+                    .setNotification(Notification.builder()
+                            .setTitle(request.getTitle())
+                            .setBody(request.getBody())
+                            .build())
+                    .setToken(userService.findUserById(request.getUserId())
+                            .getFcmToken())  // 대상 디바이스의 등록 토큰
+                    .build());
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException(ExceptionType.FCM_TOKEN_NOT_FOUND);
+        }
     }
 
     public void saveNotification(FcmMessageRequest request) {

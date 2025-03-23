@@ -11,6 +11,7 @@ public enum ExceptionType {
     FEED_NOT_FOUND("피드 정보가 존재하지 않습니다."),
     NOTIFICATION_NOT_FOUND("알림 정보가 존재하지 않습니다."),
     USER_GROUP_NOT_FOUND("해당 그룹에 속해있지 않던 유저입니다."),
+    FCM_TOKEN_NOT_FOUND("FCM 토큰이 발급되어 있지 않은 유저에게 푸시 알림 전송을 시도했습니다."),
 
     ALREADY_JOINED_GROUP("이미 가입되어 있는 그룹입니다."),
     ALREADY_FRIEND("이미 친구로 등록되어 있습니다."),
