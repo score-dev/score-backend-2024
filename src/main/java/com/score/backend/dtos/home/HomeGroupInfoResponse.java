@@ -21,7 +21,7 @@ public class HomeGroupInfoResponse {
     @Schema(description = "오늘 운동하지 않은 유저들에 대한 정보를 전달하기 위한 DTO")
     private List<HomeNotExercisedUserResponse> notExercisedUsers;
 
-    public HomeGroupInfoResponse(Long groupId, String groupName, int numOfMembers,  List<String> wholeMatesImgUrl, List<String> todayExercisedMatesImgUrl, List<HomeNotExercisedUserResponse> notExercisedUsers) {
+    public HomeGroupInfoResponse(Long groupId, String groupName, int numOfMembers,  List<String> todayExercisedMatesImgUrl, List<String> wholeMatesImgUrl, List<HomeNotExercisedUserResponse> notExercisedUsers) {
         this.groupId = groupId;
         this.groupName = groupName;
         this.numOfMembers = numOfMembers;
