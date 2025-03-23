@@ -55,7 +55,7 @@ public class HomeService {
     }
 
     private List<String> getWholeGroupMatesProfileUrl(List<UserGroup> mates) {
-        return mates.stream().map(UserGroup::getMember).map(User::getProfileImg).collect(Collectors.toList());
+        return mates.stream().map(UserGroup::getMember).map(User::getProfileImg).toList();
     }
 
     private List<String> getGroupExercisedMatesProfileUrl(List<User> allUsersDidExerciseToday) {
