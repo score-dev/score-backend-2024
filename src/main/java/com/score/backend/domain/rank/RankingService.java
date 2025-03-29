@@ -39,8 +39,8 @@ public class RankingService {
 
         if (info.size() >= 2) {
             info.sort((o1, o2) -> {
-                if (o1.weeklyExerciseTime == o2.weeklyExerciseTime) {
-                    return (int) (o2.weeklyExerciseTime - o1.weeklyExerciseTime);
+                if (o1.weeklyLevelIncrement == o2.weeklyLevelIncrement) {
+                    return Double.compare(o2.weeklyExerciseTime, o1.weeklyExerciseTime);
                 }
                 return o2.weeklyLevelIncrement - o1.weeklyLevelIncrement;
             });
