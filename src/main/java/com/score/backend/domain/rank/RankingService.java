@@ -90,9 +90,9 @@ public class RankingService {
         if (info.size() >= 2) {
             info.sort((o1, o2) -> {
                 if (o1.participateRatio == o2.participateRatio) {
-                    return (int) (o2.totalExerciseTime - o1.totalExerciseTime);
+                    return Double.compare(o2.totalExerciseTime, o1.totalExerciseTime);
                 }
-                return (int) (o2.participateRatio - o1.participateRatio);
+                return Double.compare(o2.participateRatio, o1.participateRatio);
             });
         }
 
@@ -101,7 +101,7 @@ public class RankingService {
             info.get(i).rankNum = i + 1; // 이번주 순위
             SchoolRanker lastWeekRanker = schoolRankService.findLastWeekSchoolRankingByGroupId(info.get(i).group.getGroupId());
             if (lastWeekRanker != null) {
-                info.get(i).changedDegree = lastWeekRanker.getRankNum() - (i + 1); // 지난주와의 순위 변동
+                info.get(i).changedDegree = (i + 1) - lastWeekRanker.getRankNum(); // 지난주와의 순위 변동
             } else {
                 info.get(i).changedDegree = 0;
             }
