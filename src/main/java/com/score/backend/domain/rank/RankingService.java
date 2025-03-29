@@ -52,7 +52,7 @@ public class RankingService {
             GroupRanker lastWeekRankerInfo = groupRankerRepository.findLastWeekGroupRankerByGroupIdAndUserId(group.getGroupId(), info.get(i).user.getId());
             // 지난주와의 순위 비교 후 변동 추이 계산
             if (lastWeekRankerInfo != null) {
-                info.get(i).changedDegree = lastWeekRankerInfo.getRankNum() - (i + 1);
+                info.get(i).changedDegree = (i + 1) - lastWeekRankerInfo.getRankNum();
             } else {
                 info.get(i).changedDegree = 0;
             }
