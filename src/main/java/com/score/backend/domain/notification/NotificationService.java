@@ -55,7 +55,8 @@ public class NotificationService {
                             .getFcmToken())  // 대상 디바이스의 등록 토큰
                     .build());
         } catch (IllegalArgumentException e) {
-            throw new NotFoundException(ExceptionType.FCM_TOKEN_NOT_FOUND);
+            return null;
+//            throw new NotFoundException(ExceptionType.FCM_TOKEN_NOT_FOUND);
         }
     }
 
