@@ -67,7 +67,9 @@ public class SchedulerService {
 
         List<School> allSchools = schoolService.findAll();
         for (School school : allSchools) {
-            school.getSchoolRankings().add(calculateSchoolRanking(school));
+            if (!school.getGroups().isEmpty()) {
+                school.getSchoolRankings().add(calculateSchoolRanking(school));
+            }
         }
     }
 
