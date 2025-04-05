@@ -139,7 +139,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             })
     @RequestMapping(value = "/score/user/setting/notification", method = RequestMethod.PUT)
-    public ResponseEntity<String> updateUserNotificationStatus(NotificationStatusRequest request) {
+    public ResponseEntity<String> updateUserNotificationStatus(@Parameter(description = "수정된 알림 수신 여부 정보 전달을 위한 DTO") @RequestBody NotificationStatusRequest request) {
         notificationService.changeNotificationReceivingStatus(request);
         return ResponseEntity.ok("알림 수신 여부 수정이 완료되었습니다.");
     }
