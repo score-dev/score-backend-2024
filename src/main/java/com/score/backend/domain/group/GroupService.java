@@ -149,7 +149,7 @@ public class GroupService {
         User requester = userService.findUserById(userId);
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
-        FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + "에 가입을 신청했어요!", "알림 페이지에서 가입을 승인 혹은 거절할 수 있어요.");
+        FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + " 그룹의 메이트가 되고 싶어합니다. 수락하시겠나요?", null);
         notificationService.sendMessage(message);
         notificationService.saveNotification(message);
     }
@@ -180,7 +180,7 @@ public class GroupService {
             userGroupRepository.save(userGroup);
             group.getMembers().add(userGroup);
             user.addGroup(userGroup, group);
-            FcmMessageRequest message = new FcmMessageRequest(userId, group.getGroupName() + "에 가입이 승인되었어요!", "어서 확인해보세요.");
+            FcmMessageRequest message = new FcmMessageRequest(userId, group.getGroupName() + " 그룹에 " + user.getNickname() + "님이 가입이 완료되었습니다!", "앞으로 " + group.getGroupName() + " 그룹과 함께 열심히 달려봐요!");
             notificationService.sendMessage(message);
             notificationService.saveNotification(message);
             return;

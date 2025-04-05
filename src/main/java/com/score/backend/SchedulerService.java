@@ -82,8 +82,8 @@ public class SchedulerService {
             // 그룹 랭킹 1위인 유저에게 알림 발송
             FcmMessageRequest message = new FcmMessageRequest(
                     gr.getGroupRankers().get(0).getUser().getId(),
-                    gr.getGroup().getGroupName() + " 그룹에서 1위를 달성했어요!",
-                    "축하합니다\uD83C\uDF89 " + gr.getGroupRankers().get(0).getUser().getNickname() +  "님이 이번주 1등이에요! 1등이 된 기념으로 스코어에서 400pt를 쏩니다\uD83E\uDD73"
+                    gr.getGroupRankers().get(0).getUser().getNickname() + "님이 " + gr.getGroup().getGroupName() + " 그룹에서 1등을 달리고 있습니다!",
+                    "계속 유지해보세요!"
             );
             notificationService.sendMessage(message);
             notificationService.saveNotification(message);
@@ -96,11 +96,11 @@ public class SchedulerService {
         if (!sr.getSchoolRankers().isEmpty() && sr.getSchoolRankers().size() > 1) {
             List<UserGroup> winningGroupMembers = sr.getSchoolRankers().get(0).getGroup().getMembers();
             for (UserGroup winningGroupMember : winningGroupMembers) {
-                winningGroupMember.getMember().updatePoint(200);
+                winningGroupMember.getMember().updatePoint(800);
                 FcmMessageRequest message = new FcmMessageRequest(
                         winningGroupMember.getId(),
-                        sr.getSchoolRankers().get(0).getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 1위를 달성했어요!",
-                        "축하합니다\uD83C\uDF89 " + winningGroupMember.getMember().getNickname() +  "님이 속한 그룹이 이번주 1위예요! 1등이 된 기념으로 스코어에서 그룹 메이트 모두에게 200pt를 쏩니다\uD83E\uDD73"
+                        sr.getSchoolRankers().get(0).getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 이번주 1위를 달성했어요!",
+                        "메이트 모두에게 800pt를 드립니다!"
                 );
                 notificationService.sendMessage(message);
                 notificationService.saveNotification(message);

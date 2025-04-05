@@ -2,6 +2,8 @@ package com.score.backend.domain.rank.school;
 
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.dtos.schoolrank.SchoolRankerResponse;
+import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,9 @@ public class SchoolRankService {
 
     public List<SchoolRankerResponse> findAllSchoolRankingByUserId(Long userId, LocalDate startDate) {
         SchoolRanking schoolRanking = schoolRankingRepository.findSchoolRankingByUserIdAndStartDate(userId, startDate);
+        if (schoolRanking == null) {
+            throw new NotFoundException(ExceptionType.RANKING_NOT_FOUND);
+        }
         List<SchoolRankerResponse> rankers = new ArrayList<>();
         for (SchoolRanker ranker : schoolRanking.getSchoolRankers()) {
             GroupEntity group = ranker.getGroup();

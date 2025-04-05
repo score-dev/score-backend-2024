@@ -3,10 +3,10 @@ package com.score.backend.domain.rank;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.rank.group.GroupRankService;
-import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.rank.school.SchoolRankService;
 import com.score.backend.domain.school.School;
 import com.score.backend.domain.user.UserService;
+import com.score.backend.dtos.GroupRankingResponse;
 import com.score.backend.dtos.schoolrank.SchoolRankerResponse;
 import com.score.backend.dtos.schoolrank.SchoolRankingResponse;
 import com.score.backend.exceptions.ExceptionType;
@@ -45,10 +45,11 @@ public class RankingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "랭킹 정보 응답"),
             @ApiResponse(responseCode = "409", description = "신규 생성되어 랭킹이 산정되지 않는 주차에 대한 조회 요청"),
-            @ApiResponse(responseCode = "404", description = "그룹을 찾을 수 없습니다.")
+            @ApiResponse(responseCode = "404", description = "그룹을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "404", description = "오류로 인해 해당 주차의 주간 랭킹이 산정되지 않았습니다.")
     })
     @GetMapping("/group")
-    public ResponseEntity<GroupRanking> getGroupRanking(
+    public ResponseEntity<GroupRankingResponse> getGroupRanking(
             @Parameter(description = "조회하고자 하는 그룹의 고유 id 값", required = true) @RequestParam Long groupId,
             @Parameter(description = "랭킹을 조회하고자 하는 주차 월요일에 해당하는 날짜. 주어지지 않을 경우 가장 최근 주차의 랭킹으로 응답.") @RequestParam(value = "localDate", required = false) @DateTimeFormat(iso = DATE) LocalDate localDate) {
 
@@ -63,13 +64,14 @@ public class RankingController {
         if (!createdDate.isBefore(localDate)) {
             throw new ScoreCustomException(ExceptionType.GROUP_RANKING_NOT_EXIST);
         }
-        return ResponseEntity.ok(groupRankService.findRankingByGroupIdAndDate(groupId, localDate));
+        return ResponseEntity.ok(groupRankService.getGroupRankingResponse(groupId, localDate));
     }
 
     @Operation(summary = "학교 랭킹 조회", description = "학교 내 그룹 랭킹을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "랭킹 정보 응답"),
-            @ApiResponse(responseCode = "404", description = "학교를 찾을 수 없습니다.")
+            @ApiResponse(responseCode = "404", description = "학교를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "404", description = "오류로 인해 해당 주차의 주간 랭킹이 산정되지 않았습니다.")
     })
     @GetMapping("/school")
     public ResponseEntity<SchoolRankingResponse> getSchoolRanking(
