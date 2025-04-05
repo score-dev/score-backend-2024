@@ -79,7 +79,7 @@ public class BatonService {
         if (!canTurnOverBaton(senderId, receiverId)) {
             return false;
         }
-        FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 찔렀어요!", "오늘치 운동하러 스코어와 떠나 볼까요?");
+        FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 넘겼습니다!", null);
         notificationService.sendMessage(message);
         notificationService.saveNotification(message);
         saveBatonLog(senderId, receiverId);
