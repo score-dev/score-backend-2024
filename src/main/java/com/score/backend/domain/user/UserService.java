@@ -31,9 +31,13 @@ public class UserService {
     }
 
     @Transactional
-    public Long saveUser(User user, MultipartFile profileImage) throws IOException {
+    public Long saveUser(User user, int profileImgId, MultipartFile profileImage) throws IOException {
         // db에 기본 프로필 이미지 저장된 후 프로필 사진 미설정시 기본 프로필 이미지 설정되도록 하는 기능 구현 필요
-        user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
+        if (profileImgId != 0 || profileImage == null) {
+            user.setProfileImageUrl(DefaultProfileImg.getUrlById(profileImgId));
+        } else {
+            user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
+        }
         return userRepository.save(user).getId();
     }
 
