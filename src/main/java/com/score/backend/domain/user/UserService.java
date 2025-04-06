@@ -40,7 +40,9 @@ public class UserService {
     @Transactional
     public void updateUser(Long userId, UserUpdateDto userUpdateDto, MultipartFile profileImage) throws IOException {
         User user = this.findUserById(userId);
-        user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
+        if (profileImage != null) {
+            user.setProfileImageUrl(imageUploadService.uploadImage(profileImage));
+        }
         if (userUpdateDto.getNickname() != null) {
             user.setNickname(userUpdateDto.getNickname());
         }
