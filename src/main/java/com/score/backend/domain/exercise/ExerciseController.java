@@ -68,8 +68,6 @@ public class ExerciseController {
     @RequestMapping(value = "/score/exercise/walking/save", method = POST)
     public ResponseEntity<String> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
                                                     @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws IOException, FirebaseMessagingException {
-        // 피드 저장
-        exerciseService.saveFeed(walkingDto, multipartFile);
 
         ///// 3분 이상 운동한 경우 /////
         if (exerciseService.isValidateExercise(walkingDto.getStartedAt(), walkingDto.getCompletedAt())) {
@@ -89,7 +87,7 @@ public class ExerciseController {
             }
             /////// 오늘 3분 이상 운동한 기록이 이미 존재하는 경우 ///////
             else {
-                // 유저의 금주 운동 현황 업데이트하지만 이번주 운동한 날짜 수는 더 이상 증가하지 않음
+                // 유저의 금주 누적 운동 시간 업데이트하지만 이번주 운동한 날짜 수는 더 이상 증가하지 않음
                 exerciseService.updateWeeklyExerciseStatus(walkingDto.getAgentId(), false, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
             }
         }
@@ -103,6 +101,8 @@ public class ExerciseController {
         exerciseService.cumulateExerciseDuration(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         // 유저가 속한 그룹의 누적 운동 시간 업데이트
         groupService.increaseCumulativeTime(walkingDto.getAgentId(), walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+        // 피드 저장
+        exerciseService.saveFeed(walkingDto, multipartFile);
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }
 
