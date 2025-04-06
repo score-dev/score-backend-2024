@@ -74,10 +74,6 @@ public class UserService {
                 () -> new NotFoundException(ExceptionType.USER_NOT_FOUND));
     }
 
-    public Optional<User> findOptionalUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
     public List<User> findUsersByGoal(LocalTime curr) {
         return userRepository.findAllByGoal(curr);
     }
