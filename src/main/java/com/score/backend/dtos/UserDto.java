@@ -20,6 +20,9 @@ public class UserDto {
     @Schema(description = "유저 닉네임(unique)", maxLength = 10, example = "김승주")
     private String nickname;
 
+    @Schema(description = "기본 프로필 이미지 사용 여부 및 기본 프로필 이미지의 id 값")
+    private int profileImgId;
+
     @Schema(description = "학년", example = "1")
     private int grade;
 

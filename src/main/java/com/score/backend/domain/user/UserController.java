@@ -81,7 +81,7 @@ public class UserController {
     @RequestMapping(value = "/score/public/onboarding/fin", method = RequestMethod.POST)
     public ResponseEntity<JwtTokenResponse> saveNewUser(@Parameter(description = "회원 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "userDto") UserDto userDto,
                                               @Parameter(description = "학교 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)) @RequestPart(value = "schoolDto") SchoolDto schoolDto,
-                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws ParseException, IOException {
+                                              @Parameter(description = "프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file", required = false) MultipartFile multipartFile) throws ParseException, IOException {
 
         // 유저의 학교 정보가 이미 db에 존재하면 그 학교 정보를 찾기, 없으면 새로운 학교 엔티티 생성하기.
         School school = schoolService.findOrSave(schoolDto);
@@ -89,7 +89,7 @@ public class UserController {
         User user = userDto.toEntity(authService.getUserId(userDto.getProvider(), userDto.getIdToken()));
         // 유저 엔티티에 학교 정보 set
         user.setSchoolAndStudent(school);
-        return ResponseEntity.ok(new JwtTokenResponse(userService.saveUser(user, multipartFile), authService.setJwtToken(userDto.getProvider(), userDto.getIdToken())));
+        return ResponseEntity.ok(new JwtTokenResponse(userService.saveUser(user, userDto.getProfileImgId(), multipartFile), authService.setJwtToken(userDto.getProvider(), userDto.getIdToken())));
     }
 
     // 회원 탈퇴
