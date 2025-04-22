@@ -44,9 +44,9 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public String sendMessage(FcmMessageRequest request) throws FirebaseMessagingException {
+    public void sendMessage(FcmMessageRequest request) throws FirebaseMessagingException {
         try {
-            return FirebaseMessaging.getInstance().send(Message.builder()
+            FirebaseMessaging.getInstance().send(Message.builder()
                     .setNotification(Notification.builder()
                             .setTitle(request.getTitle())
                             .setBody(request.getBody())
@@ -54,9 +54,9 @@ public class NotificationService {
                     .setToken(userService.findUserById(request.getUserId())
                             .getFcmToken())  // 대상 디바이스의 등록 토큰
                     .build());
-        } catch (IllegalArgumentException e) {
-            return null;
-//            throw new NotFoundException(ExceptionType.FCM_TOKEN_NOT_FOUND);
+        } catch (IllegalArgumentException ignored) {
+            // FCM 토큰이 null인 경우 알림을 전송하지 않고 넘어감.
+            // 알림 전송에 문제가 생기더라도 이외의 로직은 상관 없이 모두 그대로 수행되어야 함.
         }
     }
 
