@@ -40,7 +40,8 @@ public class NotificationController {
     )
     @PostMapping("/score/fcm")
     public ResponseEntity<String> sendFcmNotification(FcmMessageRequest fcmMessageRequest) throws FirebaseMessagingException {
-        return ResponseEntity.ok(notificationService.sendMessage(fcmMessageRequest));
+        notificationService.sendMessage(fcmMessageRequest);
+        return ResponseEntity.ok("알림 전송이 완료되었습니다.");
     }
 
     @Operation(summary = "알림 목록 조회", description = "유저의 알림 목록을 페이지 단위로 조회합니다.")

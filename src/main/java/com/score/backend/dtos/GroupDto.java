@@ -15,6 +15,7 @@ public class GroupDto {
     private Long id;
     private String name;
     private String description;
+    private String groupImg;
     private int userLimit;
     private int currentMembers;
     private boolean isPrivate;
@@ -35,6 +36,7 @@ public class GroupDto {
                 group.getGroupId(),
                 group.getGroupName(),
                 group.getGroupDescription(),
+                group.getGroupImg(),
                 group.getUserLimit(),
                 group.getMembers().size(),
                 group.isPrivate(),

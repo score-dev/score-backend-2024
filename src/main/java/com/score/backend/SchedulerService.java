@@ -123,7 +123,7 @@ public class SchedulerService {
     protected void alertExerciseTimeAndSaveNotification(User user) throws FirebaseMessagingException {
         if (user.isExercisingTime()) {
             FcmMessageRequest message = new FcmMessageRequest(user.getId(),
-                    "목표한 운동 시간이 되었어요!", "오늘도 스코어와 함께 운동을 시작해요\uD83D\uDE4C\uD83C\uDFFB");
+                    "목표한 운동 시간이 되었어요!", "오늘도 스코어와 함께 운동을 시작해요!");
             notificationService.sendMessage(message);
             notificationService.saveNotification(message);
         }
