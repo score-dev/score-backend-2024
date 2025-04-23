@@ -136,7 +136,7 @@ public class User extends BaseEntity {
         point += amount;
         // 500 포인트 달성 시 레벨업 + 포인트 초기화
         if (point >= 500) {
-            this.increaseLevel(amount / 500);
+            this.increaseLevel(point / 500);
             this.initPoint(point % 500);
         }
     }
@@ -152,8 +152,8 @@ public class User extends BaseEntity {
     }
     public void updateLastExerciseDateTime(LocalDateTime lastExerciseDateTime) {this.lastExerciseDateTime = lastExerciseDateTime;}
     public void increaseLevel(int amount) {
-        this.level = this.level + amount;
-        this.weeklyLevelIncrement = this.weeklyLevelIncrement + amount;
+        this.level += amount;
+        this.weeklyLevelIncrement += amount;
     }
     public void initWeeklyExerciseStatus() {
         this.weeklyLevelIncrement = 0;
