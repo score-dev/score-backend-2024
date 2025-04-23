@@ -14,7 +14,7 @@ public abstract class AbstractTokenVerifier implements TokenVerifier {
 
     protected abstract String getJwkUrl();
     protected abstract String getIssuer();
-//    protected abstract String getClientId();
+    protected abstract String getClientId();
 
     @Override
     public boolean verify(String idToken) {
