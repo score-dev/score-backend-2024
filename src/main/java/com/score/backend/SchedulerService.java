@@ -62,16 +62,16 @@ public class SchedulerService {
             group.getGroupRankings().add(calculateGroupRanking(group));
         }
 
-        List<User> allUsers = userService.findAll();
-        for (User user : allUsers) {
-            user.initWeeklyExerciseStatus();
-        }
-
         List<School> allSchools = schoolService.findAll();
         for (School school : allSchools) {
             if (!school.getGroups().isEmpty()) {
                 school.getSchoolRankings().add(calculateSchoolRanking(school));
             }
+        }
+
+        List<User> allUsers = userService.findAll();
+        for (User user : allUsers) {
+            user.initWeeklyExerciseStatus();
         }
     }
 
