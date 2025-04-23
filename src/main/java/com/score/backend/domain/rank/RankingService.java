@@ -47,8 +47,15 @@ public class RankingService {
         }
 
         List<GroupRanker> thisWeekGroupRankers = new ArrayList<>();
+        int rank = 1;
         for (int i = 0; i < info.size(); i++) {
-            info.get(i).rankNum = i + 1;// 금주의 순위 설정
+            // 금주 순위 설정
+            if (i > 0 && (info.get(i).weeklyLevelIncrement != info.get(i - 1).weeklyLevelIncrement
+                    || info.get(i).weeklyExerciseTime != info.get(i - 1).weeklyExerciseTime)) {
+                rank = i + 1;
+            }
+            info.get(i).rankNum = rank;
+
             GroupRanker lastWeekRankerInfo = groupRankerRepository.findLastWeekGroupRankerByGroupIdAndUserId(group.getGroupId(), info.get(i).user.getId());
             // 지난주와의 순위 비교 후 변동 추이 계산
             if (lastWeekRankerInfo != null) {
@@ -97,8 +104,15 @@ public class RankingService {
         }
 
         List<SchoolRanker> thisWeekSchoolRankers = new ArrayList<>();
+        int rank = 1;
         for (int i = 0; i < info.size(); i++) {
-            info.get(i).rankNum = i + 1; // 이번주 순위
+            // 금주 순위 산정
+            if (i > 0 && (info.get(i).participateRatio != info.get(i - 1).participateRatio
+                    || info.get(i).totalExerciseTime != info.get(i - 1).totalExerciseTime)) {
+                rank = i + 1;
+            }
+            info.get(i).rankNum = rank;
+
             SchoolRanker lastWeekRanker = schoolRankService.findLastWeekSchoolRankingByGroupId(info.get(i).group.getGroupId());
             if (lastWeekRanker != null) {
                 info.get(i).changedDegree = (i + 1) - lastWeekRanker.getRankNum(); // 지난주와의 순위 변동
