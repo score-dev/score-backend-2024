@@ -5,6 +5,8 @@ import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.rank.RankingService;
+import com.score.backend.domain.rank.group.GroupRanker;
+import com.score.backend.domain.rank.school.SchoolRanker;
 import com.score.backend.domain.rank.school.SchoolRanking;
 import com.score.backend.domain.school.School;
 import com.score.backend.domain.school.SchoolService;
@@ -60,16 +62,16 @@ public class SchedulerService {
             group.getGroupRankings().add(calculateGroupRanking(group));
         }
 
-        List<User> allUsers = userService.findAll();
-        for (User user : allUsers) {
-            user.initWeeklyExerciseStatus();
-        }
-
         List<School> allSchools = schoolService.findAll();
         for (School school : allSchools) {
             if (!school.getGroups().isEmpty()) {
                 school.getSchoolRankings().add(calculateSchoolRanking(school));
             }
+        }
+
+        List<User> allUsers = userService.findAll();
+        for (User user : allUsers) {
+            user.initWeeklyExerciseStatus();
         }
     }
 
@@ -77,16 +79,22 @@ public class SchedulerService {
         // 그룹 내 주간 랭킹 산정
         GroupRanking gr = rankingService.calculateWeeklyGroupRanking(group);
         if (!gr.getGroupRankers().isEmpty() && gr.getGroupRankers().size() > 1) {
-            // 그룹 랭킹 1위인 유저에게 400포인트 지급
-            gr.getGroupRankers().get(0).getUser().updatePoint(400);
-            // 그룹 랭킹 1위인 유저에게 알림 발송
-            FcmMessageRequest message = new FcmMessageRequest(
-                    gr.getGroupRankers().get(0).getUser().getId(),
-                    gr.getGroupRankers().get(0).getUser().getNickname() + "님이 " + gr.getGroup().getGroupName() + " 그룹에서 1등을 달리고 있습니다!",
-                    "계속 유지해보세요!"
-            );
-            notificationService.sendMessage(message);
-            notificationService.saveNotification(message);
+            for (int i = 0; i < gr.getGroupRankers().size(); i++) {
+                GroupRanker currGroupRanker = gr.getGroupRankers().get(i);
+                if (currGroupRanker.getRankNum() > 1) {
+                    break;
+                }
+                // 그룹 랭킹 1위인 유저에게 400포인트 지급
+                currGroupRanker.getUser().updatePoint(400);
+                // 그룹 랭킹 1위인 유저에게 알림 발송
+                FcmMessageRequest message = new FcmMessageRequest(
+                        currGroupRanker.getUser().getId(),
+                        currGroupRanker.getUser().getNickname() + "님이 " + gr.getGroup().getGroupName() + " 그룹에서 1등을 달리고 있습니다!",
+                        "계속 유지해보세요!"
+                );
+                notificationService.sendMessage(message);
+                notificationService.saveNotification(message);
+            }
         }
         return gr;
     }
@@ -94,16 +102,24 @@ public class SchedulerService {
     private SchoolRanking calculateSchoolRanking(School school) throws FirebaseMessagingException {
         SchoolRanking sr = rankingService.calculateWeeklySchoolRanking(school);
         if (!sr.getSchoolRankers().isEmpty() && sr.getSchoolRankers().size() > 1) {
-            List<UserGroup> winningGroupMembers = sr.getSchoolRankers().get(0).getGroup().getMembers();
-            for (UserGroup winningGroupMember : winningGroupMembers) {
-                winningGroupMember.getMember().updatePoint(800);
-                FcmMessageRequest message = new FcmMessageRequest(
-                        winningGroupMember.getId(),
-                        sr.getSchoolRankers().get(0).getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 이번주 1위를 달성했어요!",
-                        "메이트 모두에게 800pt를 드립니다!"
-                );
-                notificationService.sendMessage(message);
-                notificationService.saveNotification(message);
+            for (int i = 0; i < sr.getSchoolRankers().size(); i++) {
+                SchoolRanker currSchoolRanker = sr.getSchoolRankers().get(i);
+                if (currSchoolRanker.getRankNum() > 1) {
+                    break;
+                }
+
+                // 1위 학교 그룹 내 모든 유저에게 800포인트 지급 및 알림 발송
+                List<UserGroup> winningGroupMembers = currSchoolRanker.getGroup().getMembers();
+                for (UserGroup winningGroupMember : winningGroupMembers) {
+                    winningGroupMember.getMember().updatePoint(800);
+                    FcmMessageRequest message = new FcmMessageRequest(
+                            winningGroupMember.getId(),
+                            currSchoolRanker.getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 이번주 1위를 달성했어요!",
+                            "메이트 모두에게 800pt를 드립니다!"
+                    );
+                    notificationService.sendMessage(message);
+                    notificationService.saveNotification(message);
+                }
             }
         }
 

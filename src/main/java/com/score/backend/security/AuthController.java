@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.util.List;
 
-@Slf4j
 @RestController
 @Tag(name = "Auth", description = "회원 인증을 처리하는 API입니다.")
 @RequestMapping("/score/auth")
