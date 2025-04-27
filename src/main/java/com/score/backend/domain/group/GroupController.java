@@ -1,6 +1,7 @@
 package com.score.backend.domain.group;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.exceptions.ExceptionType;
@@ -31,7 +32,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequiredArgsConstructor
 @RequestMapping("/score/groups")
 public class GroupController {
-
+    private final UserService userService;
     private final GroupService groupService;
     private final ExerciseService exerciseService;
     private final BatonService batonService;
@@ -45,7 +46,7 @@ public class GroupController {
     public ResponseEntity<Long> createGroup(
             @Parameter(description = "생성될 그룹 정보 전달을 위한 DTO", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "groupCreateDto") GroupCreateDto groupCreateDto,
             @Parameter(description = "그룹 프로필 사진", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws IOException {
-        GroupEntity gr = groupService.createGroup(groupCreateDto, multipartFile);
+        GroupEntity gr = groupService.createGroup(userService.findUserById(groupCreateDto.getAdminId()), groupCreateDto, multipartFile);
         return ResponseEntity.ok(gr.getGroupId());
     }
 
@@ -71,7 +72,7 @@ public class GroupController {
     })
     @PutMapping("/leave/{groupId}/{userId}")
     public ResponseEntity<String> leaveGroup(@PathVariable Long groupId, @PathVariable Long userId) {
-        groupService.leaveGroup(groupId, userId);
+        groupService.leaveGroup(groupId, userService.findUserById(userId));
         return ResponseEntity.ok("그룹 탈퇴가 완료되었습니다.");
     }
 
@@ -99,7 +100,7 @@ public class GroupController {
     })
     @DeleteMapping("/{groupId}/removeMember")
     public ResponseEntity<String> removeMemberFromGroup(@PathVariable Long groupId, @RequestParam Long userId) {
-        groupService.removeMember(groupId, userId);
+        groupService.removeMember(groupId, userService.findUserById(userId));
         return ResponseEntity.ok("멤버 강퇴가 완료되었습니다.");
     }
 
@@ -123,7 +124,7 @@ public class GroupController {
     @GetMapping("/join/request")
     public ResponseEntity<String> sendGroupJoinRequest(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) throws FirebaseMessagingException {
         if (groupService.checkEmptySpaceExistence(groupId)) {
-            groupService.sendGroupJoinRequestNotification(groupId, userId);
+            groupService.sendGroupJoinRequestNotification(groupId, userService.findUserById(userId));
             return ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
         }
         throw new ScoreCustomException(ExceptionType.FULL_GROUP);
@@ -138,7 +139,7 @@ public class GroupController {
     @PutMapping("/join/accepted")
     public ResponseEntity<String> joinGroup(@RequestParam("groupId") Long groupId, @Parameter(required = true, description = "가입 처리할 유저의 id 값") @RequestParam("userId") Long userId) throws FirebaseMessagingException, BadRequestException {
         if (groupService.checkEmptySpaceExistence(groupId)) {
-            groupService.addNewMember(groupId, userId);
+            groupService.addNewMember(groupId, userService.findUserById(userId));
             return ResponseEntity.ok("그룹 가입이 완료되었습니다.");
         }
         throw new ScoreCustomException(ExceptionType.FULL_GROUP);

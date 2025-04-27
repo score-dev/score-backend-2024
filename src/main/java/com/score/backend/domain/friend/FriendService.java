@@ -1,7 +1,6 @@
 package com.score.backend.domain.friend;
 
 import com.score.backend.domain.user.User;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.user.repositories.UserRepository;
 import com.score.backend.dtos.FriendsSearchResponse;
 import com.score.backend.exceptions.ExceptionType;
@@ -22,7 +21,6 @@ import java.util.List;
 @Transactional
 public class FriendService {
     private final FriendRepository friendRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
 
     public Friend findFriendByEachUsersId(Long userId1, Long userId2) {
@@ -30,10 +28,8 @@ public class FriendService {
                 () -> new NotFoundException(ExceptionType.USER_NOT_FOUND));
     }
 
-    public void saveNewFriend(Long userId1, Long userId2) {
-        User user1 = userService.findUserById(userId1);
-        User user2 = userService.findUserById(userId2);
-        if (friendRepository.findByUserIdAndFriendId(userId1, userId2).isEmpty()) {
+    public void saveNewFriend(User user1, User user2) {
+        if (friendRepository.findByUserIdAndFriendId(user1.getId(), user2.getId()).isEmpty()) {
             user1.addFriend(user2);
         } else {
             throw new ScoreCustomException(ExceptionType.ALREADY_FRIEND);

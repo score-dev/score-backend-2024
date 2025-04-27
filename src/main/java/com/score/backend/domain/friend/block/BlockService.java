@@ -17,14 +17,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class BlockService {
-    private final UserRepository userRepository;
-    private final UserService userService;
     private final BlockedUserRepository blockedUserRepository;
 
-    public void blockFriend(Long blockerId, Long blockedId) {
-        User blocker = userService.findUserById(blockerId);
-        User blocked = userService.findUserById(blockedId);
-        if (blockedUserRepository.findByBlockerIdAndBlockedId(blockerId, blockedId).isPresent()) {
+    public void blockFriend(User blocker, User blocked) {
+        if (blockedUserRepository.findByBlockerIdAndBlockedId(blocker.getId(), blocked.getId()).isPresent()) {
             throw new ScoreCustomException(ExceptionType.ALREADY_BLOCKED);
         }
         BlockedUser blockedUser = new BlockedUser(blocker, blocked);
@@ -32,8 +28,8 @@ public class BlockService {
         blockedUserRepository.save(blockedUser);
     }
 
-    public List<FriendsSearchResponse> findBlockedFriends(Long blockerId) {
-        List<BlockedUser> blockedUsers = blockedUserRepository.findByBlockerId(blockerId);
+    public List<FriendsSearchResponse> findBlockedFriends(User blocker) {
+        List<BlockedUser> blockedUsers = blocker.getBlockedUsers();
         List<FriendsSearchResponse> blockedDto = new ArrayList<>();
         for (BlockedUser blockedUser : blockedUsers) {
             User user = blockedUser.getBlocked();
@@ -42,8 +38,7 @@ public class BlockService {
         return blockedDto;
     }
 
-    public void unblockFriend(Long blockerId, Long blockedId) {
-        User blocker = userService.findUserById(blockerId);
-        blocker.unblockUser(blockedUserRepository.findByBlockedId(blockedId));
+    public void unblockFriend(User blocker, User blocked) {
+        blocker.unblockUser(blockedUserRepository.findByBlockedId(blocked.getId()));
     }
 }

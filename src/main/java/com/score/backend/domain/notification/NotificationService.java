@@ -5,7 +5,6 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.score.backend.domain.user.User;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FcmNotificationResponse;
 import com.score.backend.dtos.NotificationStatusRequest;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class NotificationService {
-    private final UserService userService;
     private final NotificationRepository notificationRepository;
 
     @Transactional(readOnly = true)
@@ -38,39 +36,35 @@ public class NotificationService {
         return new FcmNotificationResponse().toDto(notificationRepository.findByAgentId(userId, pageable));
     }
 
-    public void getToken(Long userId, String token) {
-        User user = userService.findUserById(userId);
+    public void getToken(User user, String token) {
         user.setFcmToken(token);
     }
 
     @Transactional(readOnly = true)
-    public void sendMessage(FcmMessageRequest request) throws FirebaseMessagingException {
+    public void sendMessage(User user, FcmMessageRequest request) throws FirebaseMessagingException {
         try {
             FirebaseMessaging.getInstance().send(Message.builder()
                     .setNotification(Notification.builder()
                             .setTitle(request.getTitle())
                             .setBody(request.getBody())
                             .build())
-                    .setToken(userService.findUserById(request.getUserId())
-                            .getFcmToken())  // 대상 디바이스의 등록 토큰
+                    .setToken(user.getFcmToken())  // 대상 디바이스의 등록 토큰
                     .build());
-        } catch (IllegalArgumentException ignored) {
+        } catch (Exception ignored) {
             // FCM 토큰이 null인 경우 알림을 전송하지 않고 넘어감.
             // 알림 전송에 문제가 생기더라도 이외의 로직은 상관 없이 모두 그대로 수행되어야 함.
         }
     }
 
-    public void saveNotification(FcmMessageRequest request) {
-        notificationRepository.save(new com.score.backend.domain.notification.Notification(userService.findUserById(request.getUserId()),
-                request.getTitle(), request.getBody()));
+    public void saveNotification(User user, FcmMessageRequest request) {
+        notificationRepository.save(new com.score.backend.domain.notification.Notification(user, request.getTitle(), request.getBody()));
     }
 
     public void deleteNotification(Long notificationId) {
         notificationRepository.deleteById(notificationId);
     }
 
-    public void changeNotificationReceivingStatus(NotificationStatusRequest request) {
-        User user = userService.findUserById(request.getUserId());
+    public void changeNotificationReceivingStatus(User user, NotificationStatusRequest request) {
         user.setNotificationReceivingStatus(request);
     }
 }

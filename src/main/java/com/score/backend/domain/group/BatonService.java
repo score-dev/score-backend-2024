@@ -79,9 +79,10 @@ public class BatonService {
         if (!canTurnOverBaton(senderId, receiverId)) {
             return false;
         }
+        User receiver = userService.findUserById(receiverId);
         FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 넘겼습니다!", null);
-        notificationService.sendMessage(message);
-        notificationService.saveNotification(message);
+        notificationService.sendMessage(receiver, message);
+        notificationService.saveNotification(receiver, message);
         saveBatonLog(senderId, receiverId);
         return true;
     }

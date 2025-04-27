@@ -55,7 +55,7 @@ public class SchedulerService {
     }
 
     // 매주 월요일 0시에 실행
-    @Scheduled(cron = "0 0 0 * * MON")
+    @Scheduled(cron = "0 20 0 * * MON")
     public void executeWeeklyScheduledTask() throws FirebaseMessagingException {
         List<GroupEntity> allGroups = groupService.findAll();
         for (GroupEntity group : allGroups) {
@@ -92,8 +92,8 @@ public class SchedulerService {
                         currGroupRanker.getUser().getNickname() + "님이 " + gr.getGroup().getGroupName() + " 그룹에서 1등을 달리고 있습니다!",
                         "계속 유지해보세요!"
                 );
-                notificationService.sendMessage(message);
-                notificationService.saveNotification(message);
+                notificationService.sendMessage(currGroupRanker.getUser(), message);
+                notificationService.saveNotification(currGroupRanker.getUser(), message);
             }
         }
         return gr;
@@ -117,8 +117,8 @@ public class SchedulerService {
                             currSchoolRanker.getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 이번주 1위를 달성했어요!",
                             "메이트 모두에게 800pt를 드립니다!"
                     );
-                    notificationService.sendMessage(message);
-                    notificationService.saveNotification(message);
+                    notificationService.sendMessage(winningGroupMember.getMember(), message);
+                    notificationService.saveNotification(winningGroupMember.getMember(), message);
                 }
             }
         }
@@ -140,8 +140,8 @@ public class SchedulerService {
         if (user.isExercisingTime()) {
             FcmMessageRequest message = new FcmMessageRequest(user.getId(),
                     "목표한 운동 시간이 되었어요!", "오늘도 스코어와 함께 운동을 시작해요!");
-            notificationService.sendMessage(message);
-            notificationService.saveNotification(message);
+            notificationService.sendMessage(user, message);
+            notificationService.saveNotification(user, message);
         }
     }
 }

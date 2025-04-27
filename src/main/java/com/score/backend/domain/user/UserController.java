@@ -140,7 +140,7 @@ public class UserController {
             })
     @RequestMapping(value = "/score/user/setting/notification", method = RequestMethod.PUT)
     public ResponseEntity<String> updateUserNotificationStatus(@Parameter(description = "수정된 알림 수신 여부 정보 전달을 위한 DTO") @RequestBody NotificationStatusRequest request) {
-        notificationService.changeNotificationReceivingStatus(request);
+        notificationService.changeNotificationReceivingStatus(userService.findUserById(request.getUserId()), request);
         return ResponseEntity.ok("알림 수신 여부 수정이 완료되었습니다.");
     }
 }
