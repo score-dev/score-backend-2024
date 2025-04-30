@@ -149,8 +149,7 @@ public class GroupService {
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
         FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + " 그룹의 메이트가 되고 싶어합니다. 수락하시겠나요?", null);
-        notificationService.sendMessage(admin, message);
-        notificationService.saveNotification(admin, message);
+        notificationService.sendAndSaveNotification(admin, message);
     }
 
     // 그룹 내 메이트 목록 전체 조회
@@ -179,8 +178,7 @@ public class GroupService {
             group.getMembers().add(userGroup);
             user.addGroup(userGroup, group);
             FcmMessageRequest message = new FcmMessageRequest(user.getId(), group.getGroupName() + " 그룹에 " + user.getNickname() + "님이 가입이 완료되었습니다!", "앞으로 " + group.getGroupName() + " 그룹과 함께 열심히 달려봐요!");
-            notificationService.sendMessage(user, message);
-            notificationService.saveNotification(user, message);
+            notificationService.sendAndSaveNotification(user, message);
             return;
         }
         throw new ScoreCustomException(ExceptionType.ALREADY_JOINED_GROUP);

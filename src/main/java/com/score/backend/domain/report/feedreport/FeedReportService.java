@@ -1,7 +1,5 @@
 package com.score.backend.domain.report.feedreport;
 
-import com.score.backend.domain.exercise.ExerciseService;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FeedReportDto;
 import com.score.backend.domain.exercise.Exercise;
@@ -12,15 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class FeedReportService {
-    private final UserService userService;
-    private final ExerciseService exerciseService;
     private final FeedReportRepository feedReportRepository;
 
     @Transactional
-    public void createReport(FeedReportDto feedReportDto) {
-        User agent = userService.findUserById(feedReportDto.getAgentId());
-        Exercise feed = exerciseService.findFeedByExerciseId(feedReportDto.getFeedId());
-
+    public void createReport(User agent, Exercise feed, FeedReportDto feedReportDto) {
         FeedReport feedReport = FeedReport.builder()
                 .reportAgent(agent)
                 .reportedFeed(feed)

@@ -1,5 +1,7 @@
 package com.score.backend.domain.report.feedreport;
 
+import com.score.backend.domain.exercise.ExerciseService;
+import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FeedReportDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FeedReportController {
     private final FeedReportService feedReportService;
+    private final UserService userService;
+    private final ExerciseService exerciseService;
 
     @Operation(summary = "피드 신고", description = "피드를를 신고합니다.")
     @RequestMapping(value = "/score/exercise/report", method = RequestMethod.POST)
@@ -25,7 +29,7 @@ public class FeedReportController {
             value = {@ApiResponse(responseCode = "200", description = "피드 신고 완료"),
                     @ApiResponse(responseCode = "404", description = "User or Feed Not Found")})
     public ResponseEntity<String> reportFeed(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody FeedReportDto feedReportDto) {
-        feedReportService.createReport(feedReportDto);
+        feedReportService.createReport(userService.findUserById(feedReportDto.getAgentId()), exerciseService.findFeedByExerciseId(feedReportDto.getFeedId()), feedReportDto);
         return ResponseEntity.ok("피드 신고가 완료되었습니다.");
     }
 }

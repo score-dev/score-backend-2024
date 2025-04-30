@@ -205,7 +205,7 @@ public class GroupController {
     public ResponseEntity<List<BatonStatusDto>> getNotExercisedMatesList(
             @RequestParam("groupId") @Parameter(required = true, description = "조회할 그룹의 id") Long groupId,
             @RequestParam("userId") @Parameter(required = true, description = "조회를 요청한 유저의 id. 바통 찌르기를 이미 했는지 여부 조회 위해 필요.") Long userId) {
-        List<BatonStatusDto> dtoList = batonService.getBatonStatuses(userId, groupId);
+        List<BatonStatusDto> dtoList = batonService.getBatonStatuses(userService.findUserById(userId), groupId);
         return ResponseEntity.ok(dtoList);
     }
 
@@ -218,8 +218,8 @@ public class GroupController {
     @PostMapping(value = "/mates/baton")
     public ResponseEntity<Boolean> turnOverBaton(
             @RequestParam("senderId") @Parameter(required = true, description = "바통을 찌른 유저의 id") Long senderId,
-            @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) throws FirebaseMessagingException {
-        Boolean wasTurned = batonService.turnOverBaton(senderId, receiverId);
+            @RequestParam("receiverId") @Parameter(required = true, description = "바통을 찔린 유저의 id") Long receiverId) {
+        Boolean wasTurned = batonService.turnOverBaton(userService.findUserById(senderId), userService.findUserById(receiverId));
         return ResponseEntity.ok(wasTurned);
     }
 }

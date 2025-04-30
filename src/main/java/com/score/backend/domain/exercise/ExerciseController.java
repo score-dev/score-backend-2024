@@ -1,6 +1,7 @@
 package com.score.backend.domain.exercise;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.user.User;
@@ -35,6 +36,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequiredArgsConstructor
 public class ExerciseController {
+    private final ImageUploadService imageUploadService;
     private final UserService userService;
     private final ExerciseService exerciseService;
     private final LevelService levelService;
@@ -107,7 +109,7 @@ public class ExerciseController {
         // 유저가 속한 그룹의 누적 운동 시간 업데이트
         groupService.increaseCumulativeTime(agent, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         // 피드 저장
-        exerciseService.saveFeed(agent, others, walkingDto, multipartFile);
+        exerciseService.saveFeed(agent, exerciseService.findTaggedUsers(agent, others), walkingDto, imageUploadService.uploadImage(multipartFile));
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }
 

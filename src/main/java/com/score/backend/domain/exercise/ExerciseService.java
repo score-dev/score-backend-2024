@@ -1,13 +1,9 @@
 package com.score.backend.domain.exercise;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.repositories.ExerciseRepository;
 import com.score.backend.domain.exercise.repositories.TaggedUserRepository;
 import com.score.backend.domain.friend.block.BlockedUser;
-import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
-import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.WalkingDto;
 import com.score.backend.exceptions.ExceptionType;
@@ -17,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,8 +27,6 @@ import java.util.Set;
 public class  ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final TaggedUserRepository taggedUserRepository;
-    private final ImageUploadService imageUploadService;
-    private final NotificationService notificationService;
 
     // user1이 user2의 피드 목록을 조회 (둘이 같을 경우 자기가 자기 피드를 조회)
     @Transactional(readOnly = true)
@@ -60,36 +52,29 @@ public class  ExerciseService {
     }
 
     @Transactional(readOnly = true)
-    public List<Exercise> getWeeklyExercises(Long userId) {
-        return exerciseRepository.findUsersWeeklyExercises(userId, LocalDate.now());
+    public List<Exercise> getWeeklyExercises(User user) {
+        return exerciseRepository.findUsersWeeklyExercises(user.getId(), LocalDate.now());
     }
 
-    public void saveFeed(User agent, List<User> others, WalkingDto walkingDto, MultipartFile multipartFile) throws FirebaseMessagingException, IOException {
+    public void saveFeed(User agent, Set<TaggedUser> taggedUsers, WalkingDto walkingDto, String imgUrl) {
         // 새로운 피드 엔티티 생성
-        Exercise feed = walkingDto.toEntity();
-        // agent와 함께 운동한 유저의 id 값을 가지고 db에서 찾기
-        Set<TaggedUser> taggedUsers = new HashSet<>();
-        if (walkingDto.getOthersId() != null) {
-            for (User user : others) {
-                if (user.equals(agent)) {
-                    continue;
-                }
-                TaggedUser taggedUser = new TaggedUser(feed, user);
-                taggedUserRepository.save(taggedUser);
-                taggedUsers.add(taggedUser);
-                // 태그된 유저들에게 알림 전송 및 알림 저장
-                if (user.isTag()) {
-                    FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(user.getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
-                    notificationService.sendMessage(user, fcmMessageRequest);
-                    notificationService.saveNotification(user, fcmMessageRequest);
-                }
-            }
-        }
+        Exercise feed = walkingDto.toEntity(imgUrl);
         // 피드 작성자, 함께 운동한 친구 설정
         feed.setAgentAndExerciseUser(agent, taggedUsers);
-        // 프로필 사진 설정
-        feed.setExercisePicUrl(imageUploadService.uploadImage(multipartFile));
         exerciseRepository.save(feed);
+    }
+
+    public Set<TaggedUser> findTaggedUsers(User agent, List<User> otherUsers) {
+        Set<TaggedUser> taggedUsers = new HashSet<>();
+        for (User user : otherUsers) {
+            if (user.equals(agent)) {
+                continue;
+            }
+            TaggedUser taggedUser = new TaggedUser(user);
+            taggedUserRepository.save(taggedUser);
+            taggedUsers.add(taggedUser);
+        }
+        return taggedUsers;
     }
 
     public void deleteFeed(Exercise exercise) {

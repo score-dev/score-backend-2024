@@ -23,20 +23,17 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class HomeService {
     private final UserReportService userReportService;
-    private final UserService userService;
     private final ExerciseService  exerciseService;
     private final GroupService groupService;
     private final BatonService batonService;
 
-    public HomeResponse getHomeInfo(Long userId) {
-        User user = userService.findUserById(userId);
+    public HomeResponse getHomeInfo(User user, List<Exercise> usersWeeklyExercises) {
         List<UserGroup> userGroups = user.getUserGroups();
         userGroups.sort(Comparator.comparing(UserGroup::getJoinedAt).reversed());
         if (userGroups.size() > 3) {
             userGroups = userGroups.subList(0, 3);
         }
-        List<Exercise> usersWeeklyExercises = exerciseService.getWeeklyExercises(userId);
-        return new HomeResponse(userReportService.getUserReportCount(userId) >= 5,
+        return new HomeResponse(userReportService.getUserReportCount(user) >= 5,
                 user.getNickname(), user.getProfileImg(), user.getLevel(), user.getPoint(),
                 cumulateExerciseTimeDayByDay(usersWeeklyExercises), user.getWeeklyCumulativeTime(), user.getWeeklyExerciseCount(), user.getConsecutiveDate(),
                 userGroups.size(), getGroupInfos(user, userGroups.stream().map(UserGroup::getGroup).toList()));
@@ -76,7 +73,7 @@ public class HomeService {
         List<HomeNotExercisedUserResponse> hneur = new ArrayList<>();
         List<User> randomMembersWhoDidNotExerciseToday = getRandomThreeUnexercisedUsers(agent, batonService.findAllMembersWhoDidNotExerciseToday(groupId));
         for (User user : randomMembersWhoDidNotExerciseToday) {
-            hneur.add(new HomeNotExercisedUserResponse(user.getId(), user.getNickname(), user.getProfileImg(), batonService.canTurnOverBaton(agent.getId(), user.getId())));
+            hneur.add(new HomeNotExercisedUserResponse(user.getId(), user.getNickname(), user.getProfileImg(), batonService.canTurnOverBaton(agent, user)));
         }
         return hneur;
     }

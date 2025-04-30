@@ -4,6 +4,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.score.backend.domain.exercise.Exercise;
+import com.score.backend.domain.exercise.TaggedUser;
+import com.score.backend.domain.exercise.repositories.TaggedUserRepository;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FcmNotificationResponse;
@@ -18,11 +21,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class NotificationService {
     private final NotificationRepository notificationRepository;
+    private final TaggedUserRepository taggedUserRepository;
 
     @Transactional(readOnly = true)
     public com.score.backend.domain.notification.Notification findById(Long id) {
@@ -40,8 +48,13 @@ public class NotificationService {
         user.setFcmToken(token);
     }
 
+    public void sendAndSaveNotification(User user, FcmMessageRequest request) {
+        sendMessage(user, request);
+        saveNotification(user, request);
+    }
+
     @Transactional(readOnly = true)
-    public void sendMessage(User user, FcmMessageRequest request) throws FirebaseMessagingException {
+    private void sendMessage(User user, FcmMessageRequest request) {
         try {
             FirebaseMessaging.getInstance().send(Message.builder()
                     .setNotification(Notification.builder()
@@ -56,7 +69,18 @@ public class NotificationService {
         }
     }
 
-    public void saveNotification(User user, FcmMessageRequest request) {
+    public Set<TaggedUser> notifyToTaggedUsers(Set<TaggedUser> taggedUsers, User agent) throws FirebaseMessagingException {
+        for (TaggedUser taggedUser : taggedUsers) {
+            // 태그된 유저들에게 알림 전송 및 알림 저장
+            if (taggedUser.getUser().isTag()) {
+                FcmMessageRequest fcmMessageRequest = new FcmMessageRequest(taggedUser.getUser().getId(), agent.getNickname() + "님에게 함께 운동한 사람으로 태그되었어요!", "피드를 확인해보러 갈까요?");
+                sendAndSaveNotification(taggedUser.getUser(), fcmMessageRequest);
+            }
+        }
+        return taggedUsers;
+    }
+
+    private void saveNotification(User user, FcmMessageRequest request) {
         notificationRepository.save(new com.score.backend.domain.notification.Notification(user, request.getTitle(), request.getBody()));
     }
 
