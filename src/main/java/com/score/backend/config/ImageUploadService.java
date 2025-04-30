@@ -19,8 +19,8 @@ public class ImageUploadService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
     private final AmazonS3 amazonS3;
+    private final String CLOUD_FRONT_DOMAIN_NAME = "https://dc70yyxvhpj8a.cloudfront.net";
 
     public String uploadImage(MultipartFile file) throws IOException {
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
@@ -29,7 +29,7 @@ public class ImageUploadService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
-            return amazonS3.getUrl(bucket, fileName).toString();
+            return CLOUD_FRONT_DOMAIN_NAME + "/" + fileName;
         }
         throw new ScoreCustomException(ExceptionType.UNSUPPORTED_FILE_TYPE);
     }
