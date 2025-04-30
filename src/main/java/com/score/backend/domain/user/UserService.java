@@ -1,5 +1,12 @@
 package com.score.backend.domain.user;
 
+import com.score.backend.domain.friend.FriendRepository;
+import com.score.backend.domain.friend.FriendService;
+import com.score.backend.domain.friend.block.BlockService;
+import com.score.backend.domain.friend.block.BlockedUserRepository;
+import com.score.backend.domain.group.GroupService;
+import com.score.backend.domain.group.UserGroup;
+import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.user.repositories.UserRepository;
 import com.score.backend.dtos.UserUpdateDto;
 import com.score.backend.config.ImageUploadService;
@@ -24,6 +31,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final ImageUploadService imageUploadService;
     private final SchoolService schoolService;
+    private final FriendService friendService;
+    private final BlockService blockService;
+    private final GroupService groupService;
+    private final UserGroupRepository userGroupRepository;
+    private final FriendRepository friendRepository;
+    private final BlockedUserRepository blockedUserRepository;
 
     public User findDummyUser() {
         return userRepository.findByNickname("(알 수 없음)").orElseThrow(
@@ -69,6 +82,15 @@ public class UserService {
     @Transactional
     public void withdrawUser(Long id) throws SQLIntegrityConstraintViolationException {
         User deletingUser = findUserById(id);
+        for (Iterable<UserGroup> userGroups; (userGroups = deletingUser.getUserGroups()).iterator().hasNext(); ) {
+            groupService.leaveGroup(userGroups.iterator().next().getGroup().getGroupId(), deletingUser);
+        }
+        blockedUserRepository.deleteAll(deletingUser.getBlockedUsers());
+        deletingUser.getFriends().forEach(friend -> friendRepository.deleteAll(friend.getFriend().getFriends()));
+        deletingUser.getFriends().clear();
+        deletingUser.getNotifications().clear();
+
+//        deletingUser.getNotifications().forEach(notification -> notificationService.deleteNotification(notification.getId()));
         userRepository.delete(deletingUser);
     }
 

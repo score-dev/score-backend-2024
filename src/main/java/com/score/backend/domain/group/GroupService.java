@@ -35,7 +35,6 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final ExerciseService exerciseService;
-    private final UserService userService;
     private final RankingService rankingService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
@@ -57,11 +56,7 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
-    public GroupEntity createGroup(GroupCreateDto groupCreateDto, MultipartFile image) throws IOException {
-
-        User admin = userRepository.findById(groupCreateDto.getAdminId())
-                .orElseThrow(() -> new NotFoundException(ExceptionType.USER_NOT_FOUND));
-
+    public GroupEntity createGroup(User admin, GroupCreateDto groupCreateDto, MultipartFile image) throws IOException {
         GroupEntity group = GroupEntity.builder()
                 .groupName(groupCreateDto.getGroupName())
                 .belongingSchool(admin.getSchool())
@@ -99,15 +94,15 @@ public class GroupService {
 //        groupRepository.save(group);
 //    }
 
-    public void leaveGroup(Long groupId, Long userId) {
-        UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
+    public void leaveGroup(Long groupId, User user) {
+        UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), groupId);
         if (userGroup == null) {
             throw new NotFoundException(ExceptionType.USER_GROUP_NOT_FOUND);
         }
         GroupEntity group = findById(groupId);
-        User user = userService.findUserById(userId);
         if (group.getAdmin().equals(user)) {
-            throw new ScoreCustomException(ExceptionType.ADMIN_GROUP_LEAVING);
+//            throw new ScoreCustomException(ExceptionType.ADMIN_GROUP_LEAVING);
+            removeGroup(groupId);
         }
 
         group.getMembers().remove(userGroup);
@@ -115,9 +110,14 @@ public class GroupService {
         userGroupRepository.delete(userGroup);
     }
 
-    public void removeMember(Long groupId, Long userId) {
+    public void removeGroup(Long groupId) {
         GroupEntity group = findById(groupId);
-        User user = userService.findUserById(userId);
+        userGroupRepository.deleteAll(group.getMembers());
+        groupRepository.delete(group);
+    }
+
+    public void removeMember(Long groupId, User user) {
+        GroupEntity group = findById(groupId);
         Long adminId = group.getAdmin().getId(); //그룹의 adminId 가져오기
 
         if (!group.getAdmin().getId().equals(adminId)) {
@@ -145,13 +145,12 @@ public class GroupService {
     }
 
     // 방장에게 그룹 가입 신청 알림 보내기
-    public void sendGroupJoinRequestNotification(Long groupId, Long userId) throws FirebaseMessagingException {
-        User requester = userService.findUserById(userId);
+    public void sendGroupJoinRequestNotification(Long groupId, User requester) throws FirebaseMessagingException {
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
         FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + " 그룹의 메이트가 되고 싶어합니다. 수락하시겠나요?", null);
-        notificationService.sendMessage(message);
-        notificationService.saveNotification(message);
+        notificationService.sendMessage(admin, message);
+        notificationService.saveNotification(admin, message);
     }
 
     // 그룹 내 메이트 목록 전체 조회
@@ -169,10 +168,9 @@ public class GroupService {
     }
 
     // 그룹에 새로운 멤버 추가
-    public void addNewMember(Long groupId, Long userId) throws FirebaseMessagingException {
+    public void addNewMember(Long groupId, User user) throws FirebaseMessagingException {
         GroupEntity group = findById(groupId);
-        User user = userService.findUserById(userId);
-        if (userGroupRepository.findByUserIdAndGroupId(userId, groupId) == null) {
+        if (userGroupRepository.findByUserIdAndGroupId(user.getId(), groupId) == null) {
             if (!group.getBelongingSchool().getId().equals(user.getSchool().getId())) {
                 throw new ScoreCustomException(ExceptionType.USERS_SCHOOL_GROUP_UNMATCHED);
             }
@@ -180,17 +178,17 @@ public class GroupService {
             userGroupRepository.save(userGroup);
             group.getMembers().add(userGroup);
             user.addGroup(userGroup, group);
-            FcmMessageRequest message = new FcmMessageRequest(userId, group.getGroupName() + " 그룹에 " + user.getNickname() + "님이 가입이 완료되었습니다!", "앞으로 " + group.getGroupName() + " 그룹과 함께 열심히 달려봐요!");
-            notificationService.sendMessage(message);
-            notificationService.saveNotification(message);
+            FcmMessageRequest message = new FcmMessageRequest(user.getId(), group.getGroupName() + " 그룹에 " + user.getNickname() + "님이 가입이 완료되었습니다!", "앞으로 " + group.getGroupName() + " 그룹과 함께 열심히 달려봐요!");
+            notificationService.sendMessage(user, message);
+            notificationService.saveNotification(user, message);
             return;
         }
         throw new ScoreCustomException(ExceptionType.ALREADY_JOINED_GROUP);
     }
 
     // 유저가 속한 모든 그룹의 누적 운동 시간 증가
-    public void increaseCumulativeTime(Long userId, LocalDateTime start, LocalDateTime end) {
-        List<GroupEntity> groups = this.findAllGroupsByUserId(userId);
+    public void increaseCumulativeTime(User agent, LocalDateTime start, LocalDateTime end) {
+        List<GroupEntity> groups = this.findAllGroupsByUserId(agent.getId());
         if (!groups.isEmpty()) {
             double duration = exerciseService.calculateExerciseDuration(start, end);
             for (GroupEntity group : groups) {

@@ -1,6 +1,7 @@
 package com.score.backend.domain.notification;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FcmNotificationResponse;
 import com.score.backend.dtos.PostTokenReq;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class NotificationController {
+    private final UserService userService;
     private final NotificationService notificationService;
 
     @Operation(summary = "FCM 토큰 발급", description = "알림 전송을 위해 유저의 FCM 토큰을 발급받아 서버에 저장합니다.")
@@ -27,7 +29,7 @@ public class NotificationController {
     )
     @PostMapping("/{userId}/token")
     public ResponseEntity<String> getToken(@PathVariable Long userId, @Valid @RequestBody PostTokenReq postTokenReq) {
-        notificationService.getToken(userId, postTokenReq.getToken());
+        notificationService.getToken(userService.findUserById(userId), postTokenReq.getToken());
         return ResponseEntity.ok("토큰이 저장되었습니다.");
     }
 
@@ -40,7 +42,7 @@ public class NotificationController {
     )
     @PostMapping("/score/fcm")
     public ResponseEntity<String> sendFcmNotification(FcmMessageRequest fcmMessageRequest) throws FirebaseMessagingException {
-        notificationService.sendMessage(fcmMessageRequest);
+        notificationService.sendMessage(userService.findUserById(fcmMessageRequest.getUserId()), fcmMessageRequest);
         return ResponseEntity.ok("알림 전송이 완료되었습니다.");
     }
 
