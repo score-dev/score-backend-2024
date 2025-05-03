@@ -124,9 +124,9 @@ public class SchedulerService {
         return sr;
     }
 
-    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    @Scheduled(cron = "0 * * * * *") // 매 분 실행
     public void checkUsersGoalExercisingTime() {
-        LocalTime currentTime = LocalTime.now();
+        LocalTime currentTime = LocalTime.now().withSecond(0).withNano(0);
         List<User> usersToNotify = userService.findUsersByGoal(currentTime);
         for (User user : usersToNotify) {
             alertExerciseTimeAndSaveNotification(user);
