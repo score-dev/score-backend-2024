@@ -1,8 +1,10 @@
 package com.score.backend.domain.exercise;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.friend.Friend;
+import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FeedInfoResponse;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -35,12 +38,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequiredArgsConstructor
 public class ExerciseController {
+    private final ImageUploadService imageUploadService;
     private final UserService userService;
     private final ExerciseService exerciseService;
     private final LevelService levelService;
     private final FriendService friendService;
     private final GroupService groupService;
     private final EmotionService emotionService;
+    private final NotificationService notificationService;
 
     @Operation(summary = "함께 운동한 친구 검색", description = "함께 운동한 친구를 선택하기 위해 닉네임으로 검색합니다.")
     @ApiResponses(
@@ -106,8 +111,10 @@ public class ExerciseController {
         exerciseService.cumulateExerciseDuration(agent, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         // 유저가 속한 그룹의 누적 운동 시간 업데이트
         groupService.increaseCumulativeTime(agent, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+        Set<TaggedUser> taggedUsers = exerciseService.findTaggedUsers(agent, others);
         // 피드 저장
-        exerciseService.saveFeed(agent, others, walkingDto, multipartFile);
+        exerciseService.saveFeed(agent, taggedUsers, walkingDto, imageUploadService.uploadImage(multipartFile));
+        notificationService.notifyToTaggedUsers(taggedUsers, agent);
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }
 

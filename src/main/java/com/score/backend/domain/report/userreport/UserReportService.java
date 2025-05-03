@@ -2,7 +2,6 @@ package com.score.backend.domain.report.userreport;
 
 import com.score.backend.domain.report.userreport.repositories.UserReportRepository;
 import com.score.backend.domain.user.User;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.UserReportDto;
 import com.score.backend.exceptions.ExceptionType;
 import com.score.backend.exceptions.ScoreCustomException;
@@ -14,12 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserReportService {
-    private final UserService userService;
     private final UserReportRepository userReportRepository;
 
-    public void createReport(UserReportDto userReportDto) {
-        User agent = userService.findUserById(userReportDto.getAgentId());
-        User object = userService.findUserById(userReportDto.getObjectId());
+    public void createReport(User agent, User object, UserReportDto userReportDto) {
         if (agent.equals(object)) {
             throw new ScoreCustomException(ExceptionType.SELF_REPORT);
         }
@@ -32,7 +28,7 @@ public class UserReportService {
         userReportRepository.save(userReport);
     }
 
-    public int getUserReportCount(Long userId) {
-        return userReportRepository.findDistinctReportCounts(userId);
+    public int getUserReportCount(User user) {
+        return userReportRepository.findDistinctReportCounts(user.getId());
     }
 }

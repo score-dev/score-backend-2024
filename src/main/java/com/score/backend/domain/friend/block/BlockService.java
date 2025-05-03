@@ -5,6 +5,7 @@ import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.user.repositories.UserRepository;
 import com.score.backend.dtos.FriendsSearchResponse;
 import com.score.backend.exceptions.ExceptionType;
+import com.score.backend.exceptions.NotFoundException;
 import com.score.backend.exceptions.ScoreCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class BlockService {
         blockedUserRepository.save(blockedUser);
     }
 
+    @Transactional(readOnly = true)
     public List<FriendsSearchResponse> findBlockedFriends(User blocker) {
         List<BlockedUser> blockedUsers = blocker.getBlockedUsers();
         List<FriendsSearchResponse> blockedDto = new ArrayList<>();
@@ -38,7 +40,21 @@ public class BlockService {
         return blockedDto;
     }
 
+    @Transactional(readOnly = true)
+    public List<BlockedUser> findAllBlockedUsers(Long blockedId) {
+        return blockedUserRepository.findByBlockedId(blockedId);
+    }
+
     public void unblockFriend(User blocker, User blocked) {
-        blocker.unblockUser(blockedUserRepository.findByBlockedId(blocked.getId()));
+        BlockedUser blockedUser = blockedUserRepository.findByBlockerIdAndBlockedId(blocker.getId(), blocked.getId()).orElseThrow(
+                () -> new NotFoundException(ExceptionType.BLOCKED_USER_NOT_FOUND)
+        );
+        blocker.unblockUser(blockedUser);
+        blockedUserRepository.delete(blockedUser);
+    }
+
+    public void deleteWithdrawalUsersBlockedLog(Long blockedId) {
+        blockedUserRepository.deleteAll(blockedUserRepository.findByBlockerId(blockedId));
+        blockedUserRepository.deleteAll(blockedUserRepository.findByBlockedId(blockedId));
     }
 }

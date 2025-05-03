@@ -59,12 +59,9 @@ public abstract class Exercise extends BaseEntity {
     }
 
     public void setAgentAndExerciseUser(User agent, Set<TaggedUser> taggedUsers) {
+        taggedUsers.forEach(taggedUser -> taggedUser.setExercise(this));
         this.setAgent(agent);
         this.taggedUsers.addAll(taggedUsers);
-    }
-
-    public void setExercisePicUrl(String exercisePicUrl) {
-        this.exercisePic = exercisePicUrl;
     }
 
     public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String fineDust, String feeling, String exercisePic) {

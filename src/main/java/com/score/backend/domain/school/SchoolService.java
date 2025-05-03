@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class SchoolService {
-
     private final SchoolRepository schoolRepository;
 
     @Transactional(readOnly = true)

@@ -1,9 +1,7 @@
 package com.score.backend.domain.group;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.BatonStatusDto;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.domain.user.repositories.UserRepository;
@@ -22,7 +20,6 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class BatonService {
-    private final UserService userService;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final RedisTemplate<String, String> redisTemplate;
@@ -47,43 +44,40 @@ public class BatonService {
 
     // 바통 찌르기 가능 여부 확인(오늘 sender가 receiver에게 바통 찌르기를 한 기록이 없으면 true 리턴)
     @Transactional(readOnly = true)
-    public boolean canTurnOverBaton(Long senderId, Long receiverId) {
-        String key = generateRedisKey(senderId, receiverId);
+    public boolean canTurnOverBaton(User sender, User receiver) {
+        String key = generateRedisKey(sender.getId(), receiver.getId());
         return !redisTemplate.hasKey(key);
     }
 
     // 바통 찌르기 알림 전송 발생 시 Redis에 전송 기록 저장
-    public void saveBatonLog(Long senderId, Long receiverId) {
-        redisTemplate.opsForValue().set(generateRedisKey(senderId, receiverId), "true", calculateTTL());
+    public void saveBatonLog(User sender, User receiver) {
+        redisTemplate.opsForValue().set(generateRedisKey(sender.getId(), receiver.getId()), "true", calculateTTL());
     }
 
     // 그룹 내 오늘 운동 쉰 유저 목록과 각 유저들이 sender에게 이미 바통을 찔렀는지 여부를 dto로 반환
     @Transactional(readOnly = true)
-    public List<BatonStatusDto> getBatonStatuses(Long senderId, Long groupId) {
+    public List<BatonStatusDto> getBatonStatuses(User sender, Long groupId) {
         List<User> notExercisedUsers = findAllMembersWhoDidNotExerciseToday(groupId);
         List<BatonStatusDto> batonStatuses = new ArrayList<>();
 
         for (User user : notExercisedUsers) {
             // 자기 자신은 목록에 포함하지 않음.
-            if (user.getId().equals(senderId)) {
+            if (user.equals(sender)) {
                 continue;
             }
-            batonStatuses.add(new BatonStatusDto(user.getId(), user.getNickname(), user.getProfileImg(), canTurnOverBaton(senderId, user.getId())));
+            batonStatuses.add(new BatonStatusDto(user.getId(), user.getNickname(), user.getProfileImg(), canTurnOverBaton(sender, user)));
         }
         return batonStatuses;
     }
 
     // 바통 찌르기
-    public boolean turnOverBaton(Long senderId, Long receiverId) throws FirebaseMessagingException {
-        User sender = userService.findUserById(senderId);
-        if (!canTurnOverBaton(senderId, receiverId)) {
+    public boolean turnOverBaton(User sender, User receiver) {
+        if (!canTurnOverBaton(sender, receiver)) {
             return false;
         }
-        User receiver = userService.findUserById(receiverId);
-        FcmMessageRequest message = new FcmMessageRequest(receiverId, sender.getNickname() + "님이 바통을 넘겼습니다!", null);
-        notificationService.sendMessage(receiver, message);
-        notificationService.saveNotification(receiver, message);
-        saveBatonLog(senderId, receiverId);
+        FcmMessageRequest message = new FcmMessageRequest(receiver.getId(), sender.getNickname() + "님이 바통을 넘겼습니다!", null);
+        notificationService.sendAndSaveNotification(receiver, message);
+        saveBatonLog(sender, receiver);
         return true;
     }
 }

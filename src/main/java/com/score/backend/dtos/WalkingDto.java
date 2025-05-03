@@ -39,7 +39,7 @@ public class WalkingDto {
     @Schema(description = "오늘의 감정")
     private String feeling;
 
-    public Exercise toEntity() {
+    public Exercise toEntity(String exercisePicUrl) {
         return Walking.builder()
                 .startedAt(startedAt)
                 .completedAt(completedAt)
@@ -50,6 +50,7 @@ public class WalkingDto {
                 .temperature(temperature)
                 .fineDust(fineDust)
                 .feeling(feeling)
+                .exercisePic(exercisePicUrl)
                 .build();
     }
 }

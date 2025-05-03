@@ -1,5 +1,6 @@
 package com.score.backend.domain.report.userreport;
 
+import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.UserReportDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserReportController {
     private final UserReportService userReportService;
+    private final UserService userService;
 
     @Operation(summary = "유저 신고", description = "유저를 신고합니다.")
     @RequestMapping(value = "/score/user/report", method = RequestMethod.POST)
@@ -23,7 +25,7 @@ public class UserReportController {
                     @ApiResponse(responseCode = "400", description = "자기 자신은 신고할 수 없습니다."),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
     public ResponseEntity<String> reportUser(@Parameter(required = true, description = "신고 요청에 필요한 정보가 저장된 dto") @RequestBody UserReportDto userReportDto) {
-        userReportService.createReport(userReportDto);
+        userReportService.createReport(userService.findUserById(userReportDto.getAgentId()), userService.findUserById(userReportDto.getObjectId()), userReportDto);
         return ResponseEntity.ok("유저 신고가 완료되었습니다.");
     }
 }

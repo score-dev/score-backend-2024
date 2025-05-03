@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -16,14 +17,14 @@ public class TaggedUser {
 
     @ManyToOne
     @JoinColumn(name = "exercise_id")
+    @Setter
     private Exercise exercise;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public TaggedUser(Exercise exercise, User user) {
-        this.exercise = exercise;
+    public TaggedUser(User user) {
         this.user = user;
     }
 }

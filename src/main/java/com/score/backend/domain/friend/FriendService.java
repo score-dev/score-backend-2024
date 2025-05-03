@@ -41,6 +41,8 @@ public class FriendService {
         Friend user2 = findFriendByEachUsersId(userId2, userId1);
         user1.getUser().deleteFriend(user1, user2);
         user2.getUser().deleteFriend(user1, user2);
+        friendRepository.delete(user1);
+        friendRepository.delete(user2);
     }
 
     @Transactional(readOnly = true)

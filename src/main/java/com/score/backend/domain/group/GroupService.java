@@ -7,6 +7,8 @@ import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.rank.RankingService;
+import com.score.backend.domain.rank.group.GroupRankerRepository;
+import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.user.User;
@@ -38,6 +40,7 @@ public class GroupService {
     private final RankingService rankingService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
+    private final GroupRankerRepository groupRankerRepository;
 
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id) {
@@ -101,8 +104,7 @@ public class GroupService {
         }
         GroupEntity group = findById(groupId);
         if (group.getAdmin().equals(user)) {
-//            throw new ScoreCustomException(ExceptionType.ADMIN_GROUP_LEAVING);
-            removeGroup(groupId);
+            throw new ScoreCustomException(ExceptionType.ADMIN_GROUP_LEAVING);
         }
 
         group.getMembers().remove(userGroup);
@@ -113,7 +115,13 @@ public class GroupService {
     public void removeGroup(Long groupId) {
         GroupEntity group = findById(groupId);
         userGroupRepository.deleteAll(group.getMembers());
+        group.getGroupRankings().forEach(ranking -> groupRankerRepository.deleteAll(ranking.getGroupRankers()));
+
         groupRepository.delete(group);
+    }
+
+    public void changeGroupAdmin(GroupEntity group, User user) {
+        group.setAdmin(user);
     }
 
     public void removeMember(Long groupId, User user) {
@@ -149,8 +157,7 @@ public class GroupService {
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
         FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + " 그룹의 메이트가 되고 싶어합니다. 수락하시겠나요?", null);
-        notificationService.sendMessage(admin, message);
-        notificationService.saveNotification(admin, message);
+        notificationService.sendAndSaveNotification(admin, message);
     }
 
     // 그룹 내 메이트 목록 전체 조회
@@ -179,8 +186,7 @@ public class GroupService {
             group.getMembers().add(userGroup);
             user.addGroup(userGroup, group);
             FcmMessageRequest message = new FcmMessageRequest(user.getId(), group.getGroupName() + " 그룹에 " + user.getNickname() + "님이 가입이 완료되었습니다!", "앞으로 " + group.getGroupName() + " 그룹과 함께 열심히 달려봐요!");
-            notificationService.sendMessage(user, message);
-            notificationService.saveNotification(user, message);
+            notificationService.sendAndSaveNotification(user, message);
             return;
         }
         throw new ScoreCustomException(ExceptionType.ALREADY_JOINED_GROUP);

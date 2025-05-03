@@ -1,7 +1,5 @@
 package com.score.backend.domain.exercise.emotion;
 
-import com.score.backend.domain.exercise.ExerciseService;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.exercise.Exercise;
 import com.score.backend.dtos.EmotionStatusResponse;
@@ -18,14 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class EmotionService {
-    private final UserService userService;
-    private final ExerciseService exerciseService;
     private final EmotionRepository emotionRepository;
 
     // 피드에 새로운 감정 표현 추가
-    public void addEmotion(Long agentId, Long feedId, EmotionType emotionType) {
-        User agent = userService.findUserById(agentId);
-        Exercise feed = exerciseService.findFeedByExerciseId(feedId);
+    public void addEmotion(User agent, Exercise feed, EmotionType emotionType) {
         Emotion emotion = new Emotion();
         emotion.setEmotion(agent, feed, emotionType);
         emotionRepository.save(emotion);

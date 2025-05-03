@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface BlockedUserRepository extends JpaRepository<BlockedUser, Long> {
     List<BlockedUser> findByBlockerId(Long blockerId);
-    BlockedUser findByBlockedId(Long blockedId);
-    @Query("select b from BlockedUser  b where b.blocker.id = :blockerId and b.blocked.id = :blockedId")
+    List<BlockedUser> findByBlockedId(Long blockedId);
+    @Query("select b from BlockedUser b where b.blocker.id = :blockerId and b.blocked.id = :blockedId")
     Optional<BlockedUser> findByBlockerIdAndBlockedId(@Param("blockerId") Long blockerId, @Param("blockedId") Long blockedId);
 }

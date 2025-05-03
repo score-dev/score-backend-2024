@@ -1,5 +1,7 @@
 package com.score.backend.domain.exercise.emotion;
 
+import com.score.backend.domain.exercise.ExerciseService;
+import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.EmotionStatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmotionController {
     private final EmotionService emotionService;
+    private final UserService userService;
+    private final ExerciseService exerciseService;
 
     @Operation(summary = "감정 표현 추가 혹은 제거", description = "피드에 요청한 감정 표현을 한 적이 있는 유저라면 그 감정 표현을 삭제하고, 요청한 감정 표현을 한 적이 없는 유저라면 그 감정 표현을 추가합니다.")
     @RequestMapping(value = "/score/exercise/emotion", method = RequestMethod.POST)
@@ -35,7 +39,7 @@ public class EmotionController {
         Emotion emotion = emotionService.checkDuplicateEmotion(agentId, emotionService.findAllEmotionTypes(feedId, type));
         // 해당 타입의 감정 표현을 한 적이 없는 유저인 경우 감정 표현 추가
         if (emotion == null) {
-            emotionService.addEmotion(agentId, feedId, type);
+            emotionService.addEmotion(userService.findUserById(agentId), exerciseService.findFeedByExerciseId(feedId), type);
             return ResponseEntity.ok("감정 표현 추가가 완료되었습니다.");
         } else { // 해당 타입의 감정 표현을 한 적이 있는 유저인 경우 감정 표현 삭제
             emotionService.deleteEmotion(emotion);
