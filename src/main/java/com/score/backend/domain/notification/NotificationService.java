@@ -4,7 +4,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.score.backend.domain.exercise.TaggedUser;
-import com.score.backend.domain.exercise.repositories.TaggedUserRepository;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FcmNotificationResponse;
@@ -26,7 +25,6 @@ import java.util.Set;
 @Transactional
 public class NotificationService {
     private final NotificationRepository notificationRepository;
-    private final TaggedUserRepository taggedUserRepository;
 
     @Transactional(readOnly = true)
     public com.score.backend.domain.notification.Notification findById(Long id) {
