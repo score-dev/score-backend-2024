@@ -26,7 +26,7 @@ public class FeedReport {
 
     @Column(columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
-    private FeedReportReason reason; // 신고 이유
+    private FeedReportReason reason; // 신고한 이유
 
     private String comment; // 신고 이유로 '기타' 선택 시 입력한 내용
 }
