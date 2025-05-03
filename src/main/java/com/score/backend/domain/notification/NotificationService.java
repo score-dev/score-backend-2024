@@ -1,10 +1,8 @@
 package com.score.backend.domain.notification;
 
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.score.backend.domain.exercise.Exercise;
 import com.score.backend.domain.exercise.TaggedUser;
 import com.score.backend.domain.exercise.repositories.TaggedUserRepository;
 import com.score.backend.domain.user.User;
@@ -21,8 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -54,7 +50,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    private void sendMessage(User user, FcmMessageRequest request) {
+    public void sendMessage(User user, FcmMessageRequest request) {
         try {
             FirebaseMessaging.getInstance().send(Message.builder()
                     .setNotification(Notification.builder()
@@ -69,7 +65,7 @@ public class NotificationService {
         }
     }
 
-    public Set<TaggedUser> notifyToTaggedUsers(Set<TaggedUser> taggedUsers, User agent) throws FirebaseMessagingException {
+    public void notifyToTaggedUsers(Set<TaggedUser> taggedUsers, User agent) {
         for (TaggedUser taggedUser : taggedUsers) {
             // 태그된 유저들에게 알림 전송 및 알림 저장
             if (taggedUser.getUser().isTag()) {
@@ -77,7 +73,6 @@ public class NotificationService {
                 sendAndSaveNotification(taggedUser.getUser(), fcmMessageRequest);
             }
         }
-        return taggedUsers;
     }
 
     private void saveNotification(User user, FcmMessageRequest request) {

@@ -98,7 +98,7 @@ public class SchedulerService {
         return gr;
     }
 
-    private SchoolRanking calculateSchoolRanking(School school) throws FirebaseMessagingException {
+    private SchoolRanking calculateSchoolRanking(School school) {
         SchoolRanking sr = rankingService.calculateWeeklySchoolRanking(school);
         if (!sr.getSchoolRankers().isEmpty() && sr.getSchoolRankers().size() > 1) {
             for (int i = 0; i < sr.getSchoolRankers().size(); i++) {
@@ -125,7 +125,7 @@ public class SchedulerService {
     }
 
     @Scheduled(fixedRate = 60000) // 1분마다 실행
-    public void checkUsersGoalExercisingTime() throws FirebaseMessagingException {
+    public void checkUsersGoalExercisingTime() {
         LocalTime currentTime = LocalTime.now();
         List<User> usersToNotify = userService.findUsersByGoal(currentTime);
         for (User user : usersToNotify) {
@@ -134,7 +134,7 @@ public class SchedulerService {
     }
 
     @Async
-    protected void alertExerciseTimeAndSaveNotification(User user) throws FirebaseMessagingException {
+    protected void alertExerciseTimeAndSaveNotification(User user)  {
         if (user.isExercisingTime()) {
             FcmMessageRequest message = new FcmMessageRequest(user.getId(),
                     "목표한 운동 시간이 되었어요!", "오늘도 스코어와 함께 운동을 시작해요!");

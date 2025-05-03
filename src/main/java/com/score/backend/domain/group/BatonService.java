@@ -1,9 +1,7 @@
 package com.score.backend.domain.group;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.BatonStatusDto;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.domain.user.repositories.UserRepository;
@@ -22,7 +20,6 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class BatonService {
-    private final UserService userService;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final RedisTemplate<String, String> redisTemplate;
