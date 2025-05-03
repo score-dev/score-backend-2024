@@ -7,6 +7,8 @@ import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.rank.RankingService;
+import com.score.backend.domain.rank.group.GroupRankerRepository;
+import com.score.backend.domain.rank.group.GroupRanking;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.user.User;
@@ -38,6 +40,7 @@ public class GroupService {
     private final RankingService rankingService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
+    private final GroupRankerRepository groupRankerRepository;
 
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id) {
@@ -101,8 +104,7 @@ public class GroupService {
         }
         GroupEntity group = findById(groupId);
         if (group.getAdmin().equals(user)) {
-//            throw new ScoreCustomException(ExceptionType.ADMIN_GROUP_LEAVING);
-            removeGroup(groupId);
+            throw new ScoreCustomException(ExceptionType.ADMIN_GROUP_LEAVING);
         }
 
         group.getMembers().remove(userGroup);
@@ -113,7 +115,13 @@ public class GroupService {
     public void removeGroup(Long groupId) {
         GroupEntity group = findById(groupId);
         userGroupRepository.deleteAll(group.getMembers());
+        group.getGroupRankings().forEach(ranking -> groupRankerRepository.deleteAll(ranking.getGroupRankers()));
+
         groupRepository.delete(group);
+    }
+
+    public void changeGroupAdmin(GroupEntity group, User user) {
+        group.setAdmin(user);
     }
 
     public void removeMember(Long groupId, User user) {

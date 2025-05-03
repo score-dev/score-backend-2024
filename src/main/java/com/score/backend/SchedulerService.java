@@ -55,7 +55,7 @@ public class SchedulerService {
     }
 
     // 매주 월요일 0시에 실행
-    @Scheduled(cron = "0 20 0 * * MON")
+    @Scheduled(cron = "0 0 0 * * MON")
     public void executeWeeklyScheduledTask() throws FirebaseMessagingException {
         List<GroupEntity> allGroups = groupService.findAll();
         for (GroupEntity group : allGroups) {
@@ -75,7 +75,7 @@ public class SchedulerService {
         }
     }
 
-    private GroupRanking calculateGroupRanking(GroupEntity group) throws FirebaseMessagingException {
+    private GroupRanking calculateGroupRanking(GroupEntity group) {
         // 그룹 내 주간 랭킹 산정
         GroupRanking gr = rankingService.calculateWeeklyGroupRanking(group);
         if (!gr.getGroupRankers().isEmpty() && gr.getGroupRankers().size() > 1) {

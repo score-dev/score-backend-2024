@@ -29,6 +29,11 @@ public class RankingService {
     private final SchoolRankerRepository schoolRankerRepository;
     private final SchoolRankingRepository schoolRankingRepository;
 
+    @Transactional(readOnly = true)
+    public List<GroupRanker> findGroupRankersByUserId(Long userId) {
+        return groupRankerRepository.findByUserId(userId);
+    }
+
     public GroupRanking calculateWeeklyGroupRanking(GroupEntity group) {
         List<UserGroup> groupMates = group.getMembers();
         GroupRanking thisWeekGroupRanking = new GroupRanking(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), group);
