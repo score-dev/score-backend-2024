@@ -56,10 +56,10 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     }
 
     @Override
-    public List<Exercise> findByUserId(Long userId) {
+    public List<Exercise> findUsersMonthlyExercises(Long userId, int year, int month) {
         return queryFactory
                 .selectFrom(e)
-                .where(userIdEq(userId))
+                .where(userIdEq(userId), e.completedAt.year().eq(year), e.completedAt.month().eq(month))
                 .fetch();
     }
 
