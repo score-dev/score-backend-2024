@@ -7,6 +7,7 @@ import com.score.backend.domain.friend.Friend;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
+import com.score.backend.dtos.FeedCalendarResponse;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.FriendsSearchResponse;
 import com.score.backend.dtos.WalkingDto;
@@ -32,8 +33,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-
 @Tag(name = "Exercise", description = "운동 기록 및 피드 관리를 위한 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -52,7 +51,7 @@ public class ExerciseController {
             value = {@ApiResponse(responseCode = "200", description = "검색 완료."),
                     @ApiResponse(responseCode = "404", description = "검색 결과가 존재하지 않습니다.")}
     )
-    @RequestMapping(value = "/score/exercise/friends", method = GET)
+    @GetMapping(value = "/score/exercise/friends")
     public ResponseEntity<List<FriendsSearchResponse>> searchFriendsByNickname(
             @Parameter(description = "운동을 기록하고자 하는(함께 운동할 친구를 선택하고자 하는) 유저의 고유 id 값", required = true) @RequestParam Long id,
             @Parameter(description = "유저가 필드에 입력한 내친구의 닉네임", required = true) @RequestParam String nickname) {
@@ -73,7 +72,7 @@ public class ExerciseController {
             value = {@ApiResponse(responseCode = "200", description = "피드 업로드 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")}
     )
-    @RequestMapping(value = "/score/exercise/walking/save", method = POST)
+    @PostMapping(value = "/score/exercise/walking/save")
     public ResponseEntity<String> uploadWalkingFeed(@Parameter(description = "운동 결과 전달을 위한 DTO", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))) @RequestPart(value = "walkingDto") WalkingDto walkingDto,
                                                     @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws IOException, FirebaseMessagingException {
 
@@ -123,7 +122,7 @@ public class ExerciseController {
             value = {@ApiResponse(responseCode = "200", description = "요청한 피드의 세부 정보 응답", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = WalkingDto.class))),
                     @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
-    @RequestMapping(value = "/score/exercise/read", method = GET)
+    @GetMapping(value = "/score/exercise/read")
     public ResponseEntity<FeedInfoResponse> readFeed(@RequestParam("feedId") @Parameter(required = true, description = "조회하고자 하는 피드의 고유 번호") Long feedId) {
         Exercise feed = exerciseService.findFeedByExerciseId(feedId);
         return ResponseEntity.ok(new FeedInfoResponse(feed));
@@ -134,7 +133,7 @@ public class ExerciseController {
             value = {@ApiResponse(responseCode = "200", description = "피드 삭제 완료"),
                     @ApiResponse(responseCode = "404", description = "Feed Not Found")}
     )
-    @RequestMapping(value = "/score/exercise/delete", method = DELETE)
+    @DeleteMapping(value = "/score/exercise/delete")
     public ResponseEntity<String> deleteFeed(@RequestParam("id") @Parameter(required = true, description = "피드 고유 번호") Long feedId) {
         Exercise feed = exerciseService.findFeedByExerciseId(feedId);
         exerciseService.deleteFeed(feed);
@@ -148,10 +147,21 @@ public class ExerciseController {
                     @ApiResponse(responseCode = "404", description = "User Not Found"),
                     @ApiResponse(responseCode = "409", description = "차단한 유저에 대한 피드 목록 조회 요청입니다.")
             })
-    @RequestMapping(value = "/score/exercise/list", method = GET)
+    @GetMapping(value = "/score/exercise/list" )
     public ResponseEntity<Page<FeedInfoResponse>> getAllUsersFeeds(@RequestParam("id1") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long id1,
                                                                    @RequestParam("id2") @Parameter(required = true, description = "id1 유저가 피드를 조회하고자 하는 유저의 고유 번호") Long id2,
                                                                    @RequestParam("page") @Parameter(required = true, description = "출력할 피드 리스트의 페이지 번호") int page) {
         return ResponseEntity.ok(exerciseService.getUsersAllExercises(page, userService.findUserById(id1), userService.findUserById(id2)));
+    }
+
+    @Operation(summary = "유저의 월별 운동 기록 조회", description = "year년, month월에 유저가 운동한 기록을 모두 조회하여 응답합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "유저의 월별 운동 기록 조회가 완료되었습니다."),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")})
+    @GetMapping(value = "/score/exercise/calendar")
+    public ResponseEntity<List<FeedCalendarResponse>> getUsersMonthlyExercises(@RequestParam("id") @Parameter(required = true, description = "월별 운동 기록 조회를 요청한 유저의 고유 번호") Long id,
+                                                                               @RequestParam("year") @Parameter(required = true, description = "조회하고자 하는 연도") int year,
+                                                                               @RequestParam("month") @Parameter(required = true, description = "조회하고자 하는 월") int month) {
+        return ResponseEntity.ok(exerciseService.getUsersMonthlyExercises(id, year, month));
     }
 }

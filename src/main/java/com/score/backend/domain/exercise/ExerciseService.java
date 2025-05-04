@@ -4,6 +4,7 @@ import com.score.backend.domain.exercise.repositories.ExerciseRepository;
 import com.score.backend.domain.exercise.repositories.TaggedUserRepository;
 import com.score.backend.domain.friend.block.BlockedUser;
 import com.score.backend.domain.user.User;
+import com.score.backend.dtos.FeedCalendarResponse;
 import com.score.backend.dtos.FeedInfoResponse;
 import com.score.backend.dtos.WalkingDto;
 import com.score.backend.exceptions.ExceptionType;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +38,16 @@ public class  ExerciseService {
         }
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Order.desc("completedAt")));
         return new FeedInfoResponse().toDtoListForMates(exerciseRepository.findExercisePageByUserId(user2.getId(), pageable));
+    }
+
+    // 마이페이지 캘린더 기록 조회
+    @Transactional(readOnly = true)
+    public List<FeedCalendarResponse> getUsersMonthlyExercises(Long userId, int year, int month) {
+        List<FeedCalendarResponse> responses = new ArrayList<>();
+        exerciseRepository.findUsersMonthlyExercises(userId, year, month).forEach(
+                e -> responses.add(new FeedCalendarResponse(e.getId(), e.getStartedAt(), e.getCompletedAt()))
+        );
+        return responses;
     }
 
     // 그룹 전체 피드 조회

@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ExerciseRepositoryCustom {
     List<Exercise> findUsersWeeklyExercises(Long userId, LocalDate today);
-    List<Exercise> findByUserId(Long userId);
+    List<Exercise> findUsersMonthlyExercises(Long userId, int year, int month);
     int countUsersValidateExerciseToday(Long userId, LocalDate today);
     Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable);
     Page<Exercise> findExercisePageByGroupId(Long groupId, Pageable pageable);
