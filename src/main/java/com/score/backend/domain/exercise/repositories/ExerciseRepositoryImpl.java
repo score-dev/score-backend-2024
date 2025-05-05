@@ -106,22 +106,6 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
         return new PageImpl<>(exercises, pageable, total);
     }
 
-    @Override
-    public Page<String> findFeedsImgPageByGroupId(Long groupId, Pageable pageable) {
-        JPAQuery<String> where = queryFactory
-                .select(e.exercisePic)
-                .from(e)
-                .join(ug.group, g)
-                .where(g.groupId.eq(groupId));
-        List<String> images = where
-                .orderBy(e.completedAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-        long total = where.stream().count();
-        return new PageImpl<>(images, pageable, total);
-    }
-
     private BooleanExpression userIdEq(Long userIdCond) {
         return userIdCond != null ? e.agent.id.eq(userIdCond) : null;
     }

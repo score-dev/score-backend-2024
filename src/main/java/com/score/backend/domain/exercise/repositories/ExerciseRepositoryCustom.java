@@ -15,5 +15,4 @@ public interface ExerciseRepositoryCustom {
     int countUsersValidateExerciseToday(Long userId, LocalDate today);
     Page<Exercise> findExercisePageByUserId(Long userId, Pageable pageable);
     Page<Exercise> findExercisePageByGroupId(Long groupId, Pageable pageable);
-    Page<String> findFeedsImgPageByGroupId(Long groupId, Pageable pageable);
 }
