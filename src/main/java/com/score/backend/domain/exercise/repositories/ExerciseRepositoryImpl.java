@@ -74,7 +74,16 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = where.stream().count();
+        Long total = queryFactory
+                .select(e.count())
+                .from(e)
+                .join(e.agent, u)
+                .join(u.userGroups, ug)
+                .where(e.agent.id.eq(userId))
+                .fetchOne();
+        if (total == null) {
+            total = 0L;
+        }
 
         return new PageImpl<>(exercises, pageable, total);
     }
