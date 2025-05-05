@@ -39,8 +39,8 @@ public class GroupSearchController {
 
     // 최신순 추천 그룹 목록 조회
     @GetMapping("/recommend/recent")
-    public ResponseEntity<List<GroupDto>> getRecentGroups(@RequestParam String schoolCode) {
-        List<GroupDto> recentGroups = groupSearchService.getRecentGroupsBySchool(schoolCode);
+    public ResponseEntity<List<GroupDto>> getRecentGroups(@RequestParam Long schoolId) {
+        List<GroupDto> recentGroups = groupSearchService.getRecentGroupsBySchool(schoolId);
         return ResponseEntity.ok(recentGroups);
     }
 

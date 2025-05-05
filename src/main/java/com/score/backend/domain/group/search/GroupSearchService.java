@@ -66,9 +66,9 @@ public class GroupSearchService {
 
     // 최신순 그룹 추천
     @Transactional(readOnly = true)
-    public List<GroupDto> getRecentGroupsBySchool(String schoolCode) {
+    public List<GroupDto> getRecentGroupsBySchool(Long schoolId) {
         // 학교 코드로 학교 조회
-        School school = schoolService.findSchoolByCode(schoolCode);
+        School school = schoolService.findSchoolById(schoolId);
         if (school == null) {
             throw new NotFoundException(ExceptionType.SCHOOL_NOT_FOUND);
         }
