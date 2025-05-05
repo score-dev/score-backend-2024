@@ -69,7 +69,8 @@ public class  ExerciseService {
     }
 
     public void saveFeed(User agent, Set<TaggedUser> taggedUsers, WalkingDto walkingDto, String imgUrl) {
-        // 새로운 피드 엔티티 생성
+        // 새로운 피드 엔티티 생성z
+
         Exercise feed = walkingDto.toEntity(imgUrl);
         // 피드 작성자, 함께 운동한 친구 설정
         feed.setAgentAndExerciseUser(agent, taggedUsers);

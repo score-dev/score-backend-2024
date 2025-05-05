@@ -81,7 +81,6 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
 
     @Override
     public Page<Exercise> findExercisePageByGroupId(Long groupId, Pageable pageable) {
-
         JPAQuery<Exercise> where = queryFactory
                 .selectFrom(e)
                 .join(e.agent, u)
@@ -93,7 +92,16 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = where.stream().count();
+        Long total = queryFactory
+                .select(e.count())
+                .from(e)
+                .join(e.agent, u)
+                .join(u.userGroups, ug)
+                .where(ug.group.groupId.eq(groupId))
+                .fetchOne();
+        if (total == null) {
+            total = 0L;
+        }
 
         return new PageImpl<>(exercises, pageable, total);
     }

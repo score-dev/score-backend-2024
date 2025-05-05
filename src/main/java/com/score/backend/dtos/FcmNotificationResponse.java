@@ -4,8 +4,10 @@ import com.score.backend.domain.notification.Notification;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Getter
@@ -22,11 +24,13 @@ public class FcmNotificationResponse {
     private String body;
 
     public Page<FcmNotificationResponse> toDto(Page<Notification> notificationPages) {
-        return notificationPages.map(notification -> FcmNotificationResponse.builder()
-                .id(notification.getId())
-                .createdAt(notification.getCreatedAt())
-                .title(notification.getTitle())
-                .body(notification.getBody())
-                .build());
+        List<FcmNotificationResponse> contents = notificationPages.getContent().stream()
+                .map(notification -> FcmNotificationResponse.builder()
+                        .id(notification.getId())
+                        .createdAt(notification.getCreatedAt())
+                        .title(notification.getTitle())
+                        .body(notification.getBody())
+                        .build()).toList();
+        return new PageImpl<>(contents, notificationPages.getPageable(), notificationPages.getTotalElements());
     }
 }
