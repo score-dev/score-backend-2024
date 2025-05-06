@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.notification.NotificationService;
+import com.score.backend.domain.notification.NotificationType;
 import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.rank.group.GroupRanker;
 import com.score.backend.domain.rank.school.SchoolRanker;
@@ -13,9 +14,9 @@ import com.score.backend.domain.school.SchoolService;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.user.User;
-import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.domain.rank.group.GroupRanking;
 
+import com.score.backend.dtos.NotificationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -87,12 +88,14 @@ public class SchedulerService {
                 // 그룹 랭킹 1위인 유저에게 400포인트 지급
                 currGroupRanker.getUser().updatePoint(400);
                 // 그룹 랭킹 1위인 유저에게 알림 발송
-                FcmMessageRequest message = new FcmMessageRequest(
-                        currGroupRanker.getUser().getId(),
-                        currGroupRanker.getUser().getNickname() + "님이 " + gr.getGroup().getGroupName() + " 그룹에서 1등을 달리고 있습니다!",
-                        "계속 유지해보세요!"
-                );
-                notificationService.sendAndSaveNotification(currGroupRanker.getUser(), message);
+
+                NotificationDto dto = NotificationDto.builder()
+                        .receiver(currGroupRanker.getUser())
+                        .relatedGroup(group)
+                        .type(NotificationType.GROUP_RANKING)
+                        .build();
+
+                notificationService.sendAndSaveNotification(dto);
             }
         }
         return gr;
@@ -111,12 +114,12 @@ public class SchedulerService {
                 List<UserGroup> winningGroupMembers = currSchoolRanker.getGroup().getMembers();
                 for (UserGroup winningGroupMember : winningGroupMembers) {
                     winningGroupMember.getMember().updatePoint(800);
-                    FcmMessageRequest message = new FcmMessageRequest(
-                            winningGroupMember.getId(),
-                            currSchoolRanker.getGroup().getGroupName() + " 그룹이 " + school.getSchoolName() + "에서 이번주 1위를 달성했어요!",
-                            "메이트 모두에게 800pt를 드립니다!"
-                    );
-                    notificationService.sendAndSaveNotification(winningGroupMember.getMember(),message);
+                    NotificationDto dto = NotificationDto.builder()
+                            .receiver(winningGroupMember.getMember())
+                            .relatedGroup(winningGroupMember.getGroup())
+                            .type(NotificationType.SCHOOL_RANKING)
+                            .build();
+                    notificationService.sendAndSaveNotification(dto);
                 }
             }
         }
@@ -136,9 +139,11 @@ public class SchedulerService {
     @Async
     protected void alertExerciseTimeAndSaveNotification(User user)  {
         if (user.isExercisingTime()) {
-            FcmMessageRequest message = new FcmMessageRequest(user.getId(),
-                    "목표한 운동 시간이 되었어요!", "오늘도 스코어와 함께 운동을 시작해요!");
-            notificationService.sendAndSaveNotification(user, message);
+            NotificationDto dto = NotificationDto.builder()
+                    .receiver(user)
+                    .type(NotificationType.GOAL)
+                    .build();
+            notificationService.sendAndSaveNotification(dto);
         }
     }
 }

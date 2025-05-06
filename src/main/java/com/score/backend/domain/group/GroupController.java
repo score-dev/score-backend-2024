@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -26,7 +25,6 @@ import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-@Slf4j
 @Tag(name = "Group", description = "그룹 정보 관리를 위한 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -74,34 +72,6 @@ public class GroupController {
     public ResponseEntity<String> leaveGroup(@PathVariable Long groupId, @PathVariable Long userId) {
         groupService.leaveGroup(groupId, userService.findUserById(userId));
         return ResponseEntity.ok("그룹 탈퇴가 완료되었습니다.");
-    }
-
-//    @Operation(summary = "그룹 정보 수정", description = "그룹 정보를 수정하는 API입니다.")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "그룹 정보 수정이 완료되었습니다."),
-//            @ApiResponse(responseCode = "400", description = "Bad Request")
-//    })
-//    @PutMapping("/{groupId}/update")
-//    public ResponseEntity<String> updateGroup(@PathVariable Long groupId,
-//                                              @Valid @RequestBody GroupCreateDto groupCreateDto) {
-//        try {
-//            groupService.updateGroup(groupId, groupCreateDto);
-//            return ResponseEntity.ok("그룹 정보 update 완료!");
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
-    // 현재 존재하지 않는 기능
-    @Operation(summary = "그룹 멤버 강퇴", description = "방장이 그룹에서 멤버를 강퇴하는 API입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "멤버 강퇴가 완료되었습니다."),
-            @ApiResponse(responseCode = "400", description = "Bad Request")
-    })
-    @DeleteMapping("/{groupId}/removeMember")
-    public ResponseEntity<String> removeMemberFromGroup(@PathVariable Long groupId, @RequestParam Long userId) {
-        groupService.removeMember(groupId, userService.findUserById(userId));
-        return ResponseEntity.ok("멤버 강퇴가 완료되었습니다.");
     }
 
     @Operation(summary = "비공개 그룹 비밀번호 일치 여부 확인", description = "비공개 그룹에 가입하고자 할 때 유저가 입력한 비밀번호가 일치하는지 여부를 확인합니다.")
@@ -172,7 +142,7 @@ public class GroupController {
             value = {@ApiResponse(responseCode = "200", description = "유저가 가입되어 있는 그룹에 대한 피드 목록 조회 요청이라면 피드에 대한 모든 정보를, 가입되어 있지 않은 그룹에 대한 요청이라면 피드 이미지만을 응답합니다."),
                     @ApiResponse(responseCode = "400", description = "Bad Request")}
     )
-    @RequestMapping(value = "/exercise/list", method = GET)
+    @GetMapping(value = "/exercise/list")
     public ResponseEntity<Page<FeedInfoResponse>> getAllGroupsFeeds(
             @RequestParam("userId") @Parameter(required = true, description = "피드 목록을 요청한 유저의 고유 번호") Long userId,
             @RequestParam("groupId") @Parameter(required = true, description = "피드 목록을 요청할 그룹의 고유 번호") Long groupId,
