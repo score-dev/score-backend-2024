@@ -1,6 +1,5 @@
 package com.score.backend;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.notification.NotificationService;

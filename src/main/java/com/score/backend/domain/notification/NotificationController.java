@@ -6,7 +6,6 @@ import com.score.backend.dtos.FcmNotificationResponse;
 import com.score.backend.dtos.NotificationDto;
 import com.score.backend.dtos.PostTokenReq;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
