@@ -44,7 +44,7 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public Page<FcmNotificationResponse> findAllByUserId(Long userId, int page) {
         Pageable pageable = PageRequest.of(page, 25, Sort.by(Sort.Order.desc("createdAt")));
-        return new FcmNotificationResponse().toDto(notificationRepository.findByAgentId(userId, pageable));
+        return new FcmNotificationResponse().toDto(notificationRepository.findByReceiverId(userId, pageable));
     }
 
     public void getToken(User user, String token) {
