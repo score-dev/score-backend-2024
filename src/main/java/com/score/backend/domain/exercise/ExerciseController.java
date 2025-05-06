@@ -113,7 +113,7 @@ public class ExerciseController {
         Set<TaggedUser> taggedUsers = exerciseService.findTaggedUsers(agent, others);
         // 피드 저장
         exerciseService.saveFeed(agent, taggedUsers, walkingDto, imageUploadService.uploadImage(multipartFile));
-        notificationService.notifyToTaggedUsers(taggedUsers, agent);
+        exerciseService.notifyToTaggedUsers(taggedUsers, agent);
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }
 

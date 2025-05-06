@@ -119,6 +119,6 @@ public class UserService {
         if (userOption.isPresent()) {
             return userOption.get().getId();
         }
-        return (long) -1;
+        return -1L;
     }
 }

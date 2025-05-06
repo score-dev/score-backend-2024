@@ -71,20 +71,6 @@ public class NotificationService {
         }
     }
 
-    public void notifyToTaggedUsers(Set<TaggedUser> taggedUsers, User agent) {
-        for (TaggedUser taggedUser : taggedUsers) {
-            // 태그된 유저들에게 알림 전송 및 알림 저장
-            if (taggedUser.getUser().isTag()) {
-                NotificationDto dto = NotificationDto.builder()
-                        .sender(agent)
-                        .receiver(taggedUser.getUser())
-                        .type(NotificationType.TAGGED)
-                        .build();
-                sendAndSaveNotification(dto);
-            }
-        }
-    }
-
     private com.score.backend.domain.notification.Notification saveNotification(NotificationDto dto) {
         return notificationRepository.save(com.score.backend.domain.notification.Notification.builder()
                         .sender((dto.getSender() == null)? findSystemUser() : dto.getSender())

@@ -3,9 +3,12 @@ package com.score.backend.domain.exercise;
 import com.score.backend.domain.exercise.repositories.ExerciseRepository;
 import com.score.backend.domain.exercise.repositories.TaggedUserRepository;
 import com.score.backend.domain.friend.block.BlockedUser;
+import com.score.backend.domain.notification.NotificationService;
+import com.score.backend.domain.notification.NotificationType;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.FeedCalendarResponse;
 import com.score.backend.dtos.FeedInfoResponse;
+import com.score.backend.dtos.NotificationDto;
 import com.score.backend.dtos.WalkingDto;
 import com.score.backend.exceptions.ExceptionType;
 import com.score.backend.exceptions.NotFoundException;
@@ -29,6 +32,7 @@ import java.util.Set;
 public class  ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final TaggedUserRepository taggedUserRepository;
+    private final NotificationService notificationService;
 
     // user1이 user2의 피드 목록을 조회 (둘이 같을 경우 자기가 자기 피드를 조회)
     @Transactional(readOnly = true)
@@ -146,5 +150,19 @@ public class  ExerciseService {
     @Transactional(readOnly = true)
     public boolean isTodaysFirstValidateExercise(User user) {
         return exerciseRepository.countUsersValidateExerciseToday(user.getId(), LocalDate.now()) == 0;
+    }
+
+    public void notifyToTaggedUsers(Set<TaggedUser> taggedUsers, User agent) {
+        for (TaggedUser taggedUser : taggedUsers) {
+            // 태그된 유저들에게 알림 전송 및 알림 저장
+            if (taggedUser.getUser().isTag()) {
+                NotificationDto dto = NotificationDto.builder()
+                        .sender(agent)
+                        .receiver(taggedUser.getUser())
+                        .type(NotificationType.TAGGED)
+                        .build();
+                notificationService.sendAndSaveNotification(dto);
+            }
+        }
     }
 }
