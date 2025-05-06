@@ -16,7 +16,7 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "varchar(20)", nullable = false)
+    @Column(name = "notification_type", columnDefinition = "varchar(20)", nullable = false)
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
@@ -43,18 +43,18 @@ public class Notification extends BaseEntity {
         }
         switch (this.getType()) {
             case BATON, TAGGED -> {
-                return String.format(this.title, this.getSender().getNickname());
+                return String.format(this.getType().getTitle(), this.getSender().getNickname());
             }
             case JOIN_REQUEST -> {
-                return String.format(this.title, this.getSender().getNickname(), this.getRelatedGroup().getGroupName());
+                return String.format(this.getType().getTitle(), this.getSender().getNickname(), this.getRelatedGroup().getGroupName());
             }
             case JOIN_COMPLETE -> {
-                return String.format(this.title, this.getRelatedGroup().getGroupName(), this.getReceiver().getNickname());
+                return String.format(this.getType().getTitle(), this.getRelatedGroup().getGroupName(), this.getReceiver().getNickname());
             }
             case GROUP_RANKING -> {
-                return String.format(this.title, this.getReceiver().getNickname(), this.getRelatedGroup().getGroupName());
+                return String.format(this.getType().getTitle(), this.getReceiver().getNickname(), this.getRelatedGroup().getGroupName());
             } case SCHOOL_RANKING -> {
-                return String.format(this.title, this.getRelatedGroup().getGroupName(), this.getRelatedGroup().getBelongingSchool().getSchoolName());
+                return String.format(this.getType().getTitle(), this.getRelatedGroup().getGroupName(), this.getRelatedGroup().getBelongingSchool().getSchoolName());
             }
             default -> {
                 return this.type.getTitle();
@@ -68,7 +68,7 @@ public class Notification extends BaseEntity {
             return this.body;
         }
         if (this.getType() == NotificationType.JOIN_COMPLETE) {
-            return String.format(this.body, this.getRelatedGroup().getGroupName());
+            return String.format(this.getType().getBody(), this.getRelatedGroup().getGroupName());
         }
         return this.getType().getBody();
     }
