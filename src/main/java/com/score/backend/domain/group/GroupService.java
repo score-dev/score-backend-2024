@@ -103,8 +103,8 @@ public class GroupService {
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
         NotificationDto dto = NotificationDto.builder()
-                .sender(admin)
-                .receiver(requester)
+                .sender(requester)
+                .receiver(admin)
                 .relatedGroup(group)
                 .type(NotificationType.JOIN_REQUEST)
                 .build();

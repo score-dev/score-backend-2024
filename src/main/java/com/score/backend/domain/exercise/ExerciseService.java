@@ -72,13 +72,14 @@ public class  ExerciseService {
         return exerciseRepository.findUsersWeeklyExercises(user.getId(), LocalDate.now());
     }
 
-    public void saveFeed(User agent, Set<TaggedUser> taggedUsers, WalkingDto walkingDto, String imgUrl) {
+    public Exercise saveFeed(User agent, Set<TaggedUser> taggedUsers, WalkingDto walkingDto, String imgUrl) {
         // 새로운 피드 엔티티 생성z
 
         Exercise feed = walkingDto.toEntity(imgUrl);
         // 피드 작성자, 함께 운동한 친구 설정
         feed.setAgentAndExerciseUser(agent, taggedUsers);
         exerciseRepository.save(feed);
+        return feed;
     }
 
     public Set<TaggedUser> findTaggedUsers(User agent, List<User> otherUsers) {
@@ -152,13 +153,14 @@ public class  ExerciseService {
         return exerciseRepository.countUsersValidateExerciseToday(user.getId(), LocalDate.now()) == 0;
     }
 
-    public void notifyToTaggedUsers(Set<TaggedUser> taggedUsers, User agent) {
+    public void notifyToTaggedUsers(Set<TaggedUser> taggedUsers, Exercise feed) {
         for (TaggedUser taggedUser : taggedUsers) {
             // 태그된 유저들에게 알림 전송 및 알림 저장
             if (taggedUser.getUser().isTag()) {
                 NotificationDto dto = NotificationDto.builder()
-                        .sender(agent)
+                        .sender(feed.getAgent())
                         .receiver(taggedUser.getUser())
+                        .relatedFeed(feed)
                         .type(NotificationType.TAGGED)
                         .build();
                 notificationService.sendAndSaveNotification(dto);

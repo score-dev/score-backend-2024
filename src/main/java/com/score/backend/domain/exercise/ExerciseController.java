@@ -112,8 +112,8 @@ public class ExerciseController {
         groupService.increaseCumulativeTime(agent, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         Set<TaggedUser> taggedUsers = exerciseService.findTaggedUsers(agent, others);
         // 피드 저장
-        exerciseService.saveFeed(agent, taggedUsers, walkingDto, imageUploadService.uploadImage(multipartFile));
-        exerciseService.notifyToTaggedUsers(taggedUsers, agent);
+        Exercise feed = exerciseService.saveFeed(agent, taggedUsers, walkingDto, imageUploadService.uploadImage(multipartFile));
+        exerciseService.notifyToTaggedUsers(taggedUsers, feed);
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }
 
