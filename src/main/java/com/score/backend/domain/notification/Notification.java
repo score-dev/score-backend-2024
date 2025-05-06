@@ -26,6 +26,7 @@ public class Notification extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Setter
     private User sender;
 
     @ManyToOne

@@ -47,6 +47,7 @@ public class NotificationService {
         return new FcmNotificationResponse().toDto(notificationRepository.findByReceiverId(userId, pageable));
     }
 
+    @Transactional(readOnly = true)
     public void getToken(User user, String token) {
         user.setFcmToken(token);
     }
@@ -55,8 +56,7 @@ public class NotificationService {
         sendMessage(saveNotification(dto));
     }
 
-    @Transactional(readOnly = true)
-    public void sendMessage(com.score.backend.domain.notification.Notification notification) {
+    private void sendMessage(com.score.backend.domain.notification.Notification notification) {
         try {
             FirebaseMessaging.getInstance().send(Message.builder()
                     .setNotification(Notification.builder()

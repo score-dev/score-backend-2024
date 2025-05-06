@@ -1,7 +1,10 @@
 package com.score.backend.domain.user;
 
+import com.score.backend.domain.notification.Notification;
+import com.score.backend.domain.notification.NotificationRepository;
 import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.rank.group.GroupRanker;
+import com.score.backend.domain.rank.group.GroupRankerRepository;
 import com.score.backend.domain.user.repositories.UserRepository;
 import com.score.backend.dtos.UserUpdateDto;
 import com.score.backend.config.ImageUploadService;
@@ -27,6 +30,8 @@ public class UserService {
     private final ImageUploadService imageUploadService;
     private final SchoolService schoolService;
     private final RankingService rankingService;
+    private final NotificationRepository notificationRepository;
+    private final GroupRankerRepository groupRankerRepository;
 
     public User findDummyUser() {
         return userRepository.findByNickname("(알 수 없음)").orElseThrow(
@@ -76,6 +81,12 @@ public class UserService {
         List<GroupRanker> rankerInfos = rankingService.findGroupRankersByUserId(deletingUser.getId());
         for (GroupRanker rankerInfo : rankerInfos) {
             rankerInfo.setUser(dummyUser);
+            groupRankerRepository.save(rankerInfo);
+        }
+        List<Notification> sentNotifications = notificationRepository.findBySenderId(deletingUser.getId());
+        for (Notification sentNotification : sentNotifications) {
+            sentNotification.setSender(dummyUser);
+            notificationRepository.save(sentNotification);
         }
         userRepository.delete(deletingUser);
     }
