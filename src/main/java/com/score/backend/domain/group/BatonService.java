@@ -79,7 +79,7 @@ public class BatonService {
         NotificationDto dto = NotificationDto.builder()
                 .sender(sender)
                 .receiver(receiver)
-                .type(NotificationType.TAGGED)
+                .type(NotificationType.BATON)
                 .build();
         notificationService.sendAndSaveNotification(dto);
         saveBatonLog(sender, receiver);

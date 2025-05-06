@@ -21,16 +21,16 @@ public class Notification extends BaseEntity {
     private NotificationType type;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "receiver_id")
     private User receiver;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "sender_id")
     @Setter
     private User sender;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "related_group")
     private GroupEntity relatedGroup;
 
     private String title;
