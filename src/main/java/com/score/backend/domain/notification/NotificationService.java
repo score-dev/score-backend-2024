@@ -75,6 +75,7 @@ public class NotificationService {
         return notificationRepository.save(com.score.backend.domain.notification.Notification.builder()
                         .sender((dto.getSender() == null)? findSystemUser() : dto.getSender())
                         .receiver(dto.getReceiver())
+                        .type(dto.getType())
                         .relatedGroup(dto.getRelatedGroup())
                         .title(dto.getTitle())
                         .body(dto.getBody())
