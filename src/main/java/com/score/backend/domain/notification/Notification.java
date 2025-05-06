@@ -1,6 +1,7 @@
 package com.score.backend.domain.notification;
 
 import com.score.backend.config.BaseEntity;
+import com.score.backend.domain.exercise.Exercise;
 import com.score.backend.domain.group.GroupEntity;
 import com.score.backend.domain.user.User;
 import jakarta.persistence.*;
@@ -33,9 +34,17 @@ public class Notification extends BaseEntity {
     @JoinColumn(name = "related_group")
     private GroupEntity relatedGroup;
 
+    @ManyToOne
+    @JoinColumn(name = "related_feed")
+    private Exercise relatedFeed;
+
     private String title;
 
     private String body;
+
+    @Setter
+    @Builder.Default
+    private boolean isRead = false;
 
     public String getTitle() {
         if (this.getType() == NotificationType.ETC) {

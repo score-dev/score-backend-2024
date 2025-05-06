@@ -34,10 +34,14 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isRead = createBoolean("isRead");
+
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
     public final com.score.backend.domain.user.QUser receiver;
+
+    public final com.score.backend.domain.exercise.QExercise relatedFeed;
 
     public final com.score.backend.domain.group.QGroupEntity relatedGroup;
 
@@ -69,6 +73,7 @@ public class QNotification extends EntityPathBase<Notification> {
     public QNotification(Class<? extends Notification> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.receiver = inits.isInitialized("receiver") ? new com.score.backend.domain.user.QUser(forProperty("receiver"), inits.get("receiver")) : null;
+        this.relatedFeed = inits.isInitialized("relatedFeed") ? new com.score.backend.domain.exercise.QExercise(forProperty("relatedFeed"), inits.get("relatedFeed")) : null;
         this.relatedGroup = inits.isInitialized("relatedGroup") ? new com.score.backend.domain.group.QGroupEntity(forProperty("relatedGroup"), inits.get("relatedGroup")) : null;
         this.sender = inits.isInitialized("sender") ? new com.score.backend.domain.user.QUser(forProperty("sender"), inits.get("sender")) : null;
     }
