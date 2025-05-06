@@ -76,4 +76,16 @@ public class NotificationController {
         notificationService.deleteNotification(notificationId);
         return ResponseEntity.ok("알림 삭제가 완료되었습니다.");
     }
+
+    @Operation(summary = "읽은 알림으로 상태 변경", description = "특정 알림을 읽은 알림으로 설정합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "알림 상태 변경 완료"),
+                    @ApiResponse(responseCode = "404", description = "Notification Not Found"),
+            }
+    )
+    @PutMapping("/score/fcm/change-status")
+    public ResponseEntity<String> changeNotificationStatus(@RequestParam Long notificationId) {
+        notificationService.changeNotificationReadingStatus(notificationId);
+        return ResponseEntity.ok("확인된 알림으로 변경되었습니다.");
+    }
 }
