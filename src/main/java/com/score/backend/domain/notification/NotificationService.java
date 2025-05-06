@@ -92,6 +92,5 @@ public class NotificationService {
         com.score.backend.domain.notification.Notification notification = findNotificationById(notificationId);
         notification.setRead(true);
         notificationRepository.save(notification);
-
     }
 }
