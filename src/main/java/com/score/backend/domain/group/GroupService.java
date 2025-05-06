@@ -1,15 +1,13 @@
 package com.score.backend.domain.group;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.repositories.GroupRepository;
 import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.notification.NotificationService;
+import com.score.backend.domain.notification.NotificationType;
 import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.rank.group.GroupRankerRepository;
-import com.score.backend.domain.rank.group.GroupRanking;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.repositories.UserRepository;
@@ -79,24 +77,6 @@ public class GroupService {
         return generatedGroup;
     }
 
-//    public void updateGroup(Long groupId, GroupCreateDto groupCreateDto, Long adminId) {
-//        GroupEntity group = groupRepository.findById(groupId)
-//                .orElseThrow(() -> new IllegalArgumentException("그룹을 찾을 수 없습니다."));
-//
-//        if (!group.getAdmin().getId().equals(adminId)) {
-//            throw new IllegalArgumentException("권한이 없습니다.");
-//        }
-//
-//        group.setGroupImg(groupCreateDto.getGroupImg());
-//        group.setGroupName(groupCreateDto.getGroupName());
-//        group.setGroupDescription(groupCreateDto.getGroupDescription());
-//        group.setUserLimit(groupCreateDto.getUserLimit());
-//        group.setPrivate(groupCreateDto.isPrivate());
-//        group.setGroupPassword(groupCreateDto.getGroupPassword());
-//
-//        groupRepository.save(group);
-//    }
-
     public void leaveGroup(Long groupId, User user) {
         UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), groupId);
         if (userGroup == null) {
@@ -112,40 +92,6 @@ public class GroupService {
         userGroupRepository.delete(userGroup);
     }
 
-    public void removeGroup(Long groupId) {
-        GroupEntity group = findById(groupId);
-        userGroupRepository.deleteAll(group.getMembers());
-        group.getGroupRankings().forEach(ranking -> groupRankerRepository.deleteAll(ranking.getGroupRankers()));
-
-        groupRepository.delete(group);
-    }
-
-    public void changeGroupAdmin(GroupEntity group, User user) {
-        group.setAdmin(user);
-    }
-
-    public void removeMember(Long groupId, User user) {
-        GroupEntity group = findById(groupId);
-        Long adminId = group.getAdmin().getId(); //그룹의 adminId 가져오기
-
-        if (!group.getAdmin().getId().equals(adminId)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
-
-        if (user.getId().equals(adminId)) {
-            throw new IllegalArgumentException("방장은 강퇴할 수 없습니다.");
-        }
-
-        if (!group.getMembers().contains(user)) {
-            throw new IllegalArgumentException("그룹에 속해 있지 않습니다.");
-        }
-
-        group.getMembers().remove(user); // 그룹의 멤버 목록에서 사용자 제거
-        //user.setGroup(null); // 사용자와 그룹의 연관 관계 해제
-        groupRepository.save(group);
-        userRepository.save(user);
-    }
-
     // 비밀번호 일치 여부 확인
     public boolean verifyGroupPassword(String inputPassword, Long groupId) {
         GroupEntity group = findById(groupId);
@@ -153,11 +99,16 @@ public class GroupService {
     }
 
     // 방장에게 그룹 가입 신청 알림 보내기
-    public void sendGroupJoinRequestNotification(Long groupId, User requester) throws FirebaseMessagingException {
+    public void sendGroupJoinRequestNotification(Long groupId, User requester) {
         GroupEntity group = findById(groupId);
         User admin = group.getAdmin();
-        FcmMessageRequest message = new FcmMessageRequest(admin.getId(), requester.getNickname() + "님이 " + group.getGroupName() + " 그룹의 메이트가 되고 싶어합니다. 수락하시겠나요?", null);
-        notificationService.sendAndSaveNotification(admin, message);
+        NotificationDto dto = NotificationDto.builder()
+                .sender(admin)
+                .receiver(requester)
+                .relatedGroup(group)
+                .type(NotificationType.JOIN_REQUEST)
+                .build();
+        notificationService.sendAndSaveNotification(dto);
     }
 
     // 그룹 내 메이트 목록 전체 조회
@@ -175,7 +126,7 @@ public class GroupService {
     }
 
     // 그룹에 새로운 멤버 추가
-    public void addNewMember(Long groupId, User user) throws FirebaseMessagingException {
+    public void addNewMember(Long groupId, User user) {
         GroupEntity group = findById(groupId);
         if (userGroupRepository.findByUserIdAndGroupId(user.getId(), groupId) == null) {
             if (!group.getBelongingSchool().getId().equals(user.getSchool().getId())) {
@@ -185,8 +136,12 @@ public class GroupService {
             userGroupRepository.save(userGroup);
             group.getMembers().add(userGroup);
             user.addGroup(userGroup, group);
-            FcmMessageRequest message = new FcmMessageRequest(user.getId(), group.getGroupName() + " 그룹에 " + user.getNickname() + "님이 가입이 완료되었습니다!", "앞으로 " + group.getGroupName() + " 그룹과 함께 열심히 달려봐요!");
-            notificationService.sendAndSaveNotification(user, message);
+            NotificationDto dto = NotificationDto.builder()
+                    .receiver(user)
+                    .relatedGroup(group)
+                    .type(NotificationType.JOIN_COMPLETE)
+                    .build();
+            notificationService.sendAndSaveNotification(dto);
             return;
         }
         throw new ScoreCustomException(ExceptionType.ALREADY_JOINED_GROUP);

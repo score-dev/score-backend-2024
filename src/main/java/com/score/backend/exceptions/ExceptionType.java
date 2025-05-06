@@ -14,6 +14,7 @@ public enum ExceptionType {
     FCM_TOKEN_NOT_FOUND("FCM 토큰이 발급되어 있지 않은 유저에게 푸시 알림 전송을 시도했습니다."),
     RANKING_NOT_FOUND("오류로 인해 주간 랭킹이 산정되지 않았습니다."),
     BLOCKED_USER_NOT_FOUND("차단한 적 없는 유저에 대한 차단 해제 요청입니다."),
+    SYSTEM_USER_NOT_FOUND("관리자 계정이 존재하지 않습니다."),
 
     ALREADY_JOINED_GROUP("이미 가입되어 있는 그룹입니다."),
     ALREADY_FRIEND("이미 친구로 등록되어 있습니다."),

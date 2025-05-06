@@ -1,11 +1,12 @@
 package com.score.backend.domain.notification;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.dtos.FcmNotificationResponse;
+import com.score.backend.dtos.NotificationDto;
 import com.score.backend.dtos.PostTokenReq;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,8 +42,15 @@ public class NotificationController {
             }
     )
     @PostMapping("/score/fcm")
-    public ResponseEntity<String> sendFcmNotification(FcmMessageRequest fcmMessageRequest) throws FirebaseMessagingException {
-        notificationService.sendAndSaveNotification(userService.findUserById(fcmMessageRequest.getUserId()), fcmMessageRequest);
+    public ResponseEntity<String> sendFcmNotification(FcmMessageRequest fcmMessageRequest) {
+        NotificationDto dto = NotificationDto.builder()
+                .sender(notificationService.findSystemUser())
+                .receiver(userService.findUserById(fcmMessageRequest.getUserId()))
+                .title(fcmMessageRequest.getTitle())
+                .body(fcmMessageRequest.getBody())
+                .type(NotificationType.ETC)
+                .build();
+        notificationService.sendAndSaveNotification(dto);
         return ResponseEntity.ok("알림 전송이 완료되었습니다.");
     }
 

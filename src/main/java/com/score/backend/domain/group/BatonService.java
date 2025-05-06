@@ -1,10 +1,11 @@
 package com.score.backend.domain.group;
 
 import com.score.backend.domain.notification.NotificationService;
+import com.score.backend.domain.notification.NotificationType;
 import com.score.backend.domain.user.User;
 import com.score.backend.dtos.BatonStatusDto;
-import com.score.backend.dtos.FcmMessageRequest;
 import com.score.backend.domain.user.repositories.UserRepository;
+import com.score.backend.dtos.NotificationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -75,8 +76,12 @@ public class BatonService {
         if (!canTurnOverBaton(sender, receiver)) {
             return false;
         }
-        FcmMessageRequest message = new FcmMessageRequest(receiver.getId(), sender.getNickname() + "님이 바통을 넘겼습니다!", null);
-        notificationService.sendAndSaveNotification(receiver, message);
+        NotificationDto dto = NotificationDto.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .type(NotificationType.BATON)
+                .build();
+        notificationService.sendAndSaveNotification(dto);
         saveBatonLog(sender, receiver);
         return true;
     }

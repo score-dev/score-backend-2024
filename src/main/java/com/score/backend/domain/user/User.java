@@ -98,7 +98,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGroup> userGroups = new ArrayList<>();
 
-    @OneToMany(mappedBy = "agent", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     @Builder.Default
     private List<Notification> notifications = new ArrayList<>();

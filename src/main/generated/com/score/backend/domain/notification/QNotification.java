@@ -24,8 +24,6 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
 
-    public final com.score.backend.domain.user.QUser agent;
-
     public final StringPath body = createString("body");
 
     //inherited
@@ -39,7 +37,15 @@ public class QNotification extends EntityPathBase<Notification> {
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
+    public final com.score.backend.domain.user.QUser receiver;
+
+    public final com.score.backend.domain.group.QGroupEntity relatedGroup;
+
+    public final com.score.backend.domain.user.QUser sender;
+
     public final StringPath title = createString("title");
+
+    public final EnumPath<NotificationType> type = createEnum("type", NotificationType.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -62,7 +68,9 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public QNotification(Class<? extends Notification> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.agent = inits.isInitialized("agent") ? new com.score.backend.domain.user.QUser(forProperty("agent"), inits.get("agent")) : null;
+        this.receiver = inits.isInitialized("receiver") ? new com.score.backend.domain.user.QUser(forProperty("receiver"), inits.get("receiver")) : null;
+        this.relatedGroup = inits.isInitialized("relatedGroup") ? new com.score.backend.domain.group.QGroupEntity(forProperty("relatedGroup"), inits.get("relatedGroup")) : null;
+        this.sender = inits.isInitialized("sender") ? new com.score.backend.domain.user.QUser(forProperty("sender"), inits.get("sender")) : null;
     }
 
 }
