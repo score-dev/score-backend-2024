@@ -3,7 +3,6 @@ package com.score.backend.domain.notification;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.score.backend.domain.exercise.TaggedUser;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.repositories.UserRepository;
 import com.score.backend.dtos.FcmNotificationResponse;
@@ -18,8 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +33,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public com.score.backend.domain.notification.Notification findById(Long id) {
+    public com.score.backend.domain.notification.Notification findNotificationById(Long id) {
         return notificationRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(ExceptionType.NOTIFICATION_NOT_FOUND));
     }
@@ -77,6 +74,7 @@ public class NotificationService {
                         .receiver(dto.getReceiver())
                         .type(dto.getType())
                         .relatedGroup(dto.getRelatedGroup())
+                        .relatedFeed((dto.getRelatedFeed() == null)? null : dto.getRelatedFeed())
                         .title(dto.getTitle())
                         .body(dto.getBody())
                         .build());
@@ -88,5 +86,12 @@ public class NotificationService {
 
     public void changeNotificationReceivingStatus(User user, NotificationStatusRequest request) {
         user.setNotificationReceivingStatus(request);
+    }
+
+    public void changeNotificationReadingStatus(Long notificationId) {
+        com.score.backend.domain.notification.Notification notification = findNotificationById(notificationId);
+        notification.setRead(true);
+        notificationRepository.save(notification);
+
     }
 }
