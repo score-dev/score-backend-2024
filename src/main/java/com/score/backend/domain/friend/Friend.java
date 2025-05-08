@@ -26,7 +26,7 @@ public class Friend extends BaseEntity {
     private User friend;
 
     public Friend(User user, User friend) {
-        if (user.getId() == friend.getId()) {
+        if (user.getId().equals(friend.getId())) {
             throw new ScoreCustomException(ExceptionType.SELF_FRIEND);
         }
         this.user = user;
