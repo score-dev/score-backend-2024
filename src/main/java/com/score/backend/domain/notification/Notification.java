@@ -46,6 +46,9 @@ public class Notification extends BaseEntity {
     @Builder.Default
     private boolean isRead = false;
 
+    @Setter
+    private boolean isJoinRequestAccepted;
+
     public String getTitle() {
         if (this.getType() == NotificationType.ETC) {
             return this.title;
