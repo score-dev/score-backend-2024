@@ -87,4 +87,16 @@ public class NotificationController {
         notificationService.changeNotificationReadingStatus(notificationId);
         return ResponseEntity.ok("확인된 알림으로 변경되었습니다.");
     }
+
+    @Operation(summary = "방장의 그룹 가입 승인 여부 저장", description = "특정 그룹 가입 신청 알림에 대해 방장이 승인했는지 여부를 저장합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "그룹 가입 승인 여부 저장 완료"),
+                    @ApiResponse(responseCode = "404", description = "Notification Not Found"),
+            }
+    )
+    @PutMapping("/score/fcm/change-acceptance")
+    public ResponseEntity<String> changeNotificationStatus(@RequestParam Long notificationId, @RequestParam boolean wasAccepted) {
+        notificationService.changeGroupJoinAcceptanceStatus(notificationId, wasAccepted);
+        return ResponseEntity.ok("해당 알림에 대한 그룹 가입 승인 여부 저장이 완료되었습니다.");
+    }
 }

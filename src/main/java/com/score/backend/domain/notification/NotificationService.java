@@ -93,4 +93,10 @@ public class NotificationService {
         notification.setRead(true);
         notificationRepository.save(notification);
     }
+
+    public void changeGroupJoinAcceptanceStatus(Long notificationId, boolean wasAccepted) {
+        com.score.backend.domain.notification.Notification notification = findNotificationById(notificationId);
+        notification.setJoinRequestAccepted(wasAccepted);
+        notificationRepository.save(notification);
+    }
 }

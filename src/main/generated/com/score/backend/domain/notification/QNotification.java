@@ -34,6 +34,8 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isJoinRequestAccepted = createBoolean("isJoinRequestAccepted");
+
     public final BooleanPath isRead = createBoolean("isRead");
 
     //inherited

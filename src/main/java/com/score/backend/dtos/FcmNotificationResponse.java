@@ -45,6 +45,8 @@ public class FcmNotificationResponse {
     private String body;
     @Schema(description = "확인된 알림인지 여부")
     private boolean isRead;
+    @Schema(description = "해당 그룹 가입 요청을 승인했는지 여부 (그룹 관련 알림이 아니거나 아직 확인되지 않은 알림인 경우 false)")
+    private boolean isJoinRequestAccepted;
 
     public Page<FcmNotificationResponse> toDto(Page<Notification> notificationPages) {
         List<FcmNotificationResponse> contents = notificationPages.getContent().stream()
@@ -60,6 +62,7 @@ public class FcmNotificationResponse {
                         .title(notification.getTitle())
                         .body(notification.getBody())
                         .isRead(notification.isRead())
+                        .isJoinRequestAccepted(notification.isJoinRequestAccepted())
                         .build()).toList();
         return new PageImpl<>(contents, notificationPages.getPageable(), notificationPages.getTotalElements());
     }

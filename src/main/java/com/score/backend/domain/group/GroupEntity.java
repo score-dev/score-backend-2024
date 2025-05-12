@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Table(name = "group_entity")
 @Getter
@@ -23,7 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupEntity extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "group_id")
@@ -75,5 +73,4 @@ public class GroupEntity extends BaseEntity {
     public void updateCumulativeTime(double duration) {
         this.cumulativeTime += duration;
     }
-
 }
