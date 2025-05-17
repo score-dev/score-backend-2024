@@ -22,13 +22,23 @@ public class NotificationController {
     private final UserService userService;
     private final NotificationService notificationService;
 
+    @Operation(summary = "서버에 저장된 FCM 토큰 확인", description = "현재 서버에 저장되어 있는 FCM 토큰을 확인합니다.")
+    @ApiResponses(
+            value = {@ApiResponse(responseCode = "200", description = "토큰 값 응답 완료"),
+                    @ApiResponse(responseCode = "404", description = "User Not Found")}
+    )
+    @GetMapping("/score/fcm/token/get")
+    public ResponseEntity<String> getCurrentFcmToken(@RequestParam Long userId) {
+        return ResponseEntity.ok(notificationService.getToken(userService.findUserById(userId)));
+    }
+
     @Operation(summary = "FCM 토큰 발급", description = "알림 전송을 위해 유저의 FCM 토큰을 발급받아 서버에 저장합니다.")
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "토큰 발급 및 저장 완료."),
                     @ApiResponse(responseCode = "404", description = "User Not Found")}
     )
-    @PostMapping("/{userId}/token")
-    public ResponseEntity<String> getToken(@PathVariable Long userId, @Valid @RequestBody PostTokenReq postTokenReq) {
+    @PostMapping("/score/fcm/token/set")
+    public ResponseEntity<String> setToken(@RequestParam Long userId, @Valid @RequestBody PostTokenReq postTokenReq) {
         notificationService.setToken(userService.findUserById(userId), postTokenReq.getToken());
         return ResponseEntity.ok("토큰이 저장되었습니다.");
     }
@@ -40,7 +50,7 @@ public class NotificationController {
                     @ApiResponse(responseCode = "400", description = "Firebase Messaging Error")
             }
     )
-    @PostMapping("/score/fcm")
+    @PostMapping("/score/fcm/send")
     public ResponseEntity<String> sendFcmNotification(@RequestBody FcmMessageRequest fcmMessageRequest) {
         NotificationDto dto = NotificationDto.builder()
                 .sender(notificationService.findSystemUser())

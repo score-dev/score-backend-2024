@@ -44,9 +44,14 @@ public class NotificationService {
         return new FcmNotificationResponse().toDto(notificationRepository.findByReceiverId(userId, pageable));
     }
 
-    @Transactional(readOnly = true)
     public void setToken(User user, String token) {
         user.setFcmToken(token);
+    }
+
+
+    @Transactional(readOnly = true)
+    public String getToken(User user) {
+        return user.getFcmToken();
     }
 
     public void sendAndSaveNotification(NotificationDto dto) {
