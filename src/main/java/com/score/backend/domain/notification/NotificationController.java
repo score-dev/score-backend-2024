@@ -80,7 +80,7 @@ public class NotificationController {
                     @ApiResponse(responseCode = "404", description = "Notification Not Found"),
             }
     )
-    @PostMapping("/score/fcm/delete")
+    @DeleteMapping("/score/fcm/delete")
     public ResponseEntity<String> deleteFcmNotification(@RequestParam Long notificationId) {
         notificationService.deleteNotification(notificationId);
         return ResponseEntity.ok("알림 삭제가 완료되었습니다.");
