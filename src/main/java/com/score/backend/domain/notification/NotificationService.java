@@ -45,7 +45,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public void getToken(User user, String token) {
+    public void setToken(User user, String token) {
         user.setFcmToken(token);
     }
 

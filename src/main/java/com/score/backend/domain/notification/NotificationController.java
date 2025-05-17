@@ -29,7 +29,7 @@ public class NotificationController {
     )
     @PostMapping("/{userId}/token")
     public ResponseEntity<String> getToken(@PathVariable Long userId, @Valid @RequestBody PostTokenReq postTokenReq) {
-        notificationService.getToken(userService.findUserById(userId), postTokenReq.getToken());
+        notificationService.setToken(userService.findUserById(userId), postTokenReq.getToken());
         return ResponseEntity.ok("토큰이 저장되었습니다.");
     }
 
@@ -41,7 +41,7 @@ public class NotificationController {
             }
     )
     @PostMapping("/score/fcm")
-    public ResponseEntity<String> sendFcmNotification(FcmMessageRequest fcmMessageRequest) {
+    public ResponseEntity<String> sendFcmNotification(@RequestBody FcmMessageRequest fcmMessageRequest) {
         NotificationDto dto = NotificationDto.builder()
                 .sender(notificationService.findSystemUser())
                 .receiver(userService.findUserById(fcmMessageRequest.getUserId()))
