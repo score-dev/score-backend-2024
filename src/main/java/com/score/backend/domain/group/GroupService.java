@@ -7,7 +7,6 @@ import com.score.backend.domain.group.repositories.UserGroupRepository;
 import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.notification.NotificationType;
 import com.score.backend.domain.rank.RankingService;
-import com.score.backend.domain.rank.group.GroupRankerRepository;
 import com.score.backend.dtos.*;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.repositories.UserRepository;
@@ -38,7 +37,6 @@ public class GroupService {
     private final RankingService rankingService;
     private final ImageUploadService imageUploadService;
     private final NotificationService notificationService;
-    private final GroupRankerRepository groupRankerRepository;
 
     @Transactional(readOnly = true)
     public GroupEntity findById(Long id) {
@@ -99,14 +97,15 @@ public class GroupService {
     }
 
     // 방장에게 그룹 가입 신청 알림 보내기
-    public void sendGroupJoinRequestNotification(Long groupId, User requester) {
-        GroupEntity group = findById(groupId);
+    public void sendGroupJoinRequestNotification(GroupJoinRequest groupJoinRequest, User requester) {
+        GroupEntity group = findById(groupJoinRequest.getGroupId());
         User admin = group.getAdmin();
         NotificationDto dto = NotificationDto.builder()
                 .sender(requester)
                 .receiver(admin)
                 .relatedGroup(group)
                 .type(NotificationType.JOIN_REQUEST)
+                .body(groupJoinRequest.getMessage())
                 .build();
         notificationService.sendAndSaveNotification(dto);
     }

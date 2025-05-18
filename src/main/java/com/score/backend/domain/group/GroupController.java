@@ -92,9 +92,9 @@ public class GroupController {
             @ApiResponse(responseCode = "409", description = "정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.")
     })
     @GetMapping("/join/request")
-    public ResponseEntity<String> sendGroupJoinRequest(@RequestParam("groupId") Long groupId, @RequestParam("userId") Long userId) throws FirebaseMessagingException {
-        if (groupService.checkEmptySpaceExistence(groupId)) {
-            groupService.sendGroupJoinRequestNotification(groupId, userService.findUserById(userId));
+    public ResponseEntity<String> sendGroupJoinRequest(@RequestBody GroupJoinRequest groupJoinRequest) {
+        if (groupService.checkEmptySpaceExistence(groupJoinRequest.getGroupId())) {
+            groupService.sendGroupJoinRequestNotification(groupJoinRequest, userService.findUserById(groupJoinRequest.getRequesterId()));
             return ResponseEntity.ok("방장에게 그룹 가입 신청이 완료되었습니다.");
         }
         throw new ScoreCustomException(ExceptionType.FULL_GROUP);
