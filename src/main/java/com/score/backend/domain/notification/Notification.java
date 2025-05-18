@@ -77,7 +77,7 @@ public class Notification extends BaseEntity {
     }
 
     public String getBody() {
-        if (this.getType() == NotificationType.ETC) {
+        if (this.getType() == NotificationType.ETC || this.getType() == NotificationType.JOIN_REQUEST) {
             return this.body;
         }
         if (this.getType() == NotificationType.JOIN_COMPLETE) {

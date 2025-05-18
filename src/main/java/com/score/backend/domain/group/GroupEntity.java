@@ -17,7 +17,6 @@ import java.util.List;
 @Entity
 @Table(name = "group_entity")
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
