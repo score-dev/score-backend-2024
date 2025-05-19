@@ -42,7 +42,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     public int countUsersValidateExerciseToday(Long userId, LocalDate today) {
         return Math.toIntExact(
                 queryFactory
-                        .select(e.count())
+                        .select(e.countDistinct())
                         .from(e)
                         .where(
                                 userIdEq(userId),
@@ -75,7 +75,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
                 .fetch();
 
         Long total = queryFactory
-                .select(e.count())
+                .select(e.countDistinct())
                 .from(e)
                 .join(e.agent, u)
                 .join(u.userGroups, ug)
@@ -102,7 +102,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
                 .fetch();
 
         Long total = queryFactory
-                .select(e.count())
+                .select(e.countDistinct())
                 .from(e)
                 .join(e.agent, u)
                 .join(u.userGroups, ug)
