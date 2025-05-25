@@ -91,7 +91,7 @@ public class GroupController {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "409", description = "정원이 가득 차 새로운 유저가 가입할 수 없는 그룹입니다.")
     })
-    @GetMapping("/join/request")
+    @PostMapping("/join/request")
     public ResponseEntity<String> sendGroupJoinRequest(@RequestBody GroupJoinRequest groupJoinRequest) {
         if (groupService.checkEmptySpaceExistence(groupJoinRequest.getGroupId())) {
             groupService.sendGroupJoinRequestNotification(groupJoinRequest, userService.findUserById(groupJoinRequest.getRequesterId()));

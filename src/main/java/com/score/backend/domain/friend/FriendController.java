@@ -1,7 +1,6 @@
 package com.score.backend.domain.friend;
 
 import com.score.backend.domain.friend.block.BlockService;
-import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FriendsSearchResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +28,8 @@ public class FriendController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "친구 추가 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
-    public ResponseEntity<String> addNewFriend(@Parameter(required = true, description = "친구 신청 보낸 유저의 고유 id 값")@PathVariable("id1") Long id1,
-                                                   @Parameter(required = true, description = "친구 신청 받은 유저의 고유 id 값") @PathVariable("id2") Long id2) throws BadRequestException {
+    public ResponseEntity<String> addNewFriend(@Parameter(required = true, description = "친구 신청 보낸 유저의 고유 id 값") @PathVariable("id1") Long id1,
+                                                   @Parameter(required = true, description = "친구 신청 받은 유저의 고유 id 값") @PathVariable("id2") Long id2) {
         friendService.saveNewFriend(userService.findUserById(id1), userService.findUserById(id2));
         return ResponseEntity.ok("친구 추가가 완료되었습니다.");
     }
@@ -53,7 +51,7 @@ public class FriendController {
             value = {@ApiResponse(responseCode = "200", description = "친구 차단 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
     public ResponseEntity<String> blockFriend(@Parameter(required = true, description = "친구 차단 요청을 한 유저의 고유 id 값")@PathVariable Long id1,
-                                                   @Parameter(required = true, description = "id1이 차단하고자 하는 친구의 고유 id 값") @PathVariable Long id2) throws BadRequestException {
+                                                   @Parameter(required = true, description = "id1이 차단하고자 하는 친구의 고유 id 값") @PathVariable Long id2) {
         blockService.blockFriend(userService.findUserById(id1), userService.findUserById(id2));
         return ResponseEntity.ok("친구 차단이 완료되었습니다.");
     }

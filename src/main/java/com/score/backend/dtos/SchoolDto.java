@@ -14,9 +14,6 @@ public class SchoolDto {
     @Schema(description = "힉교명")
     private String schoolName;
 
-    //@Schema(description = "학교가 속해 있는 행정 구역")
-    //private String schoolLocation;
-
     @Schema(description = "힉교 주소")
     private String schoolAddress;
 
@@ -25,7 +22,6 @@ public class SchoolDto {
 
     public SchoolDto(String schoolName, String schoolAddress, String schoolCode) {
         this.schoolName = schoolName;
-        //this.schoolLocation = schoolLocation;
         this.schoolAddress = schoolAddress;
         this.schoolCode = schoolCode;
     }
@@ -33,7 +29,6 @@ public class SchoolDto {
     public School toEntity() {
         return School.builder()
                 .schoolName(schoolName)
-                //.schoolLocation(schoolLocation)
                 .schoolCode(schoolCode)
                 .build();
     }

@@ -6,7 +6,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.Exercise;
 import com.score.backend.domain.exercise.QExercise;
-import com.score.backend.domain.group.QGroupEntity;
 import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     QExercise e = new QExercise("e");
     QUser u = new QUser("u");
-    QGroupEntity g = new QGroupEntity("g");
     QUserGroup ug = new QUserGroup("ug");
 
     @Override
@@ -42,7 +40,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
     public int countUsersValidateExerciseToday(Long userId, LocalDate today) {
         return Math.toIntExact(
                 queryFactory
-                        .select(e.count())
+                        .select(e.countDistinct())
                         .from(e)
                         .where(
                                 userIdEq(userId),
@@ -75,10 +73,9 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
                 .fetch();
 
         Long total = queryFactory
-                .select(e.count())
+                .select(e.countDistinct())
                 .from(e)
                 .join(e.agent, u)
-                .join(u.userGroups, ug)
                 .where(e.agent.id.eq(userId))
                 .fetchOne();
         if (total == null) {
@@ -102,7 +99,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepositoryCustom {
                 .fetch();
 
         Long total = queryFactory
-                .select(e.count())
+                .select(e.countDistinct())
                 .from(e)
                 .join(e.agent, u)
                 .join(u.userGroups, ug)

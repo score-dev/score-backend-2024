@@ -22,7 +22,7 @@ public class GroupInfoResponse {
     private double averageParticipateRatio;
     @Schema(description = "그룹의 프로필 이미지 URL")
     private String groupImg;
-    @Schema(description = "공개 그룹인지 여부")
+    @Schema(description = "비공개 그룹인지 여부")
     private boolean isPrivate;
     @Schema(description = "그룹에 가입되어 있는 유저의 수")
     private int numOfTotalMembers;
