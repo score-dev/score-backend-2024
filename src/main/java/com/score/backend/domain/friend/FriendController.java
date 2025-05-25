@@ -28,7 +28,7 @@ public class FriendController {
     @ApiResponses(
             value = {@ApiResponse(responseCode = "200", description = "친구 추가 완료"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")})
-    public ResponseEntity<String> addNewFriend(@Parameter(required = true, description = "친구 신청 보낸 유저의 고유 id 값")@PathVariable("id1") Long id1,
+    public ResponseEntity<String> addNewFriend(@Parameter(required = true, description = "친구 신청 보낸 유저의 고유 id 값") @PathVariable("id1") Long id1,
                                                    @Parameter(required = true, description = "친구 신청 받은 유저의 고유 id 값") @PathVariable("id2") Long id2) {
         friendService.saveNewFriend(userService.findUserById(id1), userService.findUserById(id2));
         return ResponseEntity.ok("친구 추가가 완료되었습니다.");

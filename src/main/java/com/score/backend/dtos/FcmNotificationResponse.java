@@ -31,10 +31,14 @@ public class FcmNotificationResponse {
     private Long senderId;
     @Schema(description = "알림을 보낸 사람의 프로필 이미지 url (시스템 알림일 경우 null)", nullable = true)
     private String senderProfileImgUrl;
+    @Schema(description = "알림을 보낸 사람의 닉네임 (시스템 알림일 경우 null)", nullable = true)
+    private String senderNickname;
     @Schema(description = "알림을 받은 유저의 고유 id 값")
     private Long receiverId;
     @Schema(description = "알림이 관련되어 있는 그룹의 고유 id 값 (그룹 관련 알림이 아닌 경우 null)", nullable = true)
     private Long relatedGroupId;
+    @Schema(description = "알림이 관련되어 있는 그룹의 이름 (그룹 관련 알림이 아닌 경우 null)", nullable = true)
+    private String relatedGroupName;
     @Schema(description = "알림을 받은 유저가 태그된 피드의 고유 id 값 (태그 알림이 아닌 경우 null)", nullable = true)
     private Long relatedFeedId;
     @Schema(description = "알림이 전송된 날짜 및 시각")
@@ -56,7 +60,9 @@ public class FcmNotificationResponse {
                         .senderId(notification.getSender().getId().equals(1L)? null : notification.getSender().getId())
                         .receiverId(notification.getReceiver().getId())
                         .senderProfileImgUrl(notification.getSender().getProfileImg() != null ? notification.getSender().getProfileImg() : null)
+                        .senderNickname(notification.getSender().getId().equals(1L) ? notification.getSender().getNickname() : null)
                         .relatedGroupId(notification.getRelatedGroup() != null ? notification.getRelatedGroup().getGroupId() : null)
+                        .relatedGroupName(notification.getRelatedGroup() != null ? notification.getRelatedGroup().getGroupName() : null)
                         .relatedFeedId(notification.getRelatedFeed() != null ? notification.getRelatedFeed().getId() : null)
                         .createdAt(notification.getCreatedAt())
                         .title(notification.getTitle())
