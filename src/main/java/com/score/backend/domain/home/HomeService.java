@@ -8,7 +8,6 @@ import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.report.userreport.UserReportService;
 import com.score.backend.domain.user.User;
-import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.home.HomeGroupInfoResponse;
 import com.score.backend.dtos.home.HomeNotExercisedUserResponse;
 import com.score.backend.dtos.home.HomeResponse;
