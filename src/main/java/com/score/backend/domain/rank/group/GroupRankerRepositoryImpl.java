@@ -2,6 +2,7 @@ package com.score.backend.domain.rank.group;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.group.QGroupEntity;
+import com.score.backend.domain.rank.QRanker;
 import com.score.backend.domain.user.QUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,7 @@ public class GroupRankerRepositoryImpl implements GroupRankerRepositoryCustom {
     public GroupRanker findLastWeekGroupRankerByGroupIdAndUserId(Long groupId, Long userId) {
         return queryFactory.select(groupRanker)
                 .from(groupRanking)
+                .join(groupRanking.groupRankers, groupRanker)
                 .join(groupRanking.group, groupEntity)
                 .join(groupRanker).on(groupRanker.id.eq(groupRanker.id))
                 .join(groupRanker.user, user)

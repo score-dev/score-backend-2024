@@ -55,7 +55,7 @@ public class SchedulerService {
     }
 
     // 매주 월요일 0시에 실행
-    @Scheduled(cron = "0 0 0 * * MON")
+    @Scheduled(cron = "0 0 1 * * MON")
     public void executeWeeklyScheduledTask() {
         List<GroupEntity> allGroups = groupService.findAll();
         for (GroupEntity group : allGroups) {
