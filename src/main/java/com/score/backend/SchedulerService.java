@@ -78,7 +78,7 @@ public class SchedulerService {
     private GroupRanking calculateGroupRanking(GroupEntity group) {
         // 그룹 내 주간 랭킹 산정
         GroupRanking gr = rankingService.calculateWeeklyGroupRanking(group);
-        if (!gr.getGroupRankers().isEmpty() && gr.getGroupRankers().size() > 1) {
+        if (gr.getGroupRankers().size() > 1) {
             for (int i = 0; i < gr.getGroupRankers().size(); i++) {
                 GroupRanker currGroupRanker = gr.getGroupRankers().get(i);
                 if (currGroupRanker.getRankNum() > 1) {
@@ -87,7 +87,6 @@ public class SchedulerService {
                 // 그룹 랭킹 1위인 유저에게 400포인트 지급
                 currGroupRanker.getUser().updatePoint(400);
                 // 그룹 랭킹 1위인 유저에게 알림 발송
-
                 NotificationDto dto = NotificationDto.builder()
                         .receiver(currGroupRanker.getUser())
                         .relatedGroup(group)
@@ -102,7 +101,7 @@ public class SchedulerService {
 
     private SchoolRanking calculateSchoolRanking(School school) {
         SchoolRanking sr = rankingService.calculateWeeklySchoolRanking(school);
-        if (!sr.getSchoolRankers().isEmpty() && sr.getSchoolRankers().size() > 1) {
+        if (sr.getSchoolRankers().size() > 1) {
             for (int i = 0; i < sr.getSchoolRankers().size(); i++) {
                 SchoolRanker currSchoolRanker = sr.getSchoolRankers().get(i);
                 if (currSchoolRanker.getRankNum() > 1) {
