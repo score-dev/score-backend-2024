@@ -21,7 +21,7 @@ public enum ExceptionType {
     ALREADY_BLOCKED("이미 차단한 유저입니다."),
 
     UNSUPPORTED_FILE_TYPE("지원하지 않는 파일입니다. 확장자가 jpg, png인 파일만 업로드 가능합니다."),
-    EXCEEDED_FILE_SIZE("파일의 크기가 너무 큽니다. 3MB 이하의 파일만 업로드 가능합니다."),
+    EXCEEDED_FILE_SIZE("파일의 크기가 너무 큽니다. 5MB 이하의 파일만 업로드 가능합니다."),
 
     NICKNAME_FORMAT_ERROR("형식에 맞지 않는 닉네임입니다. 10자 이내의 한글만 입력 가능합니다."),
     GROUP_NAME_FORMAT_ERROR("형식에 맞지 않는 그룹명입니다. 20자 이내의 한글, 숫자, 영어만 입력 가능합니다."),
