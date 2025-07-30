@@ -64,7 +64,7 @@ public class RankingService {
             GroupRanker lastWeekRankerInfo = groupRankerRepository.findLastWeekGroupRankerByGroupIdAndUserId(group.getGroupId(), info.get(i).user.getId());
             // 지난주와의 순위 비교 후 변동 추이 계산
             if (lastWeekRankerInfo != null) {
-                info.get(i).changedDegree = (i + 1) - lastWeekRankerInfo.getRankNum();
+                info.get(i).changedDegree = lastWeekRankerInfo.getRankNum() - (i + 1);
             } else {
                 info.get(i).changedDegree = 0;
             }
@@ -120,7 +120,7 @@ public class RankingService {
 
             SchoolRanker lastWeekRanker = schoolRankService.findLastWeekSchoolRankingByGroupId(info.get(i).group.getGroupId());
             if (lastWeekRanker != null) {
-                info.get(i).changedDegree = (i + 1) - lastWeekRanker.getRankNum(); // 지난주와의 순위 변동
+                info.get(i).changedDegree = lastWeekRanker.getRankNum() - (i + 1); // 지난주와의 순위 변동
             } else {
                 info.get(i).changedDegree = 0;
             }

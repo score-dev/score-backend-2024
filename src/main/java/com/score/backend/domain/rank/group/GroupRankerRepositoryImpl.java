@@ -21,8 +21,8 @@ public class GroupRankerRepositoryImpl implements GroupRankerRepositoryCustom {
     public GroupRanker findLastWeekGroupRankerByGroupIdAndUserId(Long groupId, Long userId) {
         return queryFactory.select(groupRanker)
                 .from(groupRanking)
+                .join(groupRanking.groupRankers, groupRanker)
                 .join(groupRanking.group, groupEntity)
-                .join(groupRanker).on(groupRanker.id.eq(groupRanker.id))
                 .join(groupRanker.user, user)
                 .where(
                         groupRanking.startDate.eq(LocalDate.now().minusDays(14)),

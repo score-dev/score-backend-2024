@@ -60,7 +60,7 @@ public class FcmNotificationResponse {
                         .senderId(notification.getSender().getId().equals(1L)? null : notification.getSender().getId())
                         .receiverId(notification.getReceiver().getId())
                         .senderProfileImgUrl(notification.getSender().getProfileImg() != null ? notification.getSender().getProfileImg() : null)
-                        .senderNickname(notification.getSender().getId().equals(1L) ? notification.getSender().getNickname() : null)
+                        .senderNickname(notification.getSender().getId().equals(1L) ? null : notification.getSender().getNickname())
                         .relatedGroupId(notification.getRelatedGroup() != null ? notification.getRelatedGroup().getGroupId() : null)
                         .relatedGroupName(notification.getRelatedGroup() != null ? notification.getRelatedGroup().getGroupName() : null)
                         .relatedFeedId(notification.getRelatedFeed() != null ? notification.getRelatedFeed().getId() : null)
