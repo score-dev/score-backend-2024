@@ -36,15 +36,12 @@ public class EmotionController {
             @Parameter(required = true, description = "감정 표현을 누른 피드 게시물의 고유 id 값") @RequestParam("feedId") Long feedId,
             @Parameter(required = true, description = "좋아요(like), 최고예요(best), 응원해요(support), 축하해요(congrat), 일등이에요(first) 중 어떤 감정 표현인지", example = "like")
             @RequestParam("type") EmotionType type) {
-        Emotion emotion = emotionService.checkDuplicateEmotion(agentId, emotionService.findAllEmotionTypes(feedId, type));
         // 해당 타입의 감정 표현을 한 적이 없는 유저인 경우 감정 표현 추가
-        if (emotion == null) {
-            emotionService.addEmotion(userService.findUserById(agentId), exerciseService.findFeedByExerciseId(feedId), type);
+        // 해당 타입의 감정 표현을 한 적이 있는 유저인 경우 감정 표현 삭제
+        if (emotionService.addOrDeleteEmotion(userService.findUserById(agentId), exerciseService.findFeedByExerciseId(feedId), type)) {
             return ResponseEntity.ok("감정 표현 추가가 완료되었습니다.");
-        } else { // 해당 타입의 감정 표현을 한 적이 있는 유저인 경우 감정 표현 삭제
-            emotionService.deleteEmotion(emotion);
-            return ResponseEntity.ok("감정 표현 삭제가 완료되었습니다.");
         }
+        return ResponseEntity.ok("감정 표현 삭제가 완료되었습니다.");
     }
 
     @Operation(summary = "피드에 등록된 모든 감정 표현 목록 조회", description = "감정 표현 타입에 상관 없이 해당 피드에 추가되어 있는 모든 감정 표현의 리스트를 응답합니다.")

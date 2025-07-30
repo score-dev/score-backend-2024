@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,15 +19,25 @@ import java.util.List;
 public class EmotionService {
     private final EmotionRepository emotionRepository;
 
+    public boolean addOrDeleteEmotion(User agent, Exercise feed, EmotionType type) {
+        Optional<Emotion> foundEmotion = emotionRepository.findUsersEmotionByFeedIdAndEmotionType(feed.getId(), agent.getId(), type);
+        if (foundEmotion.isEmpty()) {
+            addEmotion(agent, feed, type);
+            return true;
+        }
+        deleteEmotion(foundEmotion.get());
+        return false;
+    }
+
     // 피드에 새로운 감정 표현 추가
-    public void addEmotion(User agent, Exercise feed, EmotionType emotionType) {
+    private void addEmotion(User agent, Exercise feed, EmotionType emotionType) {
         Emotion emotion = new Emotion();
         emotion.setEmotion(agent, feed, emotionType);
         emotionRepository.save(emotion);
     }
 
-    // 감정 표현 삭제
-    public void deleteEmotion(Emotion emotion) {
+    // 특정 감정 표현 삭제
+    private void deleteEmotion(Emotion emotion) {
         emotionRepository.delete(emotion);
     }
 
@@ -56,19 +67,5 @@ public class EmotionService {
     @Transactional(readOnly = true)
     public List<Emotion> findAllEmotionTypes(Long feedId, EmotionType emotionType) {
         return emotionRepository.findAllEmotionType(feedId, emotionType);
-    }
-
-    // 해당 타입의 감정 표현을 이미 한 유저인지 여부 확인
-    @Transactional(readOnly = true)
-    public Emotion checkDuplicateEmotion(Long userId, List<Emotion> savedEmotions) {
-        if (savedEmotions.isEmpty()) {
-            return null;
-        }
-        for (Emotion emotion : savedEmotions) {
-            if (emotion.getAgent().getId().equals(userId)) {
-                return emotion;
-            }
-        }
-        return null;
     }
 }
