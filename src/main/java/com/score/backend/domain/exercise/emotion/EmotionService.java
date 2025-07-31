@@ -1,6 +1,5 @@
 package com.score.backend.domain.exercise.emotion;
 
-import com.score.backend.domain.user.User;
 import com.score.backend.domain.exercise.Exercise;
 import com.score.backend.dtos.EmotionStatusResponse;
 import com.score.backend.exceptions.ExceptionType;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,26 +17,13 @@ import java.util.Optional;
 public class EmotionService {
     private final EmotionRepository emotionRepository;
 
-    public boolean addOrDeleteEmotion(User agent, Exercise feed, EmotionType type) {
-        Optional<Emotion> foundEmotion = emotionRepository.findUsersEmotionByFeedIdAndEmotionType(feed.getId(), agent.getId(), type);
-        if (foundEmotion.isEmpty()) {
-            addEmotion(agent, feed, type);
+    public boolean addOrDeleteEmotion(Long agentId, Long feedId, EmotionType type) {
+        int deleted = emotionRepository.deleteEmotion(agentId, feedId, type);
+        if (deleted == 0) {
+            emotionRepository.insertEmotion(agentId, feedId, type.name());
             return true;
         }
-        deleteEmotion(foundEmotion.get());
         return false;
-    }
-
-    // 피드에 새로운 감정 표현 추가
-    private void addEmotion(User agent, Exercise feed, EmotionType emotionType) {
-        Emotion emotion = new Emotion();
-        emotion.setEmotion(agent, feed, emotionType);
-        emotionRepository.save(emotion);
-    }
-
-    // 특정 감정 표현 삭제
-    private void deleteEmotion(Emotion emotion) {
-        emotionRepository.delete(emotion);
     }
 
     // 피드에 남겨져 있는 모든 감정 표현 삭제

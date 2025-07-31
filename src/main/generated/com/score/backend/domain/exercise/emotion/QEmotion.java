@@ -22,27 +22,13 @@ public class QEmotion extends EntityPathBase<Emotion> {
 
     public static final QEmotion emotion = new QEmotion("emotion");
 
-    public final com.score.backend.config.QBaseEntity _super = new com.score.backend.config.QBaseEntity(this);
-
     public final com.score.backend.domain.user.QUser agent;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final StringPath createdBy = _super.createdBy;
 
     public final EnumPath<EmotionType> emotionType = createEnum("emotionType", EmotionType.class);
 
     public final com.score.backend.domain.exercise.QExercise feed;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    //inherited
-    public final StringPath lastModifiedBy = _super.lastModifiedBy;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QEmotion(String variable) {
         this(Emotion.class, forVariable(variable), INITS);

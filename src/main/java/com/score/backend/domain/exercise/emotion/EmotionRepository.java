@@ -1,8 +1,7 @@
 package com.score.backend.domain.exercise.emotion;
 
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,7 +14,19 @@ public interface EmotionRepository extends JpaRepository<Emotion,Long>, EmotionR
     @Query("select e from Emotion e where e.feed.id = :feedId")
     Optional<List<Emotion>> findAllEmotionsByFeedId(@Param("feedId") Long feedId);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select e from Emotion e where e.agent.id = :userId and e.feed.id = :feedId and e.emotionType = :type")
-    Optional<Emotion> findUsersEmotionByFeedIdAndEmotionType(@Param("feedId") Long feedId, @Param("userId") Long userId, @Param("type") EmotionType type);
+    @Modifying
+    @Query("DELETE FROM Emotion e WHERE e.agent.id = :agentId AND e.feed.id = :feedId AND e.emotionType = :type")
+    int deleteEmotion(@Param("agentId") Long agentId,
+                       @Param("feedId") Long feedId,
+                       @Param("type") EmotionType type);
+
+    @Modifying
+    @Query(
+                value = "INSERT INTO emotion (user_id, exercise_id, emotion_type) " +
+                        "VALUES (:agentId, :feedId, :type) " +
+                        "ON DUPLICATE KEY UPDATE emotion_type = :type",
+                nativeQuery = true
+    )
+    void insertEmotion(@Param("agentId") Long agentId, @Param("feedId") Long feedId, @Param("type") String type);
 }
+
