@@ -5,6 +5,7 @@ import com.score.backend.dtos.EmotionStatusResponse;
 import com.score.backend.exceptions.ExceptionType;
 import com.score.backend.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,21 @@ public class EmotionService {
     private final EmotionRepository emotionRepository;
 
     public boolean addOrDeleteEmotion(Long agentId, Long feedId, EmotionType type) {
-        int deleted = emotionRepository.deleteEmotionNative(agentId, feedId, type.name());
-        if (deleted == 0) {
-            emotionRepository.insertIfNotDeleted(agentId, feedId, type.name());
-            return true;
+        for (int i = 0; i < 3; i++) {
+            try {
+                int deleted = emotionRepository.deleteEmotionNative(agentId, feedId, type.name());
+                if (deleted == 0) {
+                    emotionRepository.insertIfNotDeleted(agentId, feedId, type.name());
+                    return true;
+                }
+                return false;
+            } catch (PessimisticLockingFailureException e) {
+                if (i == 2) {
+                    throw e;
+                }
+            }
         }
+
         return false;
     }
 
