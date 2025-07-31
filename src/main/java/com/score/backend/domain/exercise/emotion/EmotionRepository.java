@@ -15,18 +15,21 @@ public interface EmotionRepository extends JpaRepository<Emotion,Long>, EmotionR
     Optional<List<Emotion>> findAllEmotionsByFeedId(@Param("feedId") Long feedId);
 
     @Modifying
-    @Query("DELETE FROM Emotion e WHERE e.agent.id = :agentId AND e.feed.id = :feedId AND e.emotionType = :type")
-    int deleteEmotion(@Param("agentId") Long agentId,
-                       @Param("feedId") Long feedId,
-                       @Param("type") EmotionType type);
+    @Query(value = "DELETE FROM emotion " +
+            "WHERE user_id = :agentId " +
+            "AND exercise_id = :feedId " +
+            "AND emotion_type = :type",
+            nativeQuery = true)
+    int deleteEmotionNative(@Param("agentId") Long agentId,
+                            @Param("feedId") Long feedId,
+                            @Param("type") String type);
 
     @Modifying
-    @Query(
-                value = "INSERT INTO emotion (user_id, exercise_id, emotion_type) " +
-                        "VALUES (:agentId, :feedId, :type) " +
-                        "ON DUPLICATE KEY UPDATE emotion_type = :type",
-                nativeQuery = true
-    )
-    void insertEmotion(@Param("agentId") Long agentId, @Param("feedId") Long feedId, @Param("type") String type);
+    @Query(value = "INSERT INTO emotion (user_id, exercise_id, emotion_type) " +
+            "SELECT :agentId, :feedId, :type " +
+            "WHERE ROW_COUNT() = 0",
+            nativeQuery = true)
+    void insertIfNotDeleted(@Param("agentId") Long agentId,
+                           @Param("feedId") Long feedId,
+                           @Param("type") String type);
 }
-

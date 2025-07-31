@@ -18,9 +18,9 @@ public class EmotionService {
     private final EmotionRepository emotionRepository;
 
     public boolean addOrDeleteEmotion(Long agentId, Long feedId, EmotionType type) {
-        int deleted = emotionRepository.deleteEmotion(agentId, feedId, type);
+        int deleted = emotionRepository.deleteEmotionNative(agentId, feedId, type.name());
         if (deleted == 0) {
-            emotionRepository.insertEmotion(agentId, feedId, type.name());
+            emotionRepository.insertIfNotDeleted(agentId, feedId, type.name());
             return true;
         }
         return false;
