@@ -7,8 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Schema(description = "피드에 등록된 감정 표현의 목록 응답을 위한 DTO")
 @Getter
 @AllArgsConstructor

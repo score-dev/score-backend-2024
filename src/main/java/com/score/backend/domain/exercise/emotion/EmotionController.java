@@ -1,7 +1,6 @@
 package com.score.backend.domain.exercise.emotion;
 
 import com.score.backend.domain.exercise.ExerciseService;
-import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.EmotionStatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
