@@ -1,6 +1,5 @@
 package com.score.backend.domain.exercise.emotion;
 
-import com.score.backend.config.BaseEntity;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.exercise.Exercise;
 import jakarta.persistence.*;
@@ -10,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
-public class Emotion extends BaseEntity {
+public class Emotion  {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "emotion_id")
     private Long id;
@@ -27,11 +26,4 @@ public class Emotion extends BaseEntity {
     @Column(columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private EmotionType emotionType; // 어떤 감정 표현인지?
-
-    public void setEmotion(User agent, Exercise feed, EmotionType emotionType) {
-        this.agent = agent;
-        this.feed = feed;
-        this.emotionType = emotionType;
-        feed.getEmotions().add(this);
-    }
 }

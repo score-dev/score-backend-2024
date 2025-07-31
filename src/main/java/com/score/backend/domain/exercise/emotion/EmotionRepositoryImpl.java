@@ -15,7 +15,7 @@ public class EmotionRepositoryImpl implements EmotionRepositoryCustom {
         return queryFactory
                 .selectFrom(e)
                 .where(e.feed.id.eq(feedId).and(e.emotionType.eq(emotionType)))
-                .orderBy(e.createdAt.desc())
+                .orderBy(e.agent.nickname.asc())
                 .fetch();
     }
 }
