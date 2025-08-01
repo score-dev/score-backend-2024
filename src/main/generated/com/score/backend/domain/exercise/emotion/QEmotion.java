@@ -30,6 +30,8 @@ public class QEmotion extends EntityPathBase<Emotion> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final NumberPath<Long> version = createNumber("version", Long.class);
+
     public QEmotion(String variable) {
         this(Emotion.class, forVariable(variable), INITS);
     }

@@ -1,6 +1,8 @@
 package com.score.backend.domain.exercise.emotion;
 
 import com.score.backend.domain.exercise.Exercise;
+import com.score.backend.domain.exercise.ExerciseService;
+import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.EmotionStatusResponse;
 import com.score.backend.exceptions.ExceptionType;
 import com.score.backend.exceptions.NotFoundException;
@@ -15,15 +17,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class EmotionService {
+    private final UserService userService;
+    private final ExerciseService exerciseService;
     private final EmotionRepository emotionRepository;
 
-    public boolean addOrDeleteEmotion(Long agentId, Long feedId, EmotionType type) {
-        int deleted = emotionRepository.deleteEmotionNative(agentId, feedId, type.name());
-        if (deleted == 0) {
-            emotionRepository.insertIfNotDeleted(agentId, feedId, type.name());
-            return true;
-        }
-        return false;
+    // 감정 표현 추가
+    public void addEmotion(Long agentId, Long feedId, EmotionType type) {
+        Emotion emotion = new Emotion(userService.findUserById(agentId), exerciseService.findFeedByExerciseId(feedId), type);
+        emotionRepository.save(emotion);
+    }
+
+    // 감정 표현 삭제
+    public void deleteEmotion(Long agentId, Long feedId, EmotionType type) {
+        emotionRepository.deleteByAgentIdAndFeedIdAndEmotionType(agentId, feedId, type);
     }
 
     // 피드에 남겨져 있는 모든 감정 표현 삭제
