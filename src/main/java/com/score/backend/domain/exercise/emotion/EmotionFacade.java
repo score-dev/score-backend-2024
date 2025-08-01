@@ -2,7 +2,7 @@ package com.score.backend.domain.exercise.emotion;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +19,7 @@ public class EmotionFacade {
             } catch (DataIntegrityViolationException e) {
                 emotionService.deleteEmotion(agentId, feedId, type);
                 return false;
-            } catch (OptimisticLockingFailureException e) {
+            } catch (PessimisticLockingFailureException e) {
                 if (i == 2) throw e;
             }
         }

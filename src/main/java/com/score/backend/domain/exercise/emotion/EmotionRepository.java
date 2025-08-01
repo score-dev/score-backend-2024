@@ -1,6 +1,8 @@
 package com.score.backend.domain.exercise.emotion;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,5 +15,6 @@ public interface EmotionRepository extends JpaRepository<Emotion,Long>, EmotionR
     @Query("select e from Emotion e where e.feed.id = :feedId")
     Optional<List<Emotion>> findAllEmotionsByFeedId(@Param("feedId") Long feedId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     void deleteByAgentIdAndFeedIdAndEmotionType(Long agentId, Long feedId, EmotionType type);
 }

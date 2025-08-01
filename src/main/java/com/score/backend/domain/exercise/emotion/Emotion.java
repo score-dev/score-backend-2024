@@ -17,9 +17,6 @@ public class Emotion  {
     @Column(name = "emotion_id")
     private Long id;
 
-    @Version
-    private Long version;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
