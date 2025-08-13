@@ -11,20 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SchoolDto {
 
-    @Schema(description = "힉교명")
+    @Schema(description = "학교명")
     private String schoolName;
-
-    @Schema(description = "힉교 주소")
-    private String schoolAddress;
 
     @Schema(description = "학교의 행정 표준 코드")
     private String schoolCode;
-
-    public SchoolDto(String schoolName, String schoolAddress, String schoolCode) {
-        this.schoolName = schoolName;
-        this.schoolAddress = schoolAddress;
-        this.schoolCode = schoolCode;
-    }
 
     public School toEntity() {
         return School.builder()
