@@ -45,6 +45,6 @@ public class SchoolService {
     // 행정 표준 코드로 학교 검색
     @Transactional(readOnly = true)
     public School findSchoolByCode(String code) {
-        return schoolRepository.findSchoolByCode(code);
+        return schoolRepository.findSchoolBySchoolCode(code);
     }
 }

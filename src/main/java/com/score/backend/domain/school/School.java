@@ -24,10 +24,6 @@ public class School extends BaseEntity {
 
     private String schoolName;
 
-    private String schoolLocation;
-
-    private String schoolAddress;
-
     @Column(nullable = false, unique = true)
     private String schoolCode;
 

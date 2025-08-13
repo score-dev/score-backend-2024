@@ -35,11 +35,7 @@ public class QSchool extends EntityPathBase<School> {
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
-    public final StringPath schoolAddress = createString("schoolAddress");
-
     public final StringPath schoolCode = createString("schoolCode");
-
-    public final StringPath schoolLocation = createString("schoolLocation");
 
     public final StringPath schoolName = createString("schoolName");
 
