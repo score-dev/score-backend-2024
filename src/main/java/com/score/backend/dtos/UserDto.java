@@ -26,13 +26,13 @@ public class UserDto {
     @Schema(description = "학년", example = "1")
     private int grade;
 
-    @Schema(description = "키", maxLength = 10, nullable = true, example = "150")
+    @Schema(description = "키", maxLength = 10, example = "150")
     private int height;
 
-    @Schema(description = "체중", maxLength = 10, nullable = true, example = "50")
+    @Schema(description = "체중", maxLength = 10, example = "50")
     private int weight;
 
-    @Schema(description = "성별", nullable = true, example = "FEMALE")
+    @Schema(description = "성별", example = "FEMALE")
     private Gender gender;
 
     @Schema(description = "목표 운동 시작 시간")
