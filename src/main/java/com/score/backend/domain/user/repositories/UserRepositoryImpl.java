@@ -1,6 +1,9 @@
 package com.score.backend.domain.user.repositories;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.QExercise;
 import com.score.backend.domain.friend.Friend;
@@ -9,8 +12,10 @@ import com.score.backend.domain.group.QGroupEntity;
 import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
 import com.score.backend.domain.user.User;
+import com.score.backend.dtos.GroupMateTodaysExerciseDto;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,59 +40,84 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     // 그룹 내에서 오늘 3분 이상 운동하지 않은 유저들의 목록 조회
     @Override
     public List<User> findGroupMatesWhoDidNotExerciseToday(Long groupId) {
-        LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay(); // 오늘의 시작 시각(00:00:00)
-        LocalDateTime endOfToday = startOfToday.plusDays(1).minusSeconds(1); // 오늘의 끝 시각(23:59:59)
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = startOfToday.plusDays(1).minusSeconds(1);
 
         return queryFactory
                 .select(user)
                 .from(userGroup)
                 .join(userGroup.member, user)
-                .join(userGroup.group, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
-                .leftJoin(user.feeds, exercise) // 유저와 운동 기록 left join (운동 기록이 존재하지 않는 유저도 포함되도록)
-                .where(group.groupId.eq(groupId)) // 주어진 특정 그룹에 속한 유저만을 필터링
-                .groupBy(user.id) // 모든 운동 기록들을 유저별로 그룹화
-                // 그룹화된 유저별 운동 기록에 대해 집계 조건 적용
+                .join(userGroup.group, group)
+                .leftJoin(user.feeds, exercise)
+                .where(group.groupId.eq(groupId))
+                .groupBy(user.id)
                 .having(Expressions.numberTemplate(
-                        Long.class, // 반환 값 타입
-                        // case when A and B then 1 else 0 end: A와 B를 모두 만족하면 1 반환, 어느 하나라도 거짓이면 0 반환.
-                        // sum(): 반환 값들의 합계 계산. 즉 조건을 만족시키는 운동 기록이 조회될 때마다 1씩 증가됨.
-                        "sum(case when {0} between {1} and {2} " + // 조건 A: 운동을 끝낸 시각이 오늘의 시작 시각과 끝 시각 사이에 존재하는 경우 (= 오늘 이뤄진 운동인 경우)
-                                "and timestampdiff(SECOND, {3}, {4}) >= 180 then 1 else 0 end)", // 조건 B: 해당 운동의 시작 시각과 끝낸 시각간의 차(운동을 한 시간)이 3분 이상인 경우
+                        Integer.class,
+                        "sum(case when {0} >= {1} and {0} <= {2} " +
+                                "and {3} >= 180 then 1 else 0 end)",
                         exercise.completedAt, // {0}
                         startOfToday, // {1}
                         endOfToday, // {2}
-                        exercise.startedAt, // {3}
-                        exercise.completedAt // {4}
-                ).eq(0L)) // 조건을 만족하는 운동 기록이 한 개도 없는 유저인 경우만을 필터링.
+                        exercise.durationSec // {3}
+                ).eq(0))
                 .fetch();
     }
 
     @Override
     public List<User> findGroupMatesWhoDidExerciseToday(Long groupId) {
-        LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay(); // 오늘의 시작 시각(00:00:00)
-        LocalDateTime endOfToday = startOfToday.plusDays(1).minusSeconds(1); // 오늘의 끝 시각(23:59:59)
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = startOfToday.plusDays(1).minusSeconds(1);
 
         return queryFactory
                 .select(user)
                 .from(userGroup)
                 .join(userGroup.member, user)
-                .join(userGroup.group, group) // 유저와 그룹을 inner join (어느 한 그룹에라도 속해 있는 유저만을 필터링)
-                .leftJoin(user.feeds, exercise) // 유저와 운동 기록 left join (운동 기록이 존재하지 않는 유저도 포함되도록)
-                .where(group.groupId.eq(groupId)) // 주어진 특정 그룹에 속한 유저만을 필터링
-                .groupBy(user.id) // 모든 운동 기록들을 유저별로 그룹화
-                // 그룹화된 유저별 운동 기록에 대해 집계 조건 적용
+                .join(userGroup.group, group)
+                .leftJoin(user.feeds, exercise)
+                .where(group.groupId.eq(groupId))
+                .groupBy(user.id)
                 .having(Expressions.numberTemplate(
-                        Integer.class, // 반환 값 타입
-                        // case when A and B then 1 else 0 end: A와 B를 모두 만족하면 1 반환, 어느 하나라도 거짓이면 0 반환.
-                        // sum(): 반환 값들의 합계 계산. 즉 조건을 만족시키는 운동 기록이 조회될 때마다 1씩 증가됨.
-                        "sum(case when {0} between {1} and {2} " + // 조건 A: 운동을 끝낸 시각이 오늘의 시작 시각과 끝 시각 사이에 존재하는 경우 (= 오늘 이뤄진 운동인 경우)
-                                "and timestampdiff(SECOND, {3}, {4}) >= 180 then 1 else 0 end)", // 조건 B: 해당 운동의 시작 시각과 끝낸 시각간의 차(운동을 한 시간)이 3분 이상인 경우
+                        Integer.class,
+                        "sum(case when {0} >= {1} and {0} <= {2} " +
+                                "and {3} >= 180 then 1 else 0 end)",
                         exercise.completedAt, // {0}
                         startOfToday, // {1}
                         endOfToday, // {2}
-                        exercise.startedAt, // {3}
-                        exercise.completedAt // {4}
-                ).gt(0)) // 조건을 만족하는 운동 기록이 한 개도 없는 유저인 경우만을 필터링.
+                        exercise.durationSec // {3}
+                ).gt(0))
                 .fetch();
+    }
+
+    @Override
+    public List<GroupMateTodaysExerciseDto> findGroupMatesTodaysExercises(Long groupId) {
+        return queryFactory
+                .select(Projections.constructor(
+                        GroupMateTodaysExerciseDto.class,
+                        user.id,
+                        user.nickname,
+                        user.profileImg,
+                        user.lastExerciseDateTime,
+                        didExerciseOrNot()
+                ))
+                .from(userGroup)
+                .join(userGroup.member, user)
+                .join(userGroup.group, group)
+                .where(group.groupId.eq(groupId))
+                .fetch();
+    }
+
+    private BooleanExpression didExerciseOrNot() {
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = startOfToday.plusDays(1).minusSeconds(1);
+        return JPAExpressions
+                .selectOne()
+                .from(exercise)
+                .where(
+                        exercise.agent.eq(user)
+                                .and(exercise.completedAt.goe(startOfToday)).and(exercise.completedAt.loe(endOfToday))
+                                .and(exercise.durationSec.goe(180))
+                )
+                .exists();
+
     }
 }

@@ -35,6 +35,8 @@ public abstract class Exercise extends BaseEntity {
 
     private LocalDateTime completedAt;
 
+    private Double durationSec;
+
     private int reducedKcal;
 
     private String location;
@@ -64,7 +66,7 @@ public abstract class Exercise extends BaseEntity {
         this.taggedUsers.addAll(taggedUsers);
     }
 
-    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String fineDust, String feeling, String exercisePic) {
+    public Exercise(LocalDateTime startedAt, LocalDateTime completedAt, int reducedKcal, String location, String weather, int temperature, String fineDust, String feeling, String exercisePic, double durationSec) {
         this.startedAt = startedAt;
         this.completedAt = completedAt;
         this.reducedKcal = reducedKcal;
@@ -74,5 +76,6 @@ public abstract class Exercise extends BaseEntity {
         this.fineDust = fineDust;
         this.feeling = feeling;
         this.exercisePic = exercisePic;
+        this.durationSec = durationSec;
     }
 }

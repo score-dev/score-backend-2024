@@ -14,10 +14,10 @@ public class HomeGroupInfoResponse {
     private String groupName;
     @Schema(description = "그룹 내 가입된 유저의 수")
     private int numOfMembers;
-    @Schema(description = "그룹 내 모든 멤버들의 프로필 이미지 url")
-    private List<String> wholeMatesImgUrl;
     @Schema(description = "오늘 운동한 그룹 멤버들의 프로필 이미지 url")
     private List<String> todayExercisedMatesImgUrl;
+    @Schema(description = "그룹 내 모든 멤버들의 프로필 이미지 url")
+    private List<String> wholeMatesImgUrl;
     @Schema(description = "오늘 운동하지 않은 유저들에 대한 정보를 전달하기 위한 DTO")
     private List<HomeNotExercisedUserResponse> notExercisedUsers;
 
@@ -25,8 +25,8 @@ public class HomeGroupInfoResponse {
         this.groupId = groupId;
         this.groupName = groupName;
         this.numOfMembers = numOfMembers;
-        this.wholeMatesImgUrl = wholeMatesImgUrl;
         this.todayExercisedMatesImgUrl = todayExercisedMatesImgUrl;
+        this.wholeMatesImgUrl = wholeMatesImgUrl;
         this.notExercisedUsers = notExercisedUsers;
     }
 }

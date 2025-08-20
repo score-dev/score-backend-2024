@@ -34,6 +34,8 @@ public class QExercise extends EntityPathBase<Exercise> {
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
+    public final NumberPath<Double> durationSec = createNumber("durationSec", Double.class);
+
     public final ListPath<com.score.backend.domain.exercise.emotion.Emotion, com.score.backend.domain.exercise.emotion.QEmotion> emotions = this.<com.score.backend.domain.exercise.emotion.Emotion, com.score.backend.domain.exercise.emotion.QEmotion>createList("emotions", com.score.backend.domain.exercise.emotion.Emotion.class, com.score.backend.domain.exercise.emotion.QEmotion.class, PathInits.DIRECT2);
 
     public final StringPath exercisePic = createString("exercisePic");

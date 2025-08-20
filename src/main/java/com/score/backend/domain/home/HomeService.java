@@ -4,10 +4,11 @@ import com.score.backend.domain.exercise.Exercise;
 import com.score.backend.domain.exercise.ExerciseService;
 import com.score.backend.domain.group.BatonService;
 import com.score.backend.domain.group.GroupEntity;
-import com.score.backend.domain.group.GroupService;
 import com.score.backend.domain.group.UserGroup;
 import com.score.backend.domain.report.userreport.UserReportService;
 import com.score.backend.domain.user.User;
+import com.score.backend.domain.user.UserService;
+import com.score.backend.dtos.GroupMateTodaysExerciseDto;
 import com.score.backend.dtos.home.HomeGroupInfoResponse;
 import com.score.backend.dtos.home.HomeNotExercisedUserResponse;
 import com.score.backend.dtos.home.HomeResponse;
@@ -21,9 +22,9 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class HomeService {
+    private final UserService userService;
     private final UserReportService userReportService;
     private final ExerciseService  exerciseService;
-    private final GroupService groupService;
     private final BatonService batonService;
 
     public HomeResponse getHomeInfo(User user, List<Exercise> usersWeeklyExercises) {
@@ -41,54 +42,58 @@ public class HomeService {
     private List<HomeGroupInfoResponse> getGroupInfos(User agent, List<GroupEntity> joinedGroups) {
         List<HomeGroupInfoResponse> groupInfos = new ArrayList<>();
         for (GroupEntity group : joinedGroups) {
+            List<GroupMateTodaysExerciseDto> groupMateTodaysExerciseDtos = userService.findGroupMateTodaysExerciseByGroupId(group.getGroupId());
+            Map<Boolean, List<GroupMateTodaysExerciseDto>> classified = classifyGroupMates(groupMateTodaysExerciseDtos);
             HomeGroupInfoResponse hgir = new HomeGroupInfoResponse(group.getGroupId(), group.getGroupName(), group.getMembers().size(),
-                    getGroupExercisedMatesProfileUrl(groupService.findAllUsersDidExerciseToday(group.getGroupId())),
-                    getWholeGroupMatesProfileUrl(groupService.findAllUsers(group.getGroupId())),
-                    getHomeNotExercisedUserResponse(agent, group.getGroupId()));
+                    getGroupExercisedMatesProfileUrl(classified.get(true)),
+                    group.getMembers().stream().map(UserGroup::getMember).map(User::getProfileImg).toList(),
+                    getHomeNotExercisedUserResponse(agent, classified.get(false)));
             groupInfos.add(hgir);
         }
         return groupInfos;
     }
 
-    private List<String> getWholeGroupMatesProfileUrl(List<UserGroup> mates) {
-        return mates.stream().map(UserGroup::getMember).map(User::getProfileImg).toList();
+    private Map<Boolean, List<GroupMateTodaysExerciseDto>> classifyGroupMates(List<GroupMateTodaysExerciseDto> dtos) {
+        return dtos.stream().collect(
+                Collectors.partitioningBy(GroupMateTodaysExerciseDto::isDidExerciseToday)
+        );
     }
 
-    private List<String> getGroupExercisedMatesProfileUrl(List<User> allUsersDidExerciseToday) {
-        allUsersDidExerciseToday.sort(Comparator.comparing(User::getLastExerciseDateTime));
-        return allUsersDidExerciseToday.stream().map(User::getProfileImg).toList();
+    private List<String> getGroupExercisedMatesProfileUrl(List<GroupMateTodaysExerciseDto> allUsersDidExerciseToday) {
+        allUsersDidExerciseToday.sort(Comparator.comparing(GroupMateTodaysExerciseDto::getLastExerciseDateTime));
+        return allUsersDidExerciseToday.stream().map(GroupMateTodaysExerciseDto::getProfileImgUrl).toList();
     }
 
     private List<Double> cumulateExerciseTimeDayByDay(List<Exercise> usersWeeklyExercises) {
         Double[] exerciseTimes = new Double[7];
         for (Exercise exercise : usersWeeklyExercises) {
-            double duration = exerciseService.calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt());
-            exerciseTimes[exercise.getStartedAt().getDayOfWeek().getValue() - 1] = duration;
+            exerciseTimes[exercise.getStartedAt().getDayOfWeek().getValue() - 1] = exercise.getDurationSec();
         }
         return Arrays.asList(exerciseTimes);
     }
 
-    private List<HomeNotExercisedUserResponse> getHomeNotExercisedUserResponse(User agent, Long groupId) {
+    private List<HomeNotExercisedUserResponse> getHomeNotExercisedUserResponse(User agent, List<GroupMateTodaysExerciseDto> didNotExercisedToday) {
         List<HomeNotExercisedUserResponse> hneur = new ArrayList<>();
-        List<User> randomMembersWhoDidNotExerciseToday = getRandomThreeUnexercisedUsers(agent, batonService.findAllMembersWhoDidNotExerciseToday(groupId));
-        for (User user : randomMembersWhoDidNotExerciseToday) {
-            hneur.add(new HomeNotExercisedUserResponse(user.getId(), user.getNickname(), user.getProfileImg(), batonService.canTurnOverBaton(agent, user)));
+        List<GroupMateTodaysExerciseDto> randomMembersWhoDidNotExerciseToday = getRandomThreeUnexercisedUsers(agent.getId(), didNotExercisedToday);
+        for (GroupMateTodaysExerciseDto dto : randomMembersWhoDidNotExerciseToday) {
+            hneur.add(new HomeNotExercisedUserResponse(dto.getUserId(), dto.getNickname(), dto.getProfileImgUrl(), batonService.canTurnOverBaton(agent, userService.findUserById(dto.getUserId()))));
         }
         return hneur;
     }
 
     // 오늘 3분 이상 운동하지 않은 그룹 메이트 중 자기 자신을 제외한 랜덤 3명을 선택
-    private List<User> getRandomThreeUnexercisedUsers(User agent, List<User> unexercisedUsers) {
-        unexercisedUsers.remove(agent); // 자기 자신은 목록에서 제외
-        if (unexercisedUsers.size() <= 3) {
-            return unexercisedUsers;
+    private List<GroupMateTodaysExerciseDto> getRandomThreeUnexercisedUsers(Long agentId, List<GroupMateTodaysExerciseDto> didNotExercisedToday) {
+        // 자기 자신 제외
+        List<GroupMateTodaysExerciseDto> exceptAgent = didNotExercisedToday.stream().filter(dto -> !dto.getUserId().equals(agentId)).collect(Collectors.toList());
+        if (exceptAgent.size() <= 3) {
+            return exceptAgent;
         }
 
         Random random = new Random();
-        return IntStream.generate(() -> random.nextInt(unexercisedUsers.size()))
+        return IntStream.generate(() -> random.nextInt(exceptAgent.size()))
                 .distinct()
                 .limit(3)
-                .mapToObj(unexercisedUsers::get)
+                .mapToObj(didNotExercisedToday::get)
                 .collect(Collectors.toList());
     }
 }
