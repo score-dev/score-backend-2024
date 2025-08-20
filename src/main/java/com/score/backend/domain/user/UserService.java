@@ -6,6 +6,7 @@ import com.score.backend.domain.rank.RankingService;
 import com.score.backend.domain.rank.group.GroupRanker;
 import com.score.backend.domain.rank.group.GroupRankerRepository;
 import com.score.backend.domain.user.repositories.UserRepository;
+import com.score.backend.dtos.GroupMateTodaysExerciseDto;
 import com.score.backend.dtos.UserUpdateDto;
 import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.school.SchoolService;
@@ -120,5 +121,9 @@ public class UserService {
             return userOption.get().getId();
         }
         return -1L;
+    }
+
+    public List<GroupMateTodaysExerciseDto> findGroupMateTodaysExerciseByGroupId(Long groupId) {
+        return userRepository.findGroupMatesTodaysExercises(groupId);
     }
 }

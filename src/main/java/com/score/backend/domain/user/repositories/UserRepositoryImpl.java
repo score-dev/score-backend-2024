@@ -1,6 +1,9 @@
 package com.score.backend.domain.user.repositories;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.score.backend.domain.exercise.QExercise;
 import com.score.backend.domain.friend.Friend;
@@ -9,6 +12,7 @@ import com.score.backend.domain.group.QGroupEntity;
 import com.score.backend.domain.group.QUserGroup;
 import com.score.backend.domain.user.QUser;
 import com.score.backend.domain.user.User;
+import com.score.backend.dtos.GroupMateTodaysExerciseDto;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
@@ -83,5 +87,38 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                         exercise.startedAt // {2}
                 ).gt(0)) // 조건을 만족하는 운동 기록이 하나라도 있는 유저인 경우만을 필터링.
                 .fetch();
+    }
+
+    @Override
+    public List<GroupMateTodaysExerciseDto> findGroupMatesTodaysExercises(Long groupId) {
+        return queryFactory
+                .select(Projections.constructor(
+                        GroupMateTodaysExerciseDto.class,
+                        user.id,
+                        user.nickname,
+                        user.profileImg,
+                        user.lastExerciseDateTime,
+                        didExerciseOrNot()
+                ))
+                .from(userGroup)
+                .join(userGroup.member, user)
+                .join(userGroup.group, group)
+                .where(group.groupId.eq(groupId))
+                .fetch();
+    }
+
+    private BooleanExpression didExerciseOrNot() {
+        LocalDate today = LocalDate.now();
+        return JPAExpressions
+                .selectOne()
+                .from(exercise)
+                .where(
+                        exercise.agent.eq(user)
+                                .and(Expressions.booleanTemplate("date({0}) = {1}", exercise.completedAt, today))
+                                .and(Expressions.numberTemplate(Integer.class,
+                                        "timestampdiff(SECOND, {0}, {1})", exercise.startedAt, exercise.completedAt).goe(180))
+                )
+                .exists();
+
     }
 }
