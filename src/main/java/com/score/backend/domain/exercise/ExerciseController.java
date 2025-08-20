@@ -4,7 +4,6 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.score.backend.config.ImageUploadService;
 import com.score.backend.domain.exercise.emotion.EmotionService;
 import com.score.backend.domain.friend.Friend;
-import com.score.backend.domain.notification.NotificationService;
 import com.score.backend.domain.user.User;
 import com.score.backend.domain.user.UserService;
 import com.score.backend.dtos.FeedCalendarResponse;
@@ -44,7 +43,6 @@ public class ExerciseController {
     private final FriendService friendService;
     private final GroupService groupService;
     private final EmotionService emotionService;
-    private final NotificationService notificationService;
 
     @Operation(summary = "함께 운동한 친구 검색", description = "함께 운동한 친구를 선택하기 위해 닉네임으로 검색합니다.")
     @ApiResponses(
@@ -77,9 +75,10 @@ public class ExerciseController {
                                                     @Parameter(description = "피드에 업로드할 이미지", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)) @RequestPart(value = "file") MultipartFile multipartFile) throws IOException, FirebaseMessagingException {
 
         User agent = userService.findUserById(walkingDto.getAgentId());
+        Double duration = exerciseService.calculateExerciseDuration(walkingDto.getStartedAt(), walkingDto.getCompletedAt());
         List<User> others = walkingDto.getOthersId().stream().map(userService::findUserById).toList();
         ///// 3분 이상 운동한 경우 /////
-        if (exerciseService.isValidateExercise(walkingDto.getStartedAt(), walkingDto.getCompletedAt())) {
+        if (exerciseService.isValidateExercise(duration)) {
             // 피드 업로드에 따른 포인트 증가
             levelService.increasePointsForTodaysFirstExercise(agent);
             // 마지막 운동 날짜 업데이트
@@ -92,12 +91,12 @@ public class ExerciseController {
                 // 연속 운동 일수 증가에 따른 포인트 증가
                 levelService.increasePointsByConsecutiveDate(agent);
                 // 유저의 금주 운동 현황 업데이트(유저의 금주 누적 운동 시간 업데이트+이번주 운동한 날짜 수 증가)
-                exerciseService.updateWeeklyExerciseStatus(agent, true, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+                exerciseService.updateWeeklyExerciseStatus(agent, true, duration);
             }
             /////// 오늘 3분 이상 운동한 기록이 이미 존재하는 경우 ///////
             else {
                 // 유저의 금주 누적 운동 시간 업데이트하지만 이번주 운동한 날짜 수는 더 이상 증가하지 않음
-                exerciseService.updateWeeklyExerciseStatus(agent, false, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+                exerciseService.updateWeeklyExerciseStatus(agent, false, duration);
             }
         }
 
@@ -107,12 +106,12 @@ public class ExerciseController {
         // 누적 운동 거리 업데이트
         exerciseService.cumulateExerciseDistance(agent, walkingDto.getDistance());
         // 개인 누적 운동 시간 업데이트
-        exerciseService.cumulateExerciseDuration(agent, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+        exerciseService.cumulateExerciseDuration(agent, duration);
         // 유저가 속한 그룹의 누적 운동 시간 업데이트
-        groupService.increaseCumulativeTime(agent, walkingDto.getStartedAt(), walkingDto.getCompletedAt());
+        groupService.increaseCumulativeTime(agent, duration);
         Set<TaggedUser> taggedUsers = exerciseService.findTaggedUsers(agent, others);
         // 피드 저장
-        Exercise feed = exerciseService.saveFeed(agent, taggedUsers, walkingDto, imageUploadService.uploadImage(multipartFile));
+        Exercise feed = exerciseService.saveFeed(agent, taggedUsers, walkingDto, imageUploadService.uploadImage(multipartFile), duration);
         exerciseService.notifyToTaggedUsers(taggedUsers, feed);
         return ResponseEntity.ok("피드 등록이 완료되었습니다.");
     }

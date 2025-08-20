@@ -72,10 +72,9 @@ public class  ExerciseService {
         return exerciseRepository.findUsersWeeklyExercises(user.getId(), LocalDate.now());
     }
 
-    public Exercise saveFeed(User agent, Set<TaggedUser> taggedUsers, WalkingDto walkingDto, String imgUrl) {
-        // 새로운 피드 엔티티 생성z
-
-        Exercise feed = walkingDto.toEntity(imgUrl);
+    public Exercise saveFeed(User agent, Set<TaggedUser> taggedUsers, WalkingDto walkingDto, String imgUrl, Double duration) {
+        // 새로운 피드 엔티티 생성
+        Exercise feed = walkingDto.toEntity(imgUrl, duration);
         // 피드 작성자, 함께 운동한 친구 설정
         feed.setAgentAndExerciseUser(agent, taggedUsers);
         exerciseRepository.save(feed);
@@ -107,8 +106,8 @@ public class  ExerciseService {
     }
 
     // 유저의 운동 시간 누적
-    public void cumulateExerciseDuration(User user, LocalDateTime start, LocalDateTime end) {
-        user.updateCumulativeTime(calculateExerciseDuration(start, end));
+    public void cumulateExerciseDuration(User user, Double duration) {
+        user.updateCumulativeTime(duration);
     }
 
     // 유저의 운동 거리 누적
@@ -127,8 +126,8 @@ public class  ExerciseService {
     }
 
     // 유저의 금주 운동 횟수, 운동 시간 업데이트
-    public void updateWeeklyExerciseStatus(User user, boolean needToIncrease, LocalDateTime start, LocalDateTime end) {
-        user.updateWeeklyExerciseStatus(needToIncrease, calculateExerciseDuration(start, end));
+    public void updateWeeklyExerciseStatus(User user, boolean needToIncrease, Double duration) {
+        user.updateWeeklyExerciseStatus(needToIncrease, duration);
     }
 
     // 운동한 시간 계산
@@ -143,8 +142,8 @@ public class  ExerciseService {
 
     // 3분 이상 운동했는지 여부 확인
     @Transactional(readOnly = true)
-    public boolean isValidateExercise(LocalDateTime start, LocalDateTime end) {
-        return calculateExerciseDuration(start, end) >= 180;
+    public boolean isValidateExercise(Double duration) {
+        return duration >= 180;
     }
 
     // 오늘 처음으로 3분 이상 운동했는지 여부 확인

@@ -67,8 +67,7 @@ public class HomeService {
     private List<Double> cumulateExerciseTimeDayByDay(List<Exercise> usersWeeklyExercises) {
         Double[] exerciseTimes = new Double[7];
         for (Exercise exercise : usersWeeklyExercises) {
-            double duration = exerciseService.calculateExerciseDuration(exercise.getStartedAt(), exercise.getCompletedAt());
-            exerciseTimes[exercise.getStartedAt().getDayOfWeek().getValue() - 1] = duration;
+            exerciseTimes[exercise.getStartedAt().getDayOfWeek().getValue() - 1] = exercise.getDurationSec();
         }
         return Arrays.asList(exerciseTimes);
     }

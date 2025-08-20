@@ -147,10 +147,9 @@ public class GroupService {
     }
 
     // 유저가 속한 모든 그룹의 누적 운동 시간 증가
-    public void increaseCumulativeTime(User agent, LocalDateTime start, LocalDateTime end) {
+    public void increaseCumulativeTime(User agent, Double duration) {
         List<GroupEntity> groups = this.findAllGroupsByUserId(agent.getId());
         if (!groups.isEmpty()) {
-            double duration = exerciseService.calculateExerciseDuration(start, end);
             for (GroupEntity group : groups) {
                 group.updateCumulativeTime(duration);
             }
